@@ -1,0 +1,1984 @@
+Index: app/src/main/res/mipmap-anydpi/ic_launcher_round.xml
+===================================================================
+diff --git a/app/src/main/res/mipmap-anydpi/ic_launcher_round.xml b/app/src/main/res/mipmap-anydpi/ic_launcher_round.xml
+deleted file mode 100644
+--- a/app/src/main/res/mipmap-anydpi/ic_launcher_round.xml	(revision 5d6966f2e2853ec7b7553c46c4a529833dc9af4c)
++++ /dev/null	(revision 5d6966f2e2853ec7b7553c46c4a529833dc9af4c)
+@@ -1,6 +0,0 @@
+-<?xml version="1.0" encoding="utf-8"?>
+-<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+-    <background android:drawable="@drawable/ic_launcher_background" />
+-    <foreground android:drawable="@drawable/ic_launcher_foreground" />
+-    <monochrome android:drawable="@drawable/ic_launcher_foreground" />
+-</adaptive-icon>
+\ No newline at end of file
+Index: app/src/main/res/mipmap-anydpi/ic_launcher.xml
+===================================================================
+diff --git a/app/src/main/res/mipmap-anydpi/ic_launcher.xml b/app/src/main/res/mipmap-anydpi/ic_launcher.xml
+deleted file mode 100644
+--- a/app/src/main/res/mipmap-anydpi/ic_launcher.xml	(revision 5d6966f2e2853ec7b7553c46c4a529833dc9af4c)
++++ /dev/null	(revision 5d6966f2e2853ec7b7553c46c4a529833dc9af4c)
+@@ -1,6 +0,0 @@
+-<?xml version="1.0" encoding="utf-8"?>
+-<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+-    <background android:drawable="@drawable/ic_launcher_background" />
+-    <foreground android:drawable="@drawable/ic_launcher_foreground" />
+-    <monochrome android:drawable="@drawable/ic_launcher_foreground" />
+-</adaptive-icon>
+\ No newline at end of file
+Index: app/app/src/main/res/values/strings.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/app/src/main/res/values/strings.xml b/app/app/src/main/res/values/strings.xml
+new file mode 100644
+--- /dev/null	(date 1756950019243)
++++ b/app/app/src/main/res/values/strings.xml	(date 1756950019243)
+@@ -0,0 +1,8 @@
++<resources>
++    <string name="app_name">Practicum-Android-Diploma</string>
++    <string name="main">Главная</string>
++    <string name="favorites">Избранное</string>
++    <string name="team">Команда</string>
++    <string name="job_search">Поиск вакансий</string>
++    <string name="filtration_settings">Настройки фильтрации</string>
++</resources>
+Index: app/app/src/main/res/values/styles.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/app/src/main/res/values/styles.xml b/app/app/src/main/res/values/styles.xml
+new file mode 100644
+--- /dev/null	(date 1756953071689)
++++ b/app/app/src/main/res/values/styles.xml	(date 1756953071689)
+@@ -0,0 +1,9 @@
++<?xml version="1.0" encoding="utf-8"?>
++<resources>
++
++    <style name="BottomNavigationStyle">
++        <item name="android:background">@color/white</item>
++        <item name="itemIconTint">@color/navigation_color</item>
++        <item name="itemTextColor">@color/navigation_color</item>
++    </style>
++</resources>
+Index: app/app/src/main/res/values/themes.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/app/src/main/res/values/themes.xml b/app/app/src/main/res/values/themes.xml
+new file mode 100644
+--- /dev/null	(date 1756946455346)
++++ b/app/app/src/main/res/values/themes.xml	(date 1756946455346)
+@@ -0,0 +1,15 @@
++<resources xmlns:tools="http://schemas.android.com/tools">
++    <!-- Base application theme. -->
++    <style name="Theme.PracticumAndroidDiploma" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
++        <!-- Primary brand color. -->
++        <item name="colorPrimary">@color/blue</item>
++        <item name="colorPrimaryVariant">@color/grey</item>
++        <item name="colorOnPrimary">@color/white</item>
++    </style>
++
++    <style name="ThemeOverlay.SearchView" parent="">
++        <item name="android:editTextColor">@color/black</item>
++        <item name="android:textColorHint">@color/grey</item>
++    </style>
++
++</resources>
+Index: app/app/src/main/res/drawable/trailing_icon.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/app/src/main/res/drawable/trailing_icon.xml b/app/app/src/main/res/drawable/trailing_icon.xml
+new file mode 100644
+--- /dev/null	(date 1756947505911)
++++ b/app/app/src/main/res/drawable/trailing_icon.xml	(date 1756947505911)
+@@ -0,0 +1,9 @@
++<vector xmlns:android="http://schemas.android.com/apk/res/android"
++    android:width="48dp"
++    android:height="48dp"
++    android:viewportWidth="48"
++    android:viewportHeight="48">
++  <path
++      android:pathData="M22,30H26V28H22V30ZM15,18V20H33V18H15ZM18,25H30V23H18V25Z"
++      android:fillColor="#1A1B22"/>
++</vector>
+Index: app/app/src/main/res/drawable/favorites_icon.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/app/src/main/res/drawable/favorites_icon.xml b/app/app/src/main/res/drawable/favorites_icon.xml
+new file mode 100644
+--- /dev/null	(date 1756944589264)
++++ b/app/app/src/main/res/drawable/favorites_icon.xml	(date 1756944589264)
+@@ -0,0 +1,9 @@
++<vector xmlns:android="http://schemas.android.com/apk/res/android"
++    android:width="24dp"
++    android:height="24dp"
++    android:viewportWidth="24"
++    android:viewportHeight="24">
++    <path
++        android:fillColor="@color/grey"
++        android:pathData="M12,22L10.405,20.561C4.74,15.471 1,12.114 1,7.995C1,4.638 3.662,2 7.05,2C8.964,2 10.801,2.883 12,4.278C13.199,2.883 15.036,2 16.95,2C20.338,2 23,4.638 23,7.995C23,12.114 19.26,15.471 13.595,20.572L12,22Z" />
++</vector>
+Index: app/app/src/main/res/drawable/main_icon.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/app/src/main/res/drawable/main_icon.xml b/app/app/src/main/res/drawable/main_icon.xml
+new file mode 100644
+--- /dev/null	(date 1756944527484)
++++ b/app/app/src/main/res/drawable/main_icon.xml	(date 1756944527484)
+@@ -0,0 +1,9 @@
++<vector xmlns:android="http://schemas.android.com/apk/res/android"
++    android:width="24dp"
++    android:height="24dp"
++    android:viewportWidth="24"
++    android:viewportHeight="24">
++    <path
++        android:fillColor="@color/grey"
++        android:pathData="M4,2C2.895,2 2,2.895 2,4V9C2,10.105 2.895,11 4,11H9C10.105,11 11,10.105 11,9V4C11,2.895 10.105,2 9,2H4ZM4,13C2.895,13 2,13.895 2,15V20C2,21.105 2.895,22 4,22H9C10.105,22 11,21.105 11,20V15C11,13.895 10.105,13 9,13H4ZM13,15C13,13.895 13.895,13 15,13H20C21.105,13 22,13.895 22,15V20C22,21.105 21.105,22 20,22H15C13.895,22 13,21.105 13,20V15ZM15,2C13.895,2 13,2.895 13,4V9C13,10.105 13.895,11 15,11H20C21.105,11 22,10.105 22,9V4C22,2.895 21.105,2 20,2H15Z" />
++</vector>
+Index: app/app/src/main/res/drawable/team_icon.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/app/src/main/res/drawable/team_icon.xml b/app/app/src/main/res/drawable/team_icon.xml
+new file mode 100644
+--- /dev/null	(date 1756944601284)
++++ b/app/app/src/main/res/drawable/team_icon.xml	(date 1756944601284)
+@@ -0,0 +1,10 @@
++<vector xmlns:android="http://schemas.android.com/apk/res/android"
++    android:width="24dp"
++    android:height="24dp"
++    android:viewportWidth="24"
++    android:viewportHeight="24">
++    <path
++        android:fillColor="@color/grey"
++        android:fillType="evenOdd"
++        android:pathData="M12,22C17.523,22 22,17.523 22,12C22,6.477 17.523,2 12,2C6.477,2 2,6.477 2,12C2,17.523 6.477,22 12,22ZM17.11,9.5C17.11,10.328 16.438,11 15.61,11C14.782,11 14.11,10.328 14.11,9.5C14.11,8.672 14.782,8 15.61,8C16.438,8 17.11,8.672 17.11,9.5ZM8.61,11C9.438,11 10.11,10.328 10.11,9.5C10.11,8.672 9.438,8 8.61,8C7.782,8 7.11,8.672 7.11,9.5C7.11,10.328 7.782,11 8.61,11ZM17.22,14C16.42,16.04 14.44,17.5 12.11,17.5C9.78,17.5 7.8,16.04 7,14H17.22Z" />
++</vector>
+Index: app/app/src/main/res/drawable/ic_launcher_foreground.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/app/src/main/res/drawable/ic_launcher_foreground.xml b/app/app/src/main/res/drawable/ic_launcher_foreground.xml
+new file mode 100644
+--- /dev/null	(date 1756920351930)
++++ b/app/app/src/main/res/drawable/ic_launcher_foreground.xml	(date 1756920351930)
+@@ -0,0 +1,30 @@
++<vector xmlns:android="http://schemas.android.com/apk/res/android"
++    xmlns:aapt="http://schemas.android.com/aapt"
++    android:width="108dp"
++    android:height="108dp"
++    android:viewportWidth="108"
++    android:viewportHeight="108">
++    <path android:pathData="M31,63.928c0,0 6.4,-11 12.1,-13.1c7.2,-2.6 26,-1.4 26,-1.4l38.1,38.1L107,108.928l-32,-1L31,63.928z">
++        <aapt:attr name="android:fillColor">
++            <gradient
++                android:endX="85.84757"
++                android:endY="92.4963"
++                android:startX="42.9492"
++                android:startY="49.59793"
++                android:type="linear">
++                <item
++                    android:color="#44000000"
++                    android:offset="0.0" />
++                <item
++                    android:color="#00000000"
++                    android:offset="1.0" />
++            </gradient>
++        </aapt:attr>
++    </path>
++    <path
++        android:fillColor="#FFFFFF"
++        android:fillType="nonZero"
++        android:pathData="M65.3,45.828l3.8,-6.6c0.2,-0.4 0.1,-0.9 -0.3,-1.1c-0.4,-0.2 -0.9,-0.1 -1.1,0.3l-3.9,6.7c-6.3,-2.8 -13.4,-2.8 -19.7,0l-3.9,-6.7c-0.2,-0.4 -0.7,-0.5 -1.1,-0.3C38.8,38.328 38.7,38.828 38.9,39.228l3.8,6.6C36.2,49.428 31.7,56.028 31,63.928h46C76.3,56.028 71.8,49.428 65.3,45.828zM43.4,57.328c-0.8,0 -1.5,-0.5 -1.8,-1.2c-0.3,-0.7 -0.1,-1.5 0.4,-2.1c0.5,-0.5 1.4,-0.7 2.1,-0.4c0.7,0.3 1.2,1 1.2,1.8C45.3,56.528 44.5,57.328 43.4,57.328L43.4,57.328zM64.6,57.328c-0.8,0 -1.5,-0.5 -1.8,-1.2s-0.1,-1.5 0.4,-2.1c0.5,-0.5 1.4,-0.7 2.1,-0.4c0.7,0.3 1.2,1 1.2,1.8C66.5,56.528 65.6,57.328 64.6,57.328L64.6,57.328z"
++        android:strokeWidth="1"
++        android:strokeColor="#00000000" />
++</vector>
+\ No newline at end of file
+Index: app/app/src/main/res/drawable/arrow_back_icon.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/app/src/main/res/drawable/arrow_back_icon.xml b/app/app/src/main/res/drawable/arrow_back_icon.xml
+new file mode 100644
+--- /dev/null	(date 1756950104479)
++++ b/app/app/src/main/res/drawable/arrow_back_icon.xml	(date 1756950104479)
+@@ -0,0 +1,9 @@
++<vector xmlns:android="http://schemas.android.com/apk/res/android"
++    android:width="24dp"
++    android:height="24dp"
++    android:viewportWidth="24"
++    android:viewportHeight="24">
++  <path
++      android:pathData="M20,11H7.83L13.42,5.41L12,4L4,12L12,20L13.41,18.59L7.83,13H20V11Z"
++      android:fillColor="#1A1B22"/>
++</vector>
+Index: app/app/src/main/res/drawable/ic_launcher_background.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/app/src/main/res/drawable/ic_launcher_background.xml b/app/app/src/main/res/drawable/ic_launcher_background.xml
+new file mode 100644
+--- /dev/null	(date 1756920351930)
++++ b/app/app/src/main/res/drawable/ic_launcher_background.xml	(date 1756920351930)
+@@ -0,0 +1,170 @@
++<?xml version="1.0" encoding="utf-8"?>
++<vector xmlns:android="http://schemas.android.com/apk/res/android"
++    android:width="108dp"
++    android:height="108dp"
++    android:viewportWidth="108"
++    android:viewportHeight="108">
++    <path
++        android:fillColor="#3DDC84"
++        android:pathData="M0,0h108v108h-108z" />
++    <path
++        android:fillColor="#00000000"
++        android:pathData="M9,0L9,108"
++        android:strokeWidth="0.8"
++        android:strokeColor="#33FFFFFF" />
++    <path
++        android:fillColor="#00000000"
++        android:pathData="M19,0L19,108"
++        android:strokeWidth="0.8"
++        android:strokeColor="#33FFFFFF" />
++    <path
++        android:fillColor="#00000000"
++        android:pathData="M29,0L29,108"
++        android:strokeWidth="0.8"
++        android:strokeColor="#33FFFFFF" />
++    <path
++        android:fillColor="#00000000"
++        android:pathData="M39,0L39,108"
++        android:strokeWidth="0.8"
++        android:strokeColor="#33FFFFFF" />
++    <path
++        android:fillColor="#00000000"
++        android:pathData="M49,0L49,108"
++        android:strokeWidth="0.8"
++        android:strokeColor="#33FFFFFF" />
++    <path
++        android:fillColor="#00000000"
++        android:pathData="M59,0L59,108"
++        android:strokeWidth="0.8"
++        android:strokeColor="#33FFFFFF" />
++    <path
++        android:fillColor="#00000000"
++        android:pathData="M69,0L69,108"
++        android:strokeWidth="0.8"
++        android:strokeColor="#33FFFFFF" />
++    <path
++        android:fillColor="#00000000"
++        android:pathData="M79,0L79,108"
++        android:strokeWidth="0.8"
++        android:strokeColor="#33FFFFFF" />
++    <path
++        android:fillColor="#00000000"
++        android:pathData="M89,0L89,108"
++        android:strokeWidth="0.8"
++        android:strokeColor="#33FFFFFF" />
++    <path
++        android:fillColor="#00000000"
++        android:pathData="M99,0L99,108"
++        android:strokeWidth="0.8"
++        android:strokeColor="#33FFFFFF" />
++    <path
++        android:fillColor="#00000000"
++        android:pathData="M0,9L108,9"
++        android:strokeWidth="0.8"
++        android:strokeColor="#33FFFFFF" />
++    <path
++        android:fillColor="#00000000"
++        android:pathData="M0,19L108,19"
++        android:strokeWidth="0.8"
++        android:strokeColor="#33FFFFFF" />
++    <path
++        android:fillColor="#00000000"
++        android:pathData="M0,29L108,29"
++        android:strokeWidth="0.8"
++        android:strokeColor="#33FFFFFF" />
++    <path
++        android:fillColor="#00000000"
++        android:pathData="M0,39L108,39"
++        android:strokeWidth="0.8"
++        android:strokeColor="#33FFFFFF" />
++    <path
++        android:fillColor="#00000000"
++        android:pathData="M0,49L108,49"
++        android:strokeWidth="0.8"
++        android:strokeColor="#33FFFFFF" />
++    <path
++        android:fillColor="#00000000"
++        android:pathData="M0,59L108,59"
++        android:strokeWidth="0.8"
++        android:strokeColor="#33FFFFFF" />
++    <path
++        android:fillColor="#00000000"
++        android:pathData="M0,69L108,69"
++        android:strokeWidth="0.8"
++        android:strokeColor="#33FFFFFF" />
++    <path
++        android:fillColor="#00000000"
++        android:pathData="M0,79L108,79"
++        android:strokeWidth="0.8"
++        android:strokeColor="#33FFFFFF" />
++    <path
++        android:fillColor="#00000000"
++        android:pathData="M0,89L108,89"
++        android:strokeWidth="0.8"
++        android:strokeColor="#33FFFFFF" />
++    <path
++        android:fillColor="#00000000"
++        android:pathData="M0,99L108,99"
++        android:strokeWidth="0.8"
++        android:strokeColor="#33FFFFFF" />
++    <path
++        android:fillColor="#00000000"
++        android:pathData="M19,29L89,29"
++        android:strokeWidth="0.8"
++        android:strokeColor="#33FFFFFF" />
++    <path
++        android:fillColor="#00000000"
++        android:pathData="M19,39L89,39"
++        android:strokeWidth="0.8"
++        android:strokeColor="#33FFFFFF" />
++    <path
++        android:fillColor="#00000000"
++        android:pathData="M19,49L89,49"
++        android:strokeWidth="0.8"
++        android:strokeColor="#33FFFFFF" />
++    <path
++        android:fillColor="#00000000"
++        android:pathData="M19,59L89,59"
++        android:strokeWidth="0.8"
++        android:strokeColor="#33FFFFFF" />
++    <path
++        android:fillColor="#00000000"
++        android:pathData="M19,69L89,69"
++        android:strokeWidth="0.8"
++        android:strokeColor="#33FFFFFF" />
++    <path
++        android:fillColor="#00000000"
++        android:pathData="M19,79L89,79"
++        android:strokeWidth="0.8"
++        android:strokeColor="#33FFFFFF" />
++    <path
++        android:fillColor="#00000000"
++        android:pathData="M29,19L29,89"
++        android:strokeWidth="0.8"
++        android:strokeColor="#33FFFFFF" />
++    <path
++        android:fillColor="#00000000"
++        android:pathData="M39,19L39,89"
++        android:strokeWidth="0.8"
++        android:strokeColor="#33FFFFFF" />
++    <path
++        android:fillColor="#00000000"
++        android:pathData="M49,19L49,89"
++        android:strokeWidth="0.8"
++        android:strokeColor="#33FFFFFF" />
++    <path
++        android:fillColor="#00000000"
++        android:pathData="M59,19L59,89"
++        android:strokeWidth="0.8"
++        android:strokeColor="#33FFFFFF" />
++    <path
++        android:fillColor="#00000000"
++        android:pathData="M69,19L69,89"
++        android:strokeWidth="0.8"
++        android:strokeColor="#33FFFFFF" />
++    <path
++        android:fillColor="#00000000"
++        android:pathData="M79,19L79,89"
++        android:strokeWidth="0.8"
++        android:strokeColor="#33FFFFFF" />
++</vector>
+Index: app/app/src/main/res/navigation/navigation_graph.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/app/src/main/res/navigation/navigation_graph.xml b/app/app/src/main/res/navigation/navigation_graph.xml
+new file mode 100644
+--- /dev/null	(date 1756953071696)
++++ b/app/app/src/main/res/navigation/navigation_graph.xml	(date 1756953071696)
+@@ -0,0 +1,51 @@
++<?xml version="1.0" encoding="utf-8"?>
++<navigation xmlns:android="http://schemas.android.com/apk/res/android"
++    xmlns:app="http://schemas.android.com/apk/res-auto"
++    android:id="@+id/navigation_graph"
++    app:startDestination="@id/mainFragment">
++
++    <fragment
++        android:id="@+id/mainFragment"
++        android:name="ru.practicum.android.diploma.ui.root.MainFragment"
++        android:label="MainFragment">
++        <action
++            android:id="@+id/action_mainFragment_to_favoritesFragment"
++            app:destination="@id/favoritesFragment" />
++        <action
++            android:id="@+id/action_mainFragment_to_teamFragment"
++            app:destination="@id/teamFragment" />
++        <action
++            android:id="@+id/action_mainFragment_to_filtrationFragment"
++            app:destination="@id/filtrationFragment" />
++    </fragment>
++    <fragment
++        android:id="@+id/favoritesFragment"
++        android:name="ru.practicum.android.diploma.ui.root.FavoritesFragment"
++        android:label="FavoritesFragment">
++        <action
++            android:id="@+id/action_favoritesFragment_to_mainFragment"
++            app:destination="@id/mainFragment" />
++        <action
++            android:id="@+id/action_favoritesFragment_to_teamFragment"
++            app:destination="@id/teamFragment" />
++    </fragment>
++    <fragment
++        android:id="@+id/teamFragment"
++        android:name="ru.practicum.android.diploma.ui.root.TeamFragment"
++        android:label="TeamFragment">
++        <action
++            android:id="@+id/action_teamFragment_to_favoritesFragment"
++            app:destination="@id/favoritesFragment" />
++        <action
++            android:id="@+id/action_teamFragment_to_mainFragment"
++            app:destination="@id/mainFragment" />
++    </fragment>
++    <fragment
++        android:id="@+id/filtrationFragment"
++        android:name="ru.practicum.android.diploma.ui.root.FiltrationFragment"
++        android:label="FiltrationFragment">
++        <action
++            android:id="@+id/action_filtrationFragment_to_mainFragment"
++            app:destination="@id/mainFragment" />
++    </fragment>
++</navigation>
+Index: app/app/src/main/res/menu/bottom_navigation_menu.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/app/src/main/res/menu/bottom_navigation_menu.xml b/app/app/src/main/res/menu/bottom_navigation_menu.xml
+new file mode 100644
+--- /dev/null	(date 1756942686688)
++++ b/app/app/src/main/res/menu/bottom_navigation_menu.xml	(date 1756942686688)
+@@ -0,0 +1,17 @@
++<?xml version="1.0" encoding="utf-8"?>
++<menu xmlns:android="http://schemas.android.com/apk/res/android">
++    <item
++        android:id="@+id/mainFragment"
++        android:icon="@drawable/main_icon"
++        android:title="@string/main" />
++
++    <item
++        android:id="@+id/favoritesFragment"
++        android:icon="@drawable/favorites_icon"
++        android:title="@string/favorites" />
++
++    <item
++        android:id="@+id/teamFragment"
++        android:icon="@drawable/team_icon"
++        android:title="@string/team" />
++</menu>
+Index: app/app/src/main/res/xml/backup_rules.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/app/src/main/res/xml/backup_rules.xml b/app/app/src/main/res/xml/backup_rules.xml
+new file mode 100644
+--- /dev/null	(date 1756920351932)
++++ b/app/app/src/main/res/xml/backup_rules.xml	(date 1756920351932)
+@@ -0,0 +1,13 @@
++<?xml version="1.0" encoding="utf-8"?><!--
++   Sample backup rules file; uncomment and customize as necessary.
++   See https://developer.android.com/guide/topics/data/autobackup
++   for details.
++   Note: This file is ignored for devices older that API 31
++   See https://developer.android.com/about/versions/12/backup-restore
++-->
++<full-backup-content>
++    <!--
++   <include domain="sharedpref" path="."/>
++   <exclude domain="sharedpref" path="device.xml"/>
++-->
++</full-backup-content>
+\ No newline at end of file
+Index: app/app/src/main/res/xml/data_extraction_rules.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/app/src/main/res/xml/data_extraction_rules.xml b/app/app/src/main/res/xml/data_extraction_rules.xml
+new file mode 100644
+--- /dev/null	(date 1756920351932)
++++ b/app/app/src/main/res/xml/data_extraction_rules.xml	(date 1756920351932)
+@@ -0,0 +1,19 @@
++<?xml version="1.0" encoding="utf-8"?><!--
++   Sample data extraction rules file; uncomment and customize as necessary.
++   See https://developer.android.com/about/versions/12/backup-restore#xml-changes
++   for details.
++-->
++<data-extraction-rules>
++    <cloud-backup>
++        <!-- TODO: Use <include> and <exclude> to control what is backed up.
++        <include .../>
++        <exclude .../>
++        -->
++    </cloud-backup>
++    <!--
++    <device-transfer>
++        <include .../>
++        <exclude .../>
++    </device-transfer>
++    -->
++</data-extraction-rules>
+\ No newline at end of file
+Index: app/app/src/main/res/color/navigation_color.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/app/src/main/res/color/navigation_color.xml b/app/app/src/main/res/color/navigation_color.xml
+new file mode 100644
+--- /dev/null	(date 1756944193421)
++++ b/app/app/src/main/res/color/navigation_color.xml	(date 1756944193421)
+@@ -0,0 +1,5 @@
++<?xml version="1.0" encoding="utf-8"?>
++<selector xmlns:android="http://schemas.android.com/apk/res/android">
++    <item android:color="@color/blue" android:state_checked="true" />
++    <item android:color="@color/grey" android:state_checked="false" />
++</selector>
+Index: app/app/src/main/res/layout/fragment_team.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/app/src/main/res/layout/fragment_team.xml b/app/app/src/main/res/layout/fragment_team.xml
+new file mode 100644
+--- /dev/null	(date 1756952689085)
++++ b/app/app/src/main/res/layout/fragment_team.xml	(date 1756952689085)
+@@ -0,0 +1,26 @@
++<?xml version="1.0" encoding="utf-8"?>
++<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
++    xmlns:tools="http://schemas.android.com/tools"
++    android:layout_width="match_parent"
++    android:layout_height="match_parent"
++    android:orientation="vertical">
++
++    <RelativeLayout
++        android:layout_width="match_parent"
++        android:layout_height="@dimen/title_height"
++        android:orientation="horizontal">
++
++        <TextView
++            android:id="@+id/team_text"
++            android:layout_width="wrap_content"
++            android:layout_height="match_parent"
++            android:gravity="center_vertical"
++            android:paddingStart="@dimen/merge_size"
++            android:text="@string/team"
++            android:textColor="@color/black"
++            android:textSize="@dimen/text_size"
++            tools:ignore="RtlSymmetry" />
++
++    </RelativeLayout>
++
++</LinearLayout>
+Index: app/app/src/main/res/layout/fragment_filter.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/app/src/main/res/layout/fragment_filter.xml b/app/app/src/main/res/layout/fragment_filter.xml
+new file mode 100644
+--- /dev/null	(date 1756952689090)
++++ b/app/app/src/main/res/layout/fragment_filter.xml	(date 1756952689090)
+@@ -0,0 +1,37 @@
++<?xml version="1.0" encoding="utf-8"?>
++<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
++    xmlns:app="http://schemas.android.com/apk/res-auto"
++    xmlns:tools="http://schemas.android.com/tools"
++    android:layout_width="match_parent"
++    android:layout_height="match_parent"
++    android:orientation="vertical">
++
++    <RelativeLayout
++        android:layout_width="match_parent"
++        android:layout_height="@dimen/title_height"
++        android:orientation="horizontal">
++
++        <TextView
++            android:id="@+id/filtration_settings_text"
++            android:layout_width="wrap_content"
++            android:layout_height="match_parent"
++            android:gravity="center_vertical"
++            android:paddingStart="56dp"
++            android:text="@string/filtration_settings"
++            android:textColor="@color/black"
++            android:textSize="@dimen/text_size"
++            tools:ignore="RtlSymmetry" />
++
++        <ImageButton
++            android:id="@+id/return_button"
++            android:layout_width="@dimen/button_size"
++            android:layout_height="@dimen/button_size"
++            android:layout_alignParentLeft="true"
++            android:layout_centerVertical="true"
++            android:layout_marginEnd="@dimen/merge_size"
++            android:background="@null"
++            android:src="@drawable/arrow_back_icon"
++            app:layout_constraintBottom_toBottomOf="parent" />
++    </RelativeLayout>
++
++</LinearLayout>
+Index: app/app/src/main/res/layout/activity_root.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/app/src/main/res/layout/activity_root.xml b/app/app/src/main/res/layout/activity_root.xml
+new file mode 100644
+--- /dev/null	(date 1756946455337)
++++ b/app/app/src/main/res/layout/activity_root.xml	(date 1756946455337)
+@@ -0,0 +1,28 @@
++<?xml version="1.0" encoding="utf-8"?>
++<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
++    xmlns:app="http://schemas.android.com/apk/res-auto"
++    android:layout_width="match_parent"
++    android:layout_height="match_parent">
++
++    <fragment
++        android:id="@+id/containerView"
++        android:name="androidx.navigation.fragment.NavHostFragment"
++        android:layout_width="match_parent"
++        android:layout_height="match_parent"
++        app:defaultNavHost="true"
++        app:navGraph="@navigation/navigation_graph" />
++
++    <com.google.android.material.bottomnavigation.BottomNavigationView
++        android:id="@+id/bottomNavigationView"
++        android:layout_width="0dp"
++        android:layout_height="wrap_content"
++        android:background="@color/white"
++
++        app:itemTextAppearanceActive="@style/BottomNavigationStyle"
++        app:itemTextAppearanceInactive="@style/BottomNavigationStyle"
++        app:layout_constraintBottom_toBottomOf="parent"
++        app:layout_constraintEnd_toEndOf="parent"
++        app:layout_constraintStart_toStartOf="parent"
++        app:menu="@menu/bottom_navigation_menu" />
++
++</androidx.constraintlayout.widget.ConstraintLayout>
+Index: app/app/src/main/res/layout/fragment_main.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/app/src/main/res/layout/fragment_main.xml b/app/app/src/main/res/layout/fragment_main.xml
+new file mode 100644
+--- /dev/null	(date 1756952689079)
++++ b/app/app/src/main/res/layout/fragment_main.xml	(date 1756952689079)
+@@ -0,0 +1,37 @@
++<?xml version="1.0" encoding="utf-8"?>
++<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
++    xmlns:app="http://schemas.android.com/apk/res-auto"
++    xmlns:tools="http://schemas.android.com/tools"
++    android:layout_width="match_parent"
++    android:layout_height="match_parent"
++    android:orientation="vertical">
++
++    <RelativeLayout
++        android:layout_width="match_parent"
++        android:layout_height="@dimen/title_height"
++        android:orientation="horizontal">
++
++        <TextView
++            android:id="@+id/job_search_text"
++            android:layout_width="wrap_content"
++            android:layout_height="match_parent"
++            android:gravity="center_vertical"
++            android:paddingStart="@dimen/merge_size"
++            android:text="@string/job_search"
++            android:textColor="@color/black"
++            android:textSize="@dimen/text_size"
++            tools:ignore="RtlSymmetry" />
++
++        <ImageButton
++            android:id="@+id/trailing_button"
++            android:layout_width="@dimen/button_size"
++            android:layout_height="@dimen/button_size"
++            android:layout_alignParentRight="true"
++            android:layout_centerVertical="true"
++            android:layout_marginEnd="@dimen/merge_size"
++            android:background="@null"
++            android:src="@drawable/trailing_icon"
++            app:layout_constraintBottom_toBottomOf="parent" />
++    </RelativeLayout>
++
++</LinearLayout>
+Index: app/app/src/main/res/values/colors.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/app/src/main/res/values/colors.xml b/app/app/src/main/res/values/colors.xml
+new file mode 100644
+--- /dev/null	(date 1756946762670)
++++ b/app/app/src/main/res/values/colors.xml	(date 1756946762670)
+@@ -0,0 +1,7 @@
++<?xml version="1.0" encoding="utf-8"?>
++<resources>
++    <color name="black">#1A1B22</color>
++    <color name="white">#FDFDFD</color>
++    <color name="blue">#3772E7</color>
++    <color name="grey">#AEAFB4</color>
++</resources>
+Index: app/app/src/main/res/values/dimens.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/app/src/main/res/values/dimens.xml b/app/app/src/main/res/values/dimens.xml
+new file mode 100644
+--- /dev/null	(date 1756952689087)
++++ b/app/app/src/main/res/values/dimens.xml	(date 1756952689087)
+@@ -0,0 +1,7 @@
++<?xml version="1.0" encoding="utf-8"?>
++<resources>
++    <dimen name="title_height">64dp</dimen>
++    <dimen name="button_size">48dp</dimen>
++    <dimen name="merge_size">16dp</dimen>
++    <dimen name="text_size">22dp</dimen>
++</resources>
+Index: app/app/src/main/res/layout/fragment_favorites.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/app/src/main/res/layout/fragment_favorites.xml b/app/app/src/main/res/layout/fragment_favorites.xml
+new file mode 100644
+--- /dev/null	(date 1756952689083)
++++ b/app/app/src/main/res/layout/fragment_favorites.xml	(date 1756952689083)
+@@ -0,0 +1,26 @@
++<?xml version="1.0" encoding="utf-8"?>
++<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
++    xmlns:tools="http://schemas.android.com/tools"
++    android:layout_width="match_parent"
++    android:layout_height="match_parent"
++    android:orientation="vertical">
++
++    <RelativeLayout
++        android:layout_width="match_parent"
++        android:layout_height="@dimen/title_height"
++        android:orientation="horizontal">
++
++        <TextView
++            android:id="@+id/favorites_text"
++            android:layout_width="wrap_content"
++            android:layout_height="match_parent"
++            android:gravity="center_vertical"
++            android:paddingStart="@dimen/merge_size"
++            android:text="@string/favorites"
++            android:textColor="@color/black"
++            android:textSize="@dimen/text_size"
++            tools:ignore="RtlSymmetry" />
++
++    </RelativeLayout>
++
++</LinearLayout>
+Index: app/app/src/main/java/ru/practicum/android/diploma/ui/root/RootActivity.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/app/src/main/java/ru/practicum/android/diploma/ui/root/RootActivity.kt b/app/app/src/main/java/ru/practicum/android/diploma/ui/root/RootActivity.kt
+new file mode 100644
+--- /dev/null	(date 1756950907475)
++++ b/app/app/src/main/java/ru/practicum/android/diploma/ui/root/RootActivity.kt	(date 1756950907475)
+@@ -0,0 +1,37 @@
++package ru.practicum.android.diploma.ui.root
++
++import android.os.Bundle
++import androidx.appcompat.app.AppCompatActivity
++import androidx.core.view.isVisible
++import androidx.navigation.fragment.NavHostFragment
++import androidx.navigation.ui.setupWithNavController
++import ru.practicum.android.diploma.BuildConfig
++import ru.practicum.android.diploma.R
++import ru.practicum.android.diploma.databinding.ActivityRootBinding
++
++class RootActivity : AppCompatActivity() {
++
++    private lateinit var binding: ActivityRootBinding
++
++    override fun onCreate(savedInstanceState: Bundle?) {
++        super.onCreate(savedInstanceState)
++
++        binding = ActivityRootBinding.inflate(layoutInflater)
++        setContentView(binding.root)
++
++        val navHostFragment =
++            supportFragmentManager.findFragmentById(R.id.containerView) as NavHostFragment
++        val navController = navHostFragment.navController
++        val bottomNavigationView = binding.bottomNavigationView
++        bottomNavigationView.setupWithNavController(navController)
++
++        navController.addOnDestinationChangedListener { _, destination, _ ->
++            bottomNavigationView.isVisible = destination.id != R.id.filtrationFragment
++        }
++
++        networkRequestExample(accessToken = BuildConfig.API_ACCESS_TOKEN)
++    }
++
++    private fun networkRequestExample(accessToken: String) {
++    }
++}
+Index: app/app/src/main/java/ru/practicum/android/diploma/ui/root/TeamFragment.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/app/src/main/java/ru/practicum/android/diploma/ui/root/TeamFragment.kt b/app/app/src/main/java/ru/practicum/android/diploma/ui/root/TeamFragment.kt
+new file mode 100644
+--- /dev/null	(date 1756942299563)
++++ b/app/app/src/main/java/ru/practicum/android/diploma/ui/root/TeamFragment.kt	(date 1756942299563)
+@@ -0,0 +1,18 @@
++package ru.practicum.android.diploma.ui.root
++
++import android.os.Bundle
++import android.view.LayoutInflater
++import android.view.View
++import android.view.ViewGroup
++import androidx.fragment.app.Fragment
++import ru.practicum.android.diploma.databinding.FragmentTeamBinding
++
++class TeamFragment : Fragment() {
++    private lateinit var binding: FragmentTeamBinding
++
++    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
++        binding = FragmentTeamBinding.inflate(layoutInflater)
++        return binding.root
++    }
++}
++
+Index: app/app/src/main/java/ru/practicum/android/diploma/ui/root/MainFragment.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/app/src/main/java/ru/practicum/android/diploma/ui/root/MainFragment.kt b/app/app/src/main/java/ru/practicum/android/diploma/ui/root/MainFragment.kt
+new file mode 100644
+--- /dev/null	(date 1756951661210)
++++ b/app/app/src/main/java/ru/practicum/android/diploma/ui/root/MainFragment.kt	(date 1756951661210)
+@@ -0,0 +1,30 @@
++package ru.practicum.android.diploma.ui.root
++
++import android.os.Bundle
++import android.view.LayoutInflater
++import android.view.View
++import android.view.ViewGroup
++import android.widget.ImageButton
++import androidx.fragment.app.Fragment
++import androidx.navigation.fragment.findNavController
++import ru.practicum.android.diploma.R
++import ru.practicum.android.diploma.databinding.FragmentMainBinding
++
++class MainFragment : Fragment() {
++
++    private lateinit var binding: FragmentMainBinding
++    private lateinit var trailingButton: ImageButton
++
++    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
++        binding = FragmentMainBinding.inflate(layoutInflater)
++        trailingButton = binding.trailingButton
++        return binding.root
++    }
++
++    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
++        super.onViewCreated(view, savedInstanceState)
++        trailingButton.setOnClickListener {
++            findNavController().navigate(R.id.action_mainFragment_to_filtrationFragment)
++        }
++    }
++}
+Index: app/src/main/res/navigation/navigation_graph.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/res/navigation/navigation_graph.xml b/app/src/main/res/navigation/navigation_graph.xml
+new file mode 100644
+--- /dev/null	(date 1756953071696)
++++ b/app/src/main/res/navigation/navigation_graph.xml	(date 1756953071696)
+@@ -0,0 +1,51 @@
++<?xml version="1.0" encoding="utf-8"?>
++<navigation xmlns:android="http://schemas.android.com/apk/res/android"
++    xmlns:app="http://schemas.android.com/apk/res-auto"
++    android:id="@+id/navigation_graph"
++    app:startDestination="@id/mainFragment">
++
++    <fragment
++        android:id="@+id/mainFragment"
++        android:name="ru.practicum.android.diploma.ui.root.MainFragment"
++        android:label="MainFragment">
++        <action
++            android:id="@+id/action_mainFragment_to_favoritesFragment"
++            app:destination="@id/favoritesFragment" />
++        <action
++            android:id="@+id/action_mainFragment_to_teamFragment"
++            app:destination="@id/teamFragment" />
++        <action
++            android:id="@+id/action_mainFragment_to_filtrationFragment"
++            app:destination="@id/filtrationFragment" />
++    </fragment>
++    <fragment
++        android:id="@+id/favoritesFragment"
++        android:name="ru.practicum.android.diploma.ui.root.FavoritesFragment"
++        android:label="FavoritesFragment">
++        <action
++            android:id="@+id/action_favoritesFragment_to_mainFragment"
++            app:destination="@id/mainFragment" />
++        <action
++            android:id="@+id/action_favoritesFragment_to_teamFragment"
++            app:destination="@id/teamFragment" />
++    </fragment>
++    <fragment
++        android:id="@+id/teamFragment"
++        android:name="ru.practicum.android.diploma.ui.root.TeamFragment"
++        android:label="TeamFragment">
++        <action
++            android:id="@+id/action_teamFragment_to_favoritesFragment"
++            app:destination="@id/favoritesFragment" />
++        <action
++            android:id="@+id/action_teamFragment_to_mainFragment"
++            app:destination="@id/mainFragment" />
++    </fragment>
++    <fragment
++        android:id="@+id/filtrationFragment"
++        android:name="ru.practicum.android.diploma.ui.root.FiltrationFragment"
++        android:label="FiltrationFragment">
++        <action
++            android:id="@+id/action_filtrationFragment_to_mainFragment"
++            app:destination="@id/mainFragment" />
++    </fragment>
++</navigation>
+Index: app/src/main/res/values/dimens.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/res/values/dimens.xml b/app/src/main/res/values/dimens.xml
+new file mode 100644
+--- /dev/null	(date 1756952689087)
++++ b/app/src/main/res/values/dimens.xml	(date 1756952689087)
+@@ -0,0 +1,7 @@
++<?xml version="1.0" encoding="utf-8"?>
++<resources>
++    <dimen name="title_height">64dp</dimen>
++    <dimen name="button_size">48dp</dimen>
++    <dimen name="merge_size">16dp</dimen>
++    <dimen name="text_size">22dp</dimen>
++</resources>
+Index: app/app/src/main/java/ru/practicum/android/diploma/ui/root/FavoritesFragment.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/app/src/main/java/ru/practicum/android/diploma/ui/root/FavoritesFragment.kt b/app/app/src/main/java/ru/practicum/android/diploma/ui/root/FavoritesFragment.kt
+new file mode 100644
+--- /dev/null	(date 1756942299561)
++++ b/app/app/src/main/java/ru/practicum/android/diploma/ui/root/FavoritesFragment.kt	(date 1756942299561)
+@@ -0,0 +1,17 @@
++package ru.practicum.android.diploma.ui.root
++
++import android.os.Bundle
++import android.view.LayoutInflater
++import android.view.View
++import android.view.ViewGroup
++import androidx.fragment.app.Fragment
++import ru.practicum.android.diploma.databinding.FragmentFavoritesBinding
++
++class FavoritesFragment : Fragment() {
++    private lateinit var binding: FragmentFavoritesBinding
++
++    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
++        binding = FragmentFavoritesBinding.inflate(layoutInflater)
++        return binding.root
++    }
++}
+Index: app/build.gradle.kts
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>plugins {\n    id(\"com.android.application\")\n    id(\"org.jetbrains.kotlin.android\")\n    id(\"ru.practicum.android.diploma.plugins.developproperties\")\n}\n\nandroid {\n    namespace = \"ru.practicum.android.diploma\"\n    compileSdk = libs.versions.compileSdk.get().toInt()\n\n    defaultConfig {\n        applicationId = \"ru.practicum.android.diploma\"\n        minSdk = libs.versions.minSdk.get().toInt()\n        targetSdk = libs.versions.targetSdk.get().toInt()\n        versionCode = 1\n        versionName = \"1.0\"\n\n        testInstrumentationRunner = \"androidx.test.runner.AndroidJUnitRunner\"\n\n        buildConfigField(type = \"String\", name = \"API_ACCESS_TOKEN\", value = \"\\\"${developProperties.apiAccessToken}\\\"\")\n    }\n\n    buildTypes {\n        release {\n            isMinifyEnabled = false\n            proguardFiles(getDefaultProguardFile(\"proguard-android-optimize.txt\"), \"proguard-rules.pro\")\n        }\n    }\n    compileOptions {\n        sourceCompatibility = JavaVersion.VERSION_1_8\n        targetCompatibility = JavaVersion.VERSION_1_8\n    }\n    kotlinOptions {\n        jvmTarget = \"1.8\"\n    }\n\n    buildFeatures {\n        buildConfig = true\n    }\n}\n\ndependencies {\n    implementation(libs.androidX.core)\n    implementation(libs.androidX.appCompat)\n\n    // UI layer libraries\n    implementation(libs.ui.material)\n    implementation(libs.ui.constraintLayout)\n\n    // region Unit tests\n    testImplementation(libs.unitTests.junit)\n    // endregion\n\n    // region UI tests\n    androidTestImplementation(libs.uiTests.junitExt)\n    androidTestImplementation(libs.uiTests.espressoCore)\n    // endregion\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/build.gradle.kts b/app/build.gradle.kts
+--- a/app/build.gradle.kts	(revision 5d6966f2e2853ec7b7553c46c4a529833dc9af4c)
++++ b/app/build.gradle.kts	(date 1759067506575)
+@@ -36,6 +36,7 @@
+ 
+     buildFeatures {
+         buildConfig = true
++        viewBinding = true
+     }
+ }
+ 
+@@ -55,4 +56,8 @@
+     androidTestImplementation(libs.uiTests.junitExt)
+     androidTestImplementation(libs.uiTests.espressoCore)
+     // endregion
++
++
++    implementation ("androidx.navigation:navigation-fragment-ktx:2.9.0")
++    implementation ("androidx.navigation:navigation-ui-ktx:2.9.0")
+ }
+Index: app/app/src/main/java/ru/practicum/android/diploma/ui/root/FiltrationFragment.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/app/src/main/java/ru/practicum/android/diploma/ui/root/FiltrationFragment.kt b/app/app/src/main/java/ru/practicum/android/diploma/ui/root/FiltrationFragment.kt
+new file mode 100644
+--- /dev/null	(date 1756950742229)
++++ b/app/app/src/main/java/ru/practicum/android/diploma/ui/root/FiltrationFragment.kt	(date 1756950742229)
+@@ -0,0 +1,29 @@
++package ru.practicum.android.diploma.ui.root
++
++import android.os.Bundle
++import android.view.LayoutInflater
++import android.view.View
++import android.view.ViewGroup
++import android.widget.ImageButton
++import androidx.fragment.app.Fragment
++import androidx.navigation.fragment.findNavController
++import ru.practicum.android.diploma.R
++import ru.practicum.android.diploma.databinding.FragmentFilterBinding
++
++class FiltrationFragment : Fragment() {
++    private lateinit var binding: FragmentFilterBinding
++    private lateinit var returnButton: ImageButton
++
++    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
++        binding = FragmentFilterBinding.inflate(layoutInflater)
++        returnButton = binding.returnButton
++        return binding.root
++    }
++
++    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
++        super.onViewCreated(view, savedInstanceState)
++        returnButton.setOnClickListener {
++            findNavController().navigate(R.id.action_filtrationFragment_to_mainFragment)
++        }
++    }
++}
+Index: app/src/main/AndroidManifest.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"utf-8\"?>\n<manifest xmlns:android=\"http://schemas.android.com/apk/res/android\"\n    xmlns:tools=\"http://schemas.android.com/tools\">\n\n    <application\n        android:allowBackup=\"true\"\n        android:dataExtractionRules=\"@xml/data_extraction_rules\"\n        android:fullBackupContent=\"@xml/backup_rules\"\n        android:icon=\"@mipmap/ic_launcher\"\n        android:label=\"@string/app_name\"\n        android:roundIcon=\"@mipmap/ic_launcher_round\"\n        android:supportsRtl=\"true\"\n        android:theme=\"@style/Theme.PracticumAndroidDiploma\"\n        tools:targetApi=\"31\">\n        <activity\n            android:name=\".ui.root.RootActivity\"\n            android:exported=\"true\">\n            <intent-filter>\n                <action android:name=\"android.intent.action.MAIN\" />\n\n                <category android:name=\"android.intent.category.LAUNCHER\" />\n            </intent-filter>\n        </activity>\n    </application>\n\n</manifest>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/AndroidManifest.xml b/app/src/main/AndroidManifest.xml
+--- a/app/src/main/AndroidManifest.xml	(revision 5d6966f2e2853ec7b7553c46c4a529833dc9af4c)
++++ b/app/src/main/AndroidManifest.xml	(date 1759129095513)
+@@ -13,7 +13,7 @@
+         android:theme="@style/Theme.PracticumAndroidDiploma"
+         tools:targetApi="31">
+         <activity
+-            android:name=".ui.root.RootActivity"
++            android:name=".root.RootActivity"
+             android:exported="true">
+             <intent-filter>
+                 <action android:name="android.intent.action.MAIN" />
+@@ -23,4 +23,4 @@
+         </activity>
+     </application>
+ 
+-</manifest>
+\ No newline at end of file
++</manifest>
+Index: app/src/main/res/values/styles.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/res/values/styles.xml b/app/src/main/res/values/styles.xml
+new file mode 100644
+--- /dev/null	(date 1756953071689)
++++ b/app/src/main/res/values/styles.xml	(date 1756953071689)
+@@ -0,0 +1,9 @@
++<?xml version="1.0" encoding="utf-8"?>
++<resources>
++
++    <style name="BottomNavigationStyle">
++        <item name="android:background">@color/white</item>
++        <item name="itemIconTint">@color/navigation_color</item>
++        <item name="itemTextColor">@color/navigation_color</item>
++    </style>
++</resources>
+Index: app/src/main/res/layout/activity_root.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"utf-8\"?>\n<androidx.constraintlayout.widget.ConstraintLayout xmlns:android=\"http://schemas.android.com/apk/res/android\"\n    xmlns:app=\"http://schemas.android.com/apk/res-auto\"\n    xmlns:tools=\"http://schemas.android.com/tools\"\n    android:layout_width=\"match_parent\"\n    android:layout_height=\"match_parent\"\n    tools:context=\".ui.root.RootActivity\">\n\n    <TextView\n        android:id=\"@+id/buildConfigReadExampleTextView\"\n        android:layout_width=\"wrap_content\"\n        android:layout_height=\"wrap_content\"\n        android:text=\"Hello World!\"\n        app:layout_constraintBottom_toBottomOf=\"parent\"\n        app:layout_constraintEnd_toEndOf=\"parent\"\n        app:layout_constraintStart_toStartOf=\"parent\"\n        app:layout_constraintTop_toTopOf=\"parent\" />\n\n</androidx.constraintlayout.widget.ConstraintLayout>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/res/layout/activity_root.xml b/app/src/main/res/layout/activity_root.xml
+--- a/app/src/main/res/layout/activity_root.xml	(revision 5d6966f2e2853ec7b7553c46c4a529833dc9af4c)
++++ b/app/src/main/res/layout/activity_root.xml	(date 1756946455337)
+@@ -1,19 +1,28 @@
+ <?xml version="1.0" encoding="utf-8"?>
+ <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+     xmlns:app="http://schemas.android.com/apk/res-auto"
+-    xmlns:tools="http://schemas.android.com/tools"
+     android:layout_width="match_parent"
+-    android:layout_height="match_parent"
+-    tools:context=".ui.root.RootActivity">
++    android:layout_height="match_parent">
++
++    <fragment
++        android:id="@+id/containerView"
++        android:name="androidx.navigation.fragment.NavHostFragment"
++        android:layout_width="match_parent"
++        android:layout_height="match_parent"
++        app:defaultNavHost="true"
++        app:navGraph="@navigation/navigation_graph" />
+ 
+-    <TextView
+-        android:id="@+id/buildConfigReadExampleTextView"
+-        android:layout_width="wrap_content"
++    <com.google.android.material.bottomnavigation.BottomNavigationView
++        android:id="@+id/bottomNavigationView"
++        android:layout_width="0dp"
+         android:layout_height="wrap_content"
+-        android:text="Hello World!"
++        android:background="@color/white"
++
++        app:itemTextAppearanceActive="@style/BottomNavigationStyle"
++        app:itemTextAppearanceInactive="@style/BottomNavigationStyle"
+         app:layout_constraintBottom_toBottomOf="parent"
+         app:layout_constraintEnd_toEndOf="parent"
+         app:layout_constraintStart_toStartOf="parent"
+-        app:layout_constraintTop_toTopOf="parent" />
++        app:menu="@menu/bottom_navigation_menu" />
+ 
+-</androidx.constraintlayout.widget.ConstraintLayout>
+\ No newline at end of file
++</androidx.constraintlayout.widget.ConstraintLayout>
+Index: app/src/main/res/color/navigation_color.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/res/color/navigation_color.xml b/app/src/main/res/color/navigation_color.xml
+new file mode 100644
+--- /dev/null	(date 1756944193421)
++++ b/app/src/main/res/color/navigation_color.xml	(date 1756944193421)
+@@ -0,0 +1,5 @@
++<?xml version="1.0" encoding="utf-8"?>
++<selector xmlns:android="http://schemas.android.com/apk/res/android">
++    <item android:color="@color/blue" android:state_checked="true" />
++    <item android:color="@color/grey" android:state_checked="false" />
++</selector>
+Index: app/src/main/res/drawable/trailing_icon.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/res/drawable/trailing_icon.xml b/app/src/main/res/drawable/trailing_icon.xml
+new file mode 100644
+--- /dev/null	(date 1756947505911)
++++ b/app/src/main/res/drawable/trailing_icon.xml	(date 1756947505911)
+@@ -0,0 +1,9 @@
++<vector xmlns:android="http://schemas.android.com/apk/res/android"
++    android:width="48dp"
++    android:height="48dp"
++    android:viewportWidth="48"
++    android:viewportHeight="48">
++  <path
++      android:pathData="M22,30H26V28H22V30ZM15,18V20H33V18H15ZM18,25H30V23H18V25Z"
++      android:fillColor="#1A1B22"/>
++</vector>
+Index: app/app/src/main/res/values-night/themes.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/app/src/main/res/values-night/themes.xml b/app/app/src/main/res/values-night/themes.xml
+new file mode 100644
+--- /dev/null	(date 1756920351931)
++++ b/app/app/src/main/res/values-night/themes.xml	(date 1756920351931)
+@@ -0,0 +1,7 @@
++<resources xmlns:tools="http://schemas.android.com/tools">
++    <!-- Base application theme. -->
++    <style name="Base.Theme.PracticumAndroidDiploma" parent="Theme.Material3.DayNight.NoActionBar">
++        <!-- Customize your dark theme here. -->
++        <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
++    </style>
++</resources>
+\ No newline at end of file
+Index: app/src/main/res/drawable/favorites_icon.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/res/drawable/favorites_icon.xml b/app/src/main/res/drawable/favorites_icon.xml
+new file mode 100644
+--- /dev/null	(date 1756944589264)
++++ b/app/src/main/res/drawable/favorites_icon.xml	(date 1756944589264)
+@@ -0,0 +1,9 @@
++<vector xmlns:android="http://schemas.android.com/apk/res/android"
++    android:width="24dp"
++    android:height="24dp"
++    android:viewportWidth="24"
++    android:viewportHeight="24">
++    <path
++        android:fillColor="@color/grey"
++        android:pathData="M12,22L10.405,20.561C4.74,15.471 1,12.114 1,7.995C1,4.638 3.662,2 7.05,2C8.964,2 10.801,2.883 12,4.278C13.199,2.883 15.036,2 16.95,2C20.338,2 23,4.638 23,7.995C23,12.114 19.26,15.471 13.595,20.572L12,22Z" />
++</vector>
+Index: app/src/main/res/drawable/main_icon.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/res/drawable/main_icon.xml b/app/src/main/res/drawable/main_icon.xml
+new file mode 100644
+--- /dev/null	(date 1756944527484)
++++ b/app/src/main/res/drawable/main_icon.xml	(date 1756944527484)
+@@ -0,0 +1,9 @@
++<vector xmlns:android="http://schemas.android.com/apk/res/android"
++    android:width="24dp"
++    android:height="24dp"
++    android:viewportWidth="24"
++    android:viewportHeight="24">
++    <path
++        android:fillColor="@color/grey"
++        android:pathData="M4,2C2.895,2 2,2.895 2,4V9C2,10.105 2.895,11 4,11H9C10.105,11 11,10.105 11,9V4C11,2.895 10.105,2 9,2H4ZM4,13C2.895,13 2,13.895 2,15V20C2,21.105 2.895,22 4,22H9C10.105,22 11,21.105 11,20V15C11,13.895 10.105,13 9,13H4ZM13,15C13,13.895 13.895,13 15,13H20C21.105,13 22,13.895 22,15V20C22,21.105 21.105,22 20,22H15C13.895,22 13,21.105 13,20V15ZM15,2C13.895,2 13,2.895 13,4V9C13,10.105 13.895,11 15,11H20C21.105,11 22,10.105 22,9V4C22,2.895 21.105,2 20,2H15Z" />
++</vector>
+Index: app/src/main/res/drawable/team_icon.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/res/drawable/team_icon.xml b/app/src/main/res/drawable/team_icon.xml
+new file mode 100644
+--- /dev/null	(date 1756944601284)
++++ b/app/src/main/res/drawable/team_icon.xml	(date 1756944601284)
+@@ -0,0 +1,10 @@
++<vector xmlns:android="http://schemas.android.com/apk/res/android"
++    android:width="24dp"
++    android:height="24dp"
++    android:viewportWidth="24"
++    android:viewportHeight="24">
++    <path
++        android:fillColor="@color/grey"
++        android:fillType="evenOdd"
++        android:pathData="M12,22C17.523,22 22,17.523 22,12C22,6.477 17.523,2 12,2C6.477,2 2,6.477 2,12C2,17.523 6.477,22 12,22ZM17.11,9.5C17.11,10.328 16.438,11 15.61,11C14.782,11 14.11,10.328 14.11,9.5C14.11,8.672 14.782,8 15.61,8C16.438,8 17.11,8.672 17.11,9.5ZM8.61,11C9.438,11 10.11,10.328 10.11,9.5C10.11,8.672 9.438,8 8.61,8C7.782,8 7.11,8.672 7.11,9.5C7.11,10.328 7.782,11 8.61,11ZM17.22,14C16.42,16.04 14.44,17.5 12.11,17.5C9.78,17.5 7.8,16.04 7,14H17.22Z" />
++</vector>
+Index: app/src/main/res/layout/fragment_team.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/res/layout/fragment_team.xml b/app/src/main/res/layout/fragment_team.xml
+new file mode 100644
+--- /dev/null	(date 1756952689085)
++++ b/app/src/main/res/layout/fragment_team.xml	(date 1756952689085)
+@@ -0,0 +1,26 @@
++<?xml version="1.0" encoding="utf-8"?>
++<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
++    xmlns:tools="http://schemas.android.com/tools"
++    android:layout_width="match_parent"
++    android:layout_height="match_parent"
++    android:orientation="vertical">
++
++    <RelativeLayout
++        android:layout_width="match_parent"
++        android:layout_height="@dimen/title_height"
++        android:orientation="horizontal">
++
++        <TextView
++            android:id="@+id/team_text"
++            android:layout_width="wrap_content"
++            android:layout_height="match_parent"
++            android:gravity="center_vertical"
++            android:paddingStart="@dimen/merge_size"
++            android:text="@string/team"
++            android:textColor="@color/black"
++            android:textSize="@dimen/text_size"
++            tools:ignore="RtlSymmetry" />
++
++    </RelativeLayout>
++
++</LinearLayout>
+Index: app/src/main/res/layout/fragment_filter.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/res/layout/fragment_filter.xml b/app/src/main/res/layout/fragment_filter.xml
+new file mode 100644
+--- /dev/null	(date 1756952689090)
++++ b/app/src/main/res/layout/fragment_filter.xml	(date 1756952689090)
+@@ -0,0 +1,37 @@
++<?xml version="1.0" encoding="utf-8"?>
++<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
++    xmlns:app="http://schemas.android.com/apk/res-auto"
++    xmlns:tools="http://schemas.android.com/tools"
++    android:layout_width="match_parent"
++    android:layout_height="match_parent"
++    android:orientation="vertical">
++
++    <RelativeLayout
++        android:layout_width="match_parent"
++        android:layout_height="@dimen/title_height"
++        android:orientation="horizontal">
++
++        <TextView
++            android:id="@+id/filtration_settings_text"
++            android:layout_width="wrap_content"
++            android:layout_height="match_parent"
++            android:gravity="center_vertical"
++            android:paddingStart="56dp"
++            android:text="@string/filtration_settings"
++            android:textColor="@color/black"
++            android:textSize="@dimen/text_size"
++            tools:ignore="RtlSymmetry" />
++
++        <ImageButton
++            android:id="@+id/return_button"
++            android:layout_width="@dimen/button_size"
++            android:layout_height="@dimen/button_size"
++            android:layout_alignParentLeft="true"
++            android:layout_centerVertical="true"
++            android:layout_marginEnd="@dimen/merge_size"
++            android:background="@null"
++            android:src="@drawable/arrow_back_icon"
++            app:layout_constraintBottom_toBottomOf="parent" />
++    </RelativeLayout>
++
++</LinearLayout>
+Index: app/src/main/res/drawable/arrow_back_icon.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/res/drawable/arrow_back_icon.xml b/app/src/main/res/drawable/arrow_back_icon.xml
+new file mode 100644
+--- /dev/null	(date 1756950104479)
++++ b/app/src/main/res/drawable/arrow_back_icon.xml	(date 1756950104479)
+@@ -0,0 +1,9 @@
++<vector xmlns:android="http://schemas.android.com/apk/res/android"
++    android:width="24dp"
++    android:height="24dp"
++    android:viewportWidth="24"
++    android:viewportHeight="24">
++  <path
++      android:pathData="M20,11H7.83L13.42,5.41L12,4L4,12L12,20L13.41,18.59L7.83,13H20V11Z"
++      android:fillColor="#1A1B22"/>
++</vector>
+Index: app/src/main/res/layout/fragment_main.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/res/layout/fragment_main.xml b/app/src/main/res/layout/fragment_main.xml
+new file mode 100644
+--- /dev/null	(date 1756952689079)
++++ b/app/src/main/res/layout/fragment_main.xml	(date 1756952689079)
+@@ -0,0 +1,37 @@
++<?xml version="1.0" encoding="utf-8"?>
++<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
++    xmlns:app="http://schemas.android.com/apk/res-auto"
++    xmlns:tools="http://schemas.android.com/tools"
++    android:layout_width="match_parent"
++    android:layout_height="match_parent"
++    android:orientation="vertical">
++
++    <RelativeLayout
++        android:layout_width="match_parent"
++        android:layout_height="@dimen/title_height"
++        android:orientation="horizontal">
++
++        <TextView
++            android:id="@+id/job_search_text"
++            android:layout_width="wrap_content"
++            android:layout_height="match_parent"
++            android:gravity="center_vertical"
++            android:paddingStart="@dimen/merge_size"
++            android:text="@string/job_search"
++            android:textColor="@color/black"
++            android:textSize="@dimen/text_size"
++            tools:ignore="RtlSymmetry" />
++
++        <ImageButton
++            android:id="@+id/trailing_button"
++            android:layout_width="@dimen/button_size"
++            android:layout_height="@dimen/button_size"
++            android:layout_alignParentRight="true"
++            android:layout_centerVertical="true"
++            android:layout_marginEnd="@dimen/merge_size"
++            android:background="@null"
++            android:src="@drawable/trailing_icon"
++            app:layout_constraintBottom_toBottomOf="parent" />
++    </RelativeLayout>
++
++</LinearLayout>
+Index: app/src/main/res/menu/bottom_navigation_menu.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/res/menu/bottom_navigation_menu.xml b/app/src/main/res/menu/bottom_navigation_menu.xml
+new file mode 100644
+--- /dev/null	(date 1756942686688)
++++ b/app/src/main/res/menu/bottom_navigation_menu.xml	(date 1756942686688)
+@@ -0,0 +1,17 @@
++<?xml version="1.0" encoding="utf-8"?>
++<menu xmlns:android="http://schemas.android.com/apk/res/android">
++    <item
++        android:id="@+id/mainFragment"
++        android:icon="@drawable/main_icon"
++        android:title="@string/main" />
++
++    <item
++        android:id="@+id/favoritesFragment"
++        android:icon="@drawable/favorites_icon"
++        android:title="@string/favorites" />
++
++    <item
++        android:id="@+id/teamFragment"
++        android:icon="@drawable/team_icon"
++        android:title="@string/team" />
++</menu>
+Index: app/src/main/res/layout/fragment_favorites.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/res/layout/fragment_favorites.xml b/app/src/main/res/layout/fragment_favorites.xml
+new file mode 100644
+--- /dev/null	(date 1756952689083)
++++ b/app/src/main/res/layout/fragment_favorites.xml	(date 1756952689083)
+@@ -0,0 +1,26 @@
++<?xml version="1.0" encoding="utf-8"?>
++<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
++    xmlns:tools="http://schemas.android.com/tools"
++    android:layout_width="match_parent"
++    android:layout_height="match_parent"
++    android:orientation="vertical">
++
++    <RelativeLayout
++        android:layout_width="match_parent"
++        android:layout_height="@dimen/title_height"
++        android:orientation="horizontal">
++
++        <TextView
++            android:id="@+id/favorites_text"
++            android:layout_width="wrap_content"
++            android:layout_height="match_parent"
++            android:gravity="center_vertical"
++            android:paddingStart="@dimen/merge_size"
++            android:text="@string/favorites"
++            android:textColor="@color/black"
++            android:textSize="@dimen/text_size"
++            tools:ignore="RtlSymmetry" />
++
++    </RelativeLayout>
++
++</LinearLayout>
+Index: app/app/.gitignore
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/app/.gitignore b/app/app/.gitignore
+new file mode 100644
+--- /dev/null	(date 1756920351927)
++++ b/app/app/.gitignore	(date 1756920351927)
+@@ -0,0 +1,1 @@
++/build
+\ No newline at end of file
+Index: app/app/build.gradle.kts
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/app/build.gradle.kts b/app/app/build.gradle.kts
+new file mode 100644
+--- /dev/null	(date 1756935205594)
++++ b/app/app/build.gradle.kts	(date 1756935205594)
+@@ -0,0 +1,62 @@
++plugins {
++    id("com.android.application")
++    id("org.jetbrains.kotlin.android")
++    id("ru.practicum.android.diploma.plugins.developproperties")
++}
++
++android {
++    namespace = "ru.practicum.android.diploma"
++    compileSdk = libs.versions.compileSdk.get().toInt()
++
++    defaultConfig {
++        applicationId = "ru.practicum.android.diploma"
++        minSdk = libs.versions.minSdk.get().toInt()
++        targetSdk = libs.versions.targetSdk.get().toInt()
++        versionCode = 1
++        versionName = "1.0"
++
++        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
++
++        buildConfigField(type = "String", name = "API_ACCESS_TOKEN", value = "\"${developProperties.apiAccessToken}\"")
++    }
++
++    buildTypes {
++        release {
++            isMinifyEnabled = false
++            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
++        }
++    }
++    compileOptions {
++        sourceCompatibility = JavaVersion.VERSION_1_8
++        targetCompatibility = JavaVersion.VERSION_1_8
++    }
++    kotlinOptions {
++        jvmTarget = "1.8"
++    }
++
++    buildFeatures {
++        buildConfig = true
++        viewBinding = true
++    }
++}
++
++dependencies {
++    implementation(libs.androidX.core)
++    implementation(libs.androidX.appCompat)
++
++    // UI layer libraries
++    implementation(libs.ui.material)
++    implementation(libs.ui.constraintLayout)
++
++    // region Unit tests
++    testImplementation(libs.unitTests.junit)
++    // endregion
++
++    // region UI tests
++    androidTestImplementation(libs.uiTests.junitExt)
++    androidTestImplementation(libs.uiTests.espressoCore)
++    // endregion
++
++    implementation ("androidx.navigation:navigation-fragment-ktx:2.9.0")
++    implementation ("androidx.navigation:navigation-ui-ktx:2.9.0")
++}
+Index: app/app/src/test/java/ru/practicum/android/diploma/ExampleUnitTest.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/app/src/test/java/ru/practicum/android/diploma/ExampleUnitTest.kt b/app/app/src/test/java/ru/practicum/android/diploma/ExampleUnitTest.kt
+new file mode 100644
+--- /dev/null	(date 1756920351932)
++++ b/app/app/src/test/java/ru/practicum/android/diploma/ExampleUnitTest.kt	(date 1756920351932)
+@@ -0,0 +1,16 @@
++package ru.practicum.android.diploma
++
++import org.junit.Assert.assertEquals
++import org.junit.Test
++
++/**
++ * Example local unit test, which will execute on the development machine (host).
++ *
++ * See [testing documentation](http://d.android.com/tools/testing).
++ */
++class ExampleUnitTest {
++    @Test
++    fun addition_isCorrect() {
++        assertEquals(4, 2 + 2)
++    }
++}
+Index: app/app/proguard-rules.pro
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/app/proguard-rules.pro b/app/app/proguard-rules.pro
+new file mode 100644
+--- /dev/null	(date 1756920351928)
++++ b/app/app/proguard-rules.pro	(date 1756920351928)
+@@ -0,0 +1,21 @@
++# Add project specific ProGuard rules here.
++# You can control the set of applied configuration files using the
++# proguardFiles setting in build.gradle.
++#
++# For more details, see
++#   http://developer.android.com/guide/developing/tools/proguard.html
++
++# If your project uses WebView with JS, uncomment the following
++# and specify the fully qualified class name to the JavaScript interface
++# class:
++#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
++#   public *;
++#}
++
++# Uncomment this to preserve the line number information for
++# debugging stack traces.
++#-keepattributes SourceFile,LineNumberTable
++
++# If you keep the line number information, uncomment this to
++# hide the original source file name.
++#-renamesourcefileattribute SourceFile
+\ No newline at end of file
+Index: app/app/src/androidTest/java/ru/practicum/android/diploma/ExampleInstrumentedTest.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/app/src/androidTest/java/ru/practicum/android/diploma/ExampleInstrumentedTest.kt b/app/app/src/androidTest/java/ru/practicum/android/diploma/ExampleInstrumentedTest.kt
+new file mode 100644
+--- /dev/null	(date 1756920351928)
++++ b/app/app/src/androidTest/java/ru/practicum/android/diploma/ExampleInstrumentedTest.kt	(date 1756920351928)
+@@ -0,0 +1,22 @@
++package ru.practicum.android.diploma
++
++import androidx.test.ext.junit.runners.AndroidJUnit4
++import androidx.test.platform.app.InstrumentationRegistry
++import org.junit.Assert.*
++import org.junit.Test
++import org.junit.runner.RunWith
++
++/**
++ * Instrumented test, which will execute on an Android device.
++ *
++ * See [testing documentation](http://d.android.com/tools/testing).
++ */
++@RunWith(AndroidJUnit4::class)
++class ExampleInstrumentedTest {
++    @Test
++    fun useAppContext() {
++        // Context of the app under test.
++        val appContext = InstrumentationRegistry.getInstrumentation().targetContext
++        assertEquals("ru.practicum.android.diploma", appContext.packageName)
++    }
++}
+Index: app/src/main/res/values/strings.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><resources>\n    <string name=\"app_name\">Practicum-Android-Diploma</string>\n</resources>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/res/values/strings.xml b/app/src/main/res/values/strings.xml
+--- a/app/src/main/res/values/strings.xml	(revision 5d6966f2e2853ec7b7553c46c4a529833dc9af4c)
++++ b/app/src/main/res/values/strings.xml	(date 1756950019243)
+@@ -1,3 +1,8 @@
+ <resources>
+     <string name="app_name">Practicum-Android-Diploma</string>
+-</resources>
+\ No newline at end of file
++    <string name="main">Главная</string>
++    <string name="favorites">Избранное</string>
++    <string name="team">Команда</string>
++    <string name="job_search">Поиск вакансий</string>
++    <string name="filtration_settings">Настройки фильтрации</string>
++</resources>
+Index: app/src/main/res/values/colors.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"utf-8\"?>\n<resources>\n    <color name=\"black\">#FF000000</color>\n    <color name=\"white\">#FFFFFFFF</color>\n</resources>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/res/values/colors.xml b/app/src/main/res/values/colors.xml
+--- a/app/src/main/res/values/colors.xml	(revision 5d6966f2e2853ec7b7553c46c4a529833dc9af4c)
++++ b/app/src/main/res/values/colors.xml	(date 1756946762670)
+@@ -1,5 +1,7 @@
+ <?xml version="1.0" encoding="utf-8"?>
+ <resources>
+-    <color name="black">#FF000000</color>
+-    <color name="white">#FFFFFFFF</color>
+-</resources>
+\ No newline at end of file
++    <color name="black">#1A1B22</color>
++    <color name="white">#FDFDFD</color>
++    <color name="blue">#3772E7</color>
++    <color name="grey">#AEAFB4</color>
++</resources>
+Index: app/src/main/res/values/themes.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><resources xmlns:tools=\"http://schemas.android.com/tools\">\n    <!-- Base application theme. -->\n    <style name=\"Base.Theme.PracticumAndroidDiploma\" parent=\"Theme.Material3.DayNight.NoActionBar\">\n        <!-- Customize your light theme here. -->\n        <!-- <item name=\"colorPrimary\">@color/my_light_primary</item> -->\n    </style>\n\n    <style name=\"Theme.PracticumAndroidDiploma\" parent=\"Base.Theme.PracticumAndroidDiploma\" />\n</resources>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/res/values/themes.xml b/app/src/main/res/values/themes.xml
+--- a/app/src/main/res/values/themes.xml	(revision 5d6966f2e2853ec7b7553c46c4a529833dc9af4c)
++++ b/app/src/main/res/values/themes.xml	(date 1756946455346)
+@@ -1,9 +1,15 @@
+ <resources xmlns:tools="http://schemas.android.com/tools">
+     <!-- Base application theme. -->
+-    <style name="Base.Theme.PracticumAndroidDiploma" parent="Theme.Material3.DayNight.NoActionBar">
+-        <!-- Customize your light theme here. -->
+-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
++    <style name="Theme.PracticumAndroidDiploma" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
++        <!-- Primary brand color. -->
++        <item name="colorPrimary">@color/blue</item>
++        <item name="colorPrimaryVariant">@color/grey</item>
++        <item name="colorOnPrimary">@color/white</item>
+     </style>
+ 
+-    <style name="Theme.PracticumAndroidDiploma" parent="Base.Theme.PracticumAndroidDiploma" />
+-</resources>
+\ No newline at end of file
++    <style name="ThemeOverlay.SearchView" parent="">
++        <item name="android:editTextColor">@color/black</item>
++        <item name="android:textColorHint">@color/grey</item>
++    </style>
++
++</resources>
+Index: app/src/main/java/ru/practicum/android/diploma/root/MainFragment.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/ru/practicum/android/diploma/root/MainFragment.kt b/app/src/main/java/ru/practicum/android/diploma/root/MainFragment.kt
+new file mode 100644
+--- /dev/null	(date 1756951661210)
++++ b/app/src/main/java/ru/practicum/android/diploma/root/MainFragment.kt	(date 1756951661210)
+@@ -0,0 +1,30 @@
++package ru.practicum.android.diploma.ui.root
++
++import android.os.Bundle
++import android.view.LayoutInflater
++import android.view.View
++import android.view.ViewGroup
++import android.widget.ImageButton
++import androidx.fragment.app.Fragment
++import androidx.navigation.fragment.findNavController
++import ru.practicum.android.diploma.R
++import ru.practicum.android.diploma.databinding.FragmentMainBinding
++
++class MainFragment : Fragment() {
++
++    private lateinit var binding: FragmentMainBinding
++    private lateinit var trailingButton: ImageButton
++
++    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
++        binding = FragmentMainBinding.inflate(layoutInflater)
++        trailingButton = binding.trailingButton
++        return binding.root
++    }
++
++    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
++        super.onViewCreated(view, savedInstanceState)
++        trailingButton.setOnClickListener {
++            findNavController().navigate(R.id.action_mainFragment_to_filtrationFragment)
++        }
++    }
++}
+Index: app/app/src/main/AndroidManifest.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/app/src/main/AndroidManifest.xml b/app/app/src/main/AndroidManifest.xml
+new file mode 100644
+--- /dev/null	(date 1756925451773)
++++ b/app/app/src/main/AndroidManifest.xml	(date 1756925451773)
+@@ -0,0 +1,26 @@
++<?xml version="1.0" encoding="utf-8"?>
++<manifest xmlns:android="http://schemas.android.com/apk/res/android"
++    xmlns:tools="http://schemas.android.com/tools">
++
++    <application
++        android:allowBackup="true"
++        android:dataExtractionRules="@xml/data_extraction_rules"
++        android:fullBackupContent="@xml/backup_rules"
++        android:icon="@mipmap/ic_launcher"
++        android:label="@string/app_name"
++        android:roundIcon="@mipmap/ic_launcher_round"
++        android:supportsRtl="true"
++        android:theme="@style/Theme.PracticumAndroidDiploma"
++        tools:targetApi="31">
++        <activity
++            android:name=".ui.root.RootActivity"
++            android:exported="true">
++            <intent-filter>
++                <action android:name="android.intent.action.MAIN" />
++
++                <category android:name="android.intent.category.LAUNCHER" />
++            </intent-filter>
++        </activity>
++    </application>
++
++</manifest>
+Index: app/src/main/java/ru/practicum/android/diploma/root/FavoritesFragment.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/ru/practicum/android/diploma/root/FavoritesFragment.kt b/app/src/main/java/ru/practicum/android/diploma/root/FavoritesFragment.kt
+new file mode 100644
+--- /dev/null	(date 1756942299561)
++++ b/app/src/main/java/ru/practicum/android/diploma/root/FavoritesFragment.kt	(date 1756942299561)
+@@ -0,0 +1,17 @@
++package ru.practicum.android.diploma.ui.root
++
++import android.os.Bundle
++import android.view.LayoutInflater
++import android.view.View
++import android.view.ViewGroup
++import androidx.fragment.app.Fragment
++import ru.practicum.android.diploma.databinding.FragmentFavoritesBinding
++
++class FavoritesFragment : Fragment() {
++    private lateinit var binding: FragmentFavoritesBinding
++
++    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
++        binding = FragmentFavoritesBinding.inflate(layoutInflater)
++        return binding.root
++    }
++}
+Index: app/src/main/java/ru/practicum/android/diploma/root/FiltrationFragment.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/ru/practicum/android/diploma/root/FiltrationFragment.kt b/app/src/main/java/ru/practicum/android/diploma/root/FiltrationFragment.kt
+new file mode 100644
+--- /dev/null	(date 1756950742229)
++++ b/app/src/main/java/ru/practicum/android/diploma/root/FiltrationFragment.kt	(date 1756950742229)
+@@ -0,0 +1,29 @@
++package ru.practicum.android.diploma.ui.root
++
++import android.os.Bundle
++import android.view.LayoutInflater
++import android.view.View
++import android.view.ViewGroup
++import android.widget.ImageButton
++import androidx.fragment.app.Fragment
++import androidx.navigation.fragment.findNavController
++import ru.practicum.android.diploma.R
++import ru.practicum.android.diploma.databinding.FragmentFilterBinding
++
++class FiltrationFragment : Fragment() {
++    private lateinit var binding: FragmentFilterBinding
++    private lateinit var returnButton: ImageButton
++
++    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
++        binding = FragmentFilterBinding.inflate(layoutInflater)
++        returnButton = binding.returnButton
++        return binding.root
++    }
++
++    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
++        super.onViewCreated(view, savedInstanceState)
++        returnButton.setOnClickListener {
++            findNavController().navigate(R.id.action_filtrationFragment_to_mainFragment)
++        }
++    }
++}
+Index: app/src/main/java/ru/practicum/android/diploma/root/RootActivity.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/ru/practicum/android/diploma/root/RootActivity.kt b/app/src/main/java/ru/practicum/android/diploma/root/RootActivity.kt
+new file mode 100644
+--- /dev/null	(date 1759129095492)
++++ b/app/src/main/java/ru/practicum/android/diploma/root/RootActivity.kt	(date 1759129095492)
+@@ -0,0 +1,37 @@
++package ru.practicum.android.diploma.root
++
++import android.os.Bundle
++import androidx.appcompat.app.AppCompatActivity
++import androidx.core.view.isVisible
++import androidx.navigation.fragment.NavHostFragment
++import androidx.navigation.ui.setupWithNavController
++import ru.practicum.android.diploma.BuildConfig
++import ru.practicum.android.diploma.R
++import ru.practicum.android.diploma.databinding.ActivityRootBinding
++
++class RootActivity : AppCompatActivity() {
++
++    private lateinit var binding: ActivityRootBinding
++
++    override fun onCreate(savedInstanceState: Bundle?) {
++        super.onCreate(savedInstanceState)
++
++        binding = ActivityRootBinding.inflate(layoutInflater)
++        setContentView(binding.root)
++
++        val navHostFragment =
++            supportFragmentManager.findFragmentById(R.id.containerView) as NavHostFragment
++        val navController = navHostFragment.navController
++        val bottomNavigationView = binding.bottomNavigationView
++        bottomNavigationView.setupWithNavController(navController)
++
++        navController.addOnDestinationChangedListener { _, destination, _ ->
++            bottomNavigationView.isVisible = destination.id != R.id.filtrationFragment
++        }
++
++        networkRequestExample(accessToken = BuildConfig.API_ACCESS_TOKEN)
++    }
++
++    private fun networkRequestExample(accessToken: String) {
++    }
++}
+Index: app/src/main/java/ru/practicum/android/diploma/root/TeamFragment.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/ru/practicum/android/diploma/root/TeamFragment.kt b/app/src/main/java/ru/practicum/android/diploma/root/TeamFragment.kt
+new file mode 100644
+--- /dev/null	(date 1756942299563)
++++ b/app/src/main/java/ru/practicum/android/diploma/root/TeamFragment.kt	(date 1756942299563)
+@@ -0,0 +1,18 @@
++package ru.practicum.android.diploma.ui.root
++
++import android.os.Bundle
++import android.view.LayoutInflater
++import android.view.View
++import android.view.ViewGroup
++import androidx.fragment.app.Fragment
++import ru.practicum.android.diploma.databinding.FragmentTeamBinding
++
++class TeamFragment : Fragment() {
++    private lateinit var binding: FragmentTeamBinding
++
++    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
++        binding = FragmentTeamBinding.inflate(layoutInflater)
++        return binding.root
++    }
++}
++
+diff --git a/app/app/src/main/java/ru/practicum/android/diploma/data/network/.gitkeep b/app/app/src/main/java/ru/practicum/android/diploma/data/network/.gitkeep
+new file mode 100644
+diff --git a/app/app/src/main/java/ru/practicum/android/diploma/data/dto/.gitkeep b/app/app/src/main/java/ru/practicum/android/diploma/data/dto/.gitkeep
+new file mode 100644
+diff --git a/app/app/src/main/java/ru/practicum/android/diploma/domain/api/.gitkeep b/app/app/src/main/java/ru/practicum/android/diploma/domain/api/.gitkeep
+new file mode 100644
+diff --git a/app/app/src/main/java/ru/practicum/android/diploma/util/.gitkeep b/app/app/src/main/java/ru/practicum/android/diploma/util/.gitkeep
+new file mode 100644
+diff --git a/app/app/src/main/java/ru/practicum/android/diploma/domain/models/.gitkeep b/app/app/src/main/java/ru/practicum/android/diploma/domain/models/.gitkeep
+new file mode 100644
+diff --git a/app/app/src/main/java/ru/practicum/android/diploma/domain/impl/.gitkeep b/app/app/src/main/java/ru/practicum/android/diploma/domain/impl/.gitkeep
+new file mode 100644
+diff --git a/app/app/src/main/java/ru/practicum/android/diploma/presentation/.gitkeep b/app/app/src/main/java/ru/practicum/android/diploma/presentation/.gitkeep
+new file mode 100644
