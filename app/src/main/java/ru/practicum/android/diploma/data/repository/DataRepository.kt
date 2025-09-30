@@ -1,4 +1,4 @@
-package ru.practicum.android.diploma.data
+package ru.practicum.android.diploma.data.repository
 
 import ru.practicum.android.diploma.data.network.ApiService
 import ru.practicum.android.diploma.domain.model.Vacancy
