@@ -91,29 +91,33 @@ class VacancyDetailFragment : Fragment() {
         binding.schedule.text = vacancyDetail.schedule?.name
         binding.employment.text = vacancyDetail.employment?.name
         binding.description.text = vacancyDetail.description
-        renderContacts(vacancyDetail.contact)
-    }
-
-    private fun renderContacts(contacts: Contact?) {
-        contacts?.let {
+        vacancyDetail.contact?.let {
             if (it.phone != null || it.email != "") {
                 binding.contactGroup.isVisible = true
-                it.email?.let { email ->
-                    binding.contactEmail.text = email
-                    binding.contactEmail.setOnClickListener {
-                        viewModel.sharedEmail(email)
-                    }
-                }
-                it.phone?.let { phone ->
-                    var str = ""
-                    phone.forEach { tel ->
-                        str += tel + "\n"
-                    }
-                    binding.contactPhone.text = str
-                    binding.contactPhone.setOnClickListener {
-                        viewModel.sharedPhone(str)
-                    }
-                }
+                renderEmail(it.email)
+                renderPhone(it.phone)
+            }
+        }
+    }
+
+    private fun renderEmail(value: String?) {
+        value?.let { email ->
+            binding.contactEmail.text = email
+            binding.contactEmail.setOnClickListener {
+                viewModel.sharedEmail(email)
+            }
+        }
+    }
+
+    private fun renderPhone(value: List<String>?) {
+        value?.let { phone ->
+            var str = ""
+            phone.forEach { tel ->
+                str += tel + "\n"
+            }
+            binding.contactPhone.text = str
+            binding.contactPhone.setOnClickListener {
+                viewModel.sharedPhone(str)
             }
         }
     }
