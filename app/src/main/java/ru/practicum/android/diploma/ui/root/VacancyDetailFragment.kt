@@ -11,6 +11,7 @@ import com.bumptech.glide.Glide
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.databinding.FragmentVacancyBinding
+import ru.practicum.android.diploma.domain.models.Contact
 import ru.practicum.android.diploma.domain.models.SalaryFormatter
 import ru.practicum.android.diploma.domain.models.VacancyDetail
 import ru.practicum.android.diploma.presentation.vmodels.VacancyDetailViewModel

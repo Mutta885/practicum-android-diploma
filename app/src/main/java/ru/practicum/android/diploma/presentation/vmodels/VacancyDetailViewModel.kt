@@ -4,9 +4,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import ru.practicum.android.diploma.data.sharing.ExternalNavigator
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import ru.practicum.android.diploma.data.sharing.ExternalNavigator
 import ru.practicum.android.diploma.domain.api.FavoritesInteractor
 import ru.practicum.android.diploma.domain.models.VacancyDetail
 import ru.practicum.android.diploma.domain.usecase.SearchVacancyDetailUseCase
