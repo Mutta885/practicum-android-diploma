@@ -11,6 +11,7 @@ import com.bumptech.glide.Glide
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.databinding.FragmentVacancyBinding
+import ru.practicum.android.diploma.domain.models.Contact
 import ru.practicum.android.diploma.domain.models.SalaryFormatter
 import ru.practicum.android.diploma.domain.models.VacancyDetail
 import ru.practicum.android.diploma.presentation.vmodels.VacancyDetailViewModel
@@ -90,7 +91,11 @@ class VacancyDetailFragment : Fragment() {
         binding.schedule.text = vacancyDetail.schedule?.name
         binding.employment.text = vacancyDetail.employment?.name
         binding.description.text = vacancyDetail.description
-        vacancyDetail.contact?.let {
+        renderContact(vacancyDetail.contact)
+    }
+
+    private fun renderContact(contact: Contact?){
+        contact?.let {
             if (it.phone != null || it.email != "") {
                 binding.contactGroup.isVisible = true
                 it.email?.let { email ->
