@@ -91,9 +91,11 @@ class VacancyDetailFragment : Fragment() {
         binding.employment.text = vacancyDetail.employment?.name
         binding.description.text = vacancyDetail.description
         vacancyDetail.contact?.let {
-            binding.contactGroup.isVisible = true
-            renderEmail(it.email)
-            renderPhone(it.phone)
+            if(it.email != "" || it.phone != null) {
+                binding.contactGroup.isVisible = true
+                renderEmail(it.email)
+                renderPhone(it.phone)
+            }
         }
     }
 
