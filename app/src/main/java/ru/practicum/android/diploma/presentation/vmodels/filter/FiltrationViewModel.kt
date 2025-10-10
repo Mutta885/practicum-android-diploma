@@ -1,4 +1,4 @@
-package ru.practicum.android.diploma.presentation.filter
+package ru.practicum.android.diploma.presentation.vmodels.filter
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

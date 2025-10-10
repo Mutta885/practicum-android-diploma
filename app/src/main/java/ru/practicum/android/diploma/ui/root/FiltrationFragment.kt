@@ -13,14 +13,16 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.databinding.FragmentFilterBinding
-import ru.practicum.android.diploma.presentation.filter.FiltrationViewModel
+import ru.practicum.android.diploma.presentation.vmodels.filter.FiltrationViewModel
 
 class FiltrationFragment : Fragment() {
 
     private var _binding: FragmentFilterBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var viewModel: FiltrationViewModel
+    private val viewModel: FiltrationViewModel by lazy {
+        ViewModelProvider(this)[FiltrationViewModel::class.java]
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -28,7 +30,6 @@ class FiltrationFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentFilterBinding.inflate(inflater, container, false)
-        viewModel = ViewModelProvider(this)[FiltrationViewModel::class.java]
 
         setupViews()
         observeViewModel()
@@ -49,8 +50,9 @@ class FiltrationFragment : Fragment() {
                     viewModel.onSalaryChanged(s.toString())
                 }
 
-                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
+
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
             })
 
             // Следим за фокусом
