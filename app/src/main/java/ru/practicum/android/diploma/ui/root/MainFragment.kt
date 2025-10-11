@@ -11,7 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.databinding.FragmentMainBinding
 import ru.practicum.android.diploma.domain.models.Vacancy
@@ -25,7 +25,8 @@ class MainFragment : Fragment() {
     private var _binding: FragmentMainBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: SearchViewModel by viewModel()
+    private val viewModel: SearchViewModel by sharedViewModel()
+
     private val adapter: VacanciesAdapter by lazy {
         VacanciesAdapter(onItemClick = { vacancy -> onVacancyClick(vacancy) })
     }
@@ -107,7 +108,7 @@ class MainFragment : Fragment() {
                     adapter.setHasMore(viewModel.hasMorePages())
                 }
 
-                is SearchState.Error -> showErrorState(state.message)
+                is SearchState.Error -> state.message?.let { showErrorState(it) }
                 is SearchState.LoadingNextPage -> {
                     println("DEBUG: Loading next page state")
                     adapter.setLoading(true)
@@ -116,8 +117,10 @@ class MainFragment : Fragment() {
 
                 is SearchState.NextPageError -> {
                     adapter.setLoading(false)
-                    requireContext().showToast(state.message)
+                    state.message?.let { requireContext().showToast(it) }
                 }
+
+                else -> {}
             }
         }
     }

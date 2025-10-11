@@ -14,6 +14,7 @@ import ru.practicum.android.diploma.data.dto.VacancyDto
 import ru.practicum.android.diploma.data.dto.VacancySearchResponse
 import ru.practicum.android.diploma.data.network.HhApi
 import ru.practicum.android.diploma.domain.models.Contact
+import ru.practicum.android.diploma.domain.models.Industry
 import ru.practicum.android.diploma.domain.models.SearchResult
 import ru.practicum.android.diploma.domain.models.SearchResultVacancyDetail
 import ru.practicum.android.diploma.domain.models.Vacancy
@@ -57,6 +58,20 @@ class DataRepositoryImpl(
         } catch (e: IOException) {
             Log.w(TAG, "IO error during network request", e)
             Resource.Error("Ошибка сети: ${e.message ?: "Неизвестная ошибка"}")
+        }
+    }
+
+    override suspend fun getIndustries(): List<Industry> {
+        return try {
+            val response = api.getIndustries()
+            response.map { dto ->
+                Industry(
+                    id = dto.id,
+                    name = dto.name
+                )
+            }
+        } catch (e: Exception) {
+            emptyList()
         }
     }
 
