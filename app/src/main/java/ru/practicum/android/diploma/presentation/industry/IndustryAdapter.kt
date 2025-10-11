@@ -41,20 +41,20 @@ class IndustryAdapter(
 
             binding.root.setOnClickListener {
                 // Если клик по уже выбранной — ничего не делаем
-                if (selectedPosition == position) return@setOnClickListener
+                if (selectedPosition != position) {
+                    val previousSelected = selectedPosition
+                    selectedPosition = position
 
-                val previousSelected = selectedPosition
-                selectedPosition = position
+                    // Обновляем состояния
+                    if (previousSelected != -1) {
+                        industries[previousSelected].isSelected = false
+                        notifyItemChanged(previousSelected)
+                    }
+                    industries[position].isSelected = true
+                    notifyItemChanged(position)
 
-                // Обновляем состояния
-                if (previousSelected != -1) {
-                    industries[previousSelected].isSelected = false
-                    notifyItemChanged(previousSelected)
+                    onItemClick(item)
                 }
-                industries[position].isSelected = true
-                notifyItemChanged(position)
-
-                onItemClick(item)
             }
         }
     }

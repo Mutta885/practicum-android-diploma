@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import ru.practicum.android.diploma.domain.models.Industry
-import ru.practicum.android.diploma.domain.usecases.GetIndustriesUseCase
+import ru.practicum.android.diploma.domain.usecase.GetIndustriesUseCase
 
 class IndustryViewModel(
     private val getIndustriesUseCase: GetIndustriesUseCase
@@ -33,23 +33,19 @@ class IndustryViewModel(
             _isLoading.value = true
             _error.value = null
 
-            try {
-                println("DEBUG: Loading industries from use case")
-                val result = getIndustriesUseCase()
-                if (result.isSuccess) {
-                    originalIndustries = result.getOrNull() ?: emptyList()
-                    println("DEBUG: Loaded ${originalIndustries.size} industries")
-                    _industries.value = originalIndustries
-                } else {
-                    _error.value = "Ошибка загрузки отраслей"
-                    println("DEBUG: Error loading industries")
-                }
-            } catch (e: Exception) {
-                _error.value = e.message
-                println("DEBUG: Exception loading industries: ${e.message}")
-            } finally {
-                _isLoading.value = false
+            println("DEBUG: Loading industries from use case")
+            val result = getIndustriesUseCase()
+
+            if (result.isSuccess) {
+                originalIndustries = result.getOrNull() ?: emptyList()
+                println("DEBUG: Loaded ${originalIndustries.size} industries")
+                _industries.value = originalIndustries
+            } else {
+                _error.value = result.exceptionOrNull()?.message ?: "Ошибка загрузки отраслей"
+                println("DEBUG: Error loading industries: ${_error.value}")
             }
+
+            _isLoading.value = false
         }
     }
 

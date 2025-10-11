@@ -14,7 +14,6 @@ class SearchVacanciesUseCase(
         page: Int,
         filters: FiltrationViewModel.Filters
     ): Resource<SearchResult> {
-
         println("DEBUG: SearchVacanciesUseCase.execute() called")
         println("DEBUG: Original query: '$query'")
         println("DEBUG: Filters: $filters")

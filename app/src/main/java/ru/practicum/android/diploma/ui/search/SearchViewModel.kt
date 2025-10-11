@@ -186,11 +186,17 @@ class SearchViewModel(
         if (isNewSearch) {
             isLoading = true
             _searchState.value = SearchState.Loading
-            println("DEBUG: Starting new search - query='$currentQuery', page=$currentPage, filters=$currentFilters")
+            println(
+                "DEBUG: Starting new search - query='$currentQuery', " +
+                    "page=$currentPage, filters=$currentFilters"
+            )
         } else {
             isLoadingNextPage = true
             _searchState.value = SearchState.LoadingNextPage
-            println("DEBUG: Starting next page search - query='$currentQuery', page=$currentPage, filters=$currentFilters")
+            println(
+                "DEBUG: Starting next page search - query='$currentQuery', " +
+                    "page=$currentPage, filters=$currentFilters"
+            )
         }
     }
 
@@ -203,7 +209,7 @@ class SearchViewModel(
             "DEBUG: Search success - query='$currentQuery', " +
                 "requestedPage=$currentPage, returnedPage=${searchResult.page}, " +
                 "vacancies=${searchResult.vacancies.size}, totalPages=$totalPages, " +
-                "found=${searchResult.found}, filters=$currentFilters" // ДОБАВЛЕНО: логируем фильтры
+                "found=${searchResult.found}, filters=$currentFilters"
         )
         println(
             "DEBUG: Before processing - allVacancies size: ${_allVacancies.size}, " +

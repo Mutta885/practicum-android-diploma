@@ -4,7 +4,7 @@ import org.koin.dsl.module
 import ru.practicum.android.diploma.domain.usecase.GetVacanciesUseCase
 import ru.practicum.android.diploma.domain.usecase.SearchVacanciesUseCase
 import ru.practicum.android.diploma.domain.usecase.SearchVacancyDetailUseCase
-import ru.practicum.android.diploma.domain.usecases.GetIndustriesUseCase
+import ru.practicum.android.diploma.domain.usecase.GetIndustriesUseCase
 
 val useCaseModule = module {
     factory { GetVacanciesUseCase(repository = get()) }

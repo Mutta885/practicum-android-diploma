@@ -82,8 +82,9 @@ class MainFragment : Fragment() {
 
         // Слушатель изменений текста
         editText.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
 
             override fun afterTextChanged(s: Editable?) {
                 val text = s.toString().trim()
@@ -176,7 +177,7 @@ class MainFragment : Fragment() {
             errorStateContainer.isVisible = false
             noResultsContainer.isVisible = false
             resultsCountText.isVisible = false
-            emptyStateContainer.isVisible = true // 👈 Показываем (хотя и так visible, но для ясности)
+            emptyStateContainer.isVisible = true
         }
         adapter.submitVacancies(emptyList())
         adapter.setLoading(false)
@@ -189,7 +190,7 @@ class MainFragment : Fragment() {
             vacanciesRecyclerView.isVisible = false
             errorStateContainer.isVisible = false
             noResultsContainer.isVisible = false
-            emptyStateContainer.isVisible = false // 👈 Скрываем
+            emptyStateContainer.isVisible = false
             resultsCountText.isVisible = false
         }
         adapter.setLoading(false)
@@ -200,7 +201,7 @@ class MainFragment : Fragment() {
         binding.apply {
             loadingProgressBar.isVisible = false
             errorStateContainer.isVisible = false
-            emptyStateContainer.isVisible = false // 👈 Скрываем
+            emptyStateContainer.isVisible = false
 
             if (state.vacancies.isEmpty()) {
                 vacanciesRecyclerView.isVisible = false
@@ -226,7 +227,7 @@ class MainFragment : Fragment() {
         binding.apply {
             loadingProgressBar.isVisible = false
             vacanciesRecyclerView.isVisible = false
-            emptyStateContainer.isVisible = false // 👈 Скрываем
+            emptyStateContainer.isVisible = false
             noResultsContainer.isVisible = false
             errorStateContainer.isVisible = true
             errorStateText.text = message

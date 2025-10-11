@@ -1,23 +1,9 @@
 package ru.practicum.android.diploma.data.repository
 
 import android.util.Log
-import ru.practicum.android.diploma.data.dto.AreaDto
-import ru.practicum.android.diploma.data.dto.ContactDto
-import ru.practicum.android.diploma.data.dto.EmployerDto
-import ru.practicum.android.diploma.data.dto.EmploymentDto
-import ru.practicum.android.diploma.data.dto.ExperienceDto
-import ru.practicum.android.diploma.data.dto.FilterIndustryDto
-import ru.practicum.android.diploma.data.dto.SalaryDto
-import ru.practicum.android.diploma.data.dto.ScheduleDto
-import ru.practicum.android.diploma.data.dto.VacancyDetailSearchResponse
-import ru.practicum.android.diploma.data.dto.VacancyDto
-import ru.practicum.android.diploma.data.dto.VacancySearchResponse
+import ru.practicum.android.diploma.data.dto.*
 import ru.practicum.android.diploma.data.network.HhApi
-import ru.practicum.android.diploma.domain.models.Contact
-import ru.practicum.android.diploma.domain.models.Industry
-import ru.practicum.android.diploma.domain.models.SearchResult
-import ru.practicum.android.diploma.domain.models.SearchResultVacancyDetail
-import ru.practicum.android.diploma.domain.models.Vacancy
+import ru.practicum.android.diploma.domain.models.*
 import ru.practicum.android.diploma.domain.repository.DataRepository
 import ru.practicum.android.diploma.util.Resource
 import java.io.IOException
@@ -44,7 +30,10 @@ class DataRepositoryImpl(
         salary: Int?,
         onlyWithSalary: Boolean
     ): Resource<SearchResult> {
-        println("DEBUG: Repository search - query: '$query', page: $page, industry: $industry, salary: $salary, onlyWithSalary: $onlyWithSalary")
+        println(
+            "DEBUG: Repository search - query: '$query', page: $page, " +
+                "industry: $industry, salary: $salary, onlyWithSalary: $onlyWithSalary"
+        )
 
         return try {
             val response = api.searchVacancies(
@@ -82,17 +71,10 @@ class DataRepositoryImpl(
 
     override suspend fun getIndustries(): List<Industry> {
         println("DEBUG: Repository getIndustries called")
-
         return try {
             val response = api.getIndustries()
             println("DEBUG: Industries loaded: ${response.size} items")
-
-            response.map { dto ->
-                Industry(
-                    id = dto.id,
-                    name = dto.name
-                )
-            }
+            response.map { dto -> Industry(id = dto.id, name = dto.name) }
         } catch (e: Exception) {
             Log.w(TAG, "Error loading industries", e)
             println("DEBUG: Error loading industries: ${e.message}")
@@ -102,16 +84,12 @@ class DataRepositoryImpl(
 
     override suspend fun searchVacancyDetail(query: String): Resource<SearchResultVacancyDetail> {
         println("DEBUG: Repository searchVacancyDetail called for id: $query")
-
         return try {
             val response = api.searchVacancyDetail(query)
-
             println("DEBUG: Vacancy detail response code: ${response.code()}, message: ${response.message()}")
 
             when (response.code()) {
-                HTTP_OK -> {
-                    handleSuccessResponseVacancyDetail(response.body())
-                }
+                HTTP_OK -> handleSuccessResponseVacancyDetail(response.body())
                 HTTP_UNAUTHORIZED -> Resource.Error("Ошибка авторизации")
                 HTTP_FORBIDDEN -> Resource.Error("Доступ запрещен")
                 HTTP_NOT_FOUND -> Resource.Error("Вакансия не найдена")
@@ -133,31 +111,30 @@ class DataRepositoryImpl(
         }
     }
 
-    private fun handleSuccessResponse(body: VacancySearchResponse?): Resource<SearchResult> {
-        return if (body != null) {
-            println("DEBUG: Search response - found: ${body.found}, pages: ${body.pages}, page: ${body.page}, items: ${body.items.size}")
-
-            val vacancies = mapVacancies(body.items)
-            createSuccessResult(body, vacancies)
+    private fun handleSuccessResponse(body: VacancySearchResponse?): Resource<SearchResult> =
+        if (body != null) {
+            println(
+                "DEBUG: Search response - found: ${body.found}, pages: ${body.pages}, " +
+                    "page: ${body.page}, items: ${body.items.size}"
+            )
+            createSuccessResult(body, mapVacancies(body.items))
         } else {
             println("DEBUG: Empty search response body")
             Resource.Error("Пустой ответ от сервера")
         }
+
+    private fun handleSuccessResponseVacancyDetail(
+        body: VacancyDetailSearchResponse?
+    ): Resource<SearchResultVacancyDetail> = if (body != null) {
+        println("DEBUG: Vacancy detail loaded - id: ${body.id}, name: ${body.name}")
+        createSuccessResultVacancyDetail(body)
+    } else {
+        println("DEBUG: Empty vacancy detail response body")
+        Resource.Error("Пустой ответ от сервера")
     }
 
-    private fun handleSuccessResponseVacancyDetail(body: VacancyDetailSearchResponse?):
-        Resource<SearchResultVacancyDetail> {
-        return if (body != null) {
-            println("DEBUG: Vacancy detail loaded - id: ${body.id}, name: ${body.name}")
-            createSuccessResultVacancyDetail(body)
-        } else {
-            println("DEBUG: Empty vacancy detail response body")
-            Resource.Error("Пустой ответ от сервера")
-        }
-    }
-
-    private fun mapVacancies(items: List<VacancyDto>): List<Vacancy> {
-        return items.map { dto ->
+    private fun mapVacancies(items: List<VacancyDto>): List<Vacancy> =
+        items.map { dto ->
             Vacancy(
                 id = dto.id,
                 title = dto.name,
@@ -167,7 +144,6 @@ class DataRepositoryImpl(
                 description = dto.description ?: "Описание не указано"
             )
         }
-    }
 
     private fun mapSalary(salaryDto: SalaryDto?) = salaryDto?.let { dto ->
         ru.practicum.android.diploma.domain.models.Salary(
@@ -220,7 +196,7 @@ class DataRepositoryImpl(
         )
     }
 
-    private fun mapContacts(contactDto: ContactDto) = contactDto?.let { dto ->
+    private fun mapContacts(contactDto: ContactDto?) = contactDto?.let { dto ->
         Contact(
             id = dto.id,
             name = dto.name,
@@ -232,8 +208,8 @@ class DataRepositoryImpl(
     private fun createSuccessResult(
         body: VacancySearchResponse,
         vacancies: List<Vacancy>
-    ): Resource<SearchResult> {
-        return Resource.Success(
+    ): Resource<SearchResult> =
+        Resource.Success(
             SearchResult(
                 found = body.found,
                 pages = body.pages,
@@ -241,12 +217,11 @@ class DataRepositoryImpl(
                 vacancies = vacancies
             )
         )
-    }
 
     private fun createSuccessResultVacancyDetail(
         body: VacancyDetailSearchResponse
-    ): Resource<SearchResultVacancyDetail> {
-        return Resource.Success(
+    ): Resource<SearchResultVacancyDetail> =
+        Resource.Success(
             SearchResultVacancyDetail(
                 id = body.id,
                 name = body.name,
@@ -261,5 +236,4 @@ class DataRepositoryImpl(
                 contact = mapContacts(body.contacts)
             )
         )
-    }
 }
