@@ -1,12 +1,34 @@
 package ru.practicum.android.diploma.data.repository
 
 import android.util.Log
-import ru.practicum.android.diploma.data.dto.*
+import ru.practicum.android.diploma.data.dto.AreaDto
+import ru.practicum.android.diploma.data.dto.ContactDto
+import ru.practicum.android.diploma.data.dto.EmployerDto
+import ru.practicum.android.diploma.data.dto.EmploymentDto
+import ru.practicum.android.diploma.data.dto.ExperienceDto
+import ru.practicum.android.diploma.data.dto.FilterIndustryDto
+import ru.practicum.android.diploma.data.dto.SalaryDto
+import ru.practicum.android.diploma.data.dto.ScheduleDto
+import ru.practicum.android.diploma.data.dto.VacancyDetailSearchResponse
+import ru.practicum.android.diploma.data.dto.VacancyDto
+import ru.practicum.android.diploma.data.dto.VacancySearchResponse
 import ru.practicum.android.diploma.data.network.HhApi
-import ru.practicum.android.diploma.domain.models.*
+import ru.practicum.android.diploma.domain.models.Area
+import ru.practicum.android.diploma.domain.models.Contact
+import ru.practicum.android.diploma.domain.models.Employer
+import ru.practicum.android.diploma.domain.models.Employment
+import ru.practicum.android.diploma.domain.models.Experience
+import ru.practicum.android.diploma.domain.models.FilterIndustry
+import ru.practicum.android.diploma.domain.models.Industry
+import ru.practicum.android.diploma.domain.models.Salary
+import ru.practicum.android.diploma.domain.models.Schedule
+import ru.practicum.android.diploma.domain.models.SearchResult
+import ru.practicum.android.diploma.domain.models.SearchResultVacancyDetail
+import ru.practicum.android.diploma.domain.models.Vacancy
 import ru.practicum.android.diploma.domain.repository.DataRepository
 import ru.practicum.android.diploma.util.Resource
 import java.io.IOException
+import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 import javax.net.ssl.SSLHandshakeException
 
@@ -57,15 +79,15 @@ class DataRepositoryImpl(
         } catch (e: UnknownHostException) {
             Log.w(TAG, "Network connection error", e)
             Resource.Error("Проверьте подключение к интернету")
+        } catch (e: SocketTimeoutException) {
+            Log.w(TAG, "Request timeout", e)
+            Resource.Error("Превышено время ожидания ответа")
         } catch (e: SSLHandshakeException) {
             Log.w(TAG, "SSL handshake error", e)
             Resource.Error("Ошибка безопасности соединения")
         } catch (e: IOException) {
             Log.w(TAG, "IO error during network request", e)
             Resource.Error("Ошибка сети: ${e.message ?: "Неизвестная ошибка"}")
-        } catch (e: Exception) {
-            Log.w(TAG, "Unexpected error", e)
-            Resource.Error("Неизвестная ошибка: ${e.message ?: "Попробуйте позже"}")
         }
     }
 
@@ -75,9 +97,17 @@ class DataRepositoryImpl(
             val response = api.getIndustries()
             println("DEBUG: Industries loaded: ${response.size} items")
             response.map { dto -> Industry(id = dto.id, name = dto.name) }
-        } catch (e: Exception) {
-            Log.w(TAG, "Error loading industries", e)
-            println("DEBUG: Error loading industries: ${e.message}")
+        } catch (e: UnknownHostException) {
+            Log.w(TAG, "Network connection error loading industries", e)
+            println("DEBUG: Network error loading industries: ${e.message}")
+            emptyList()
+        } catch (e: SocketTimeoutException) {
+            Log.w(TAG, "Timeout loading industries", e)
+            println("DEBUG: Timeout loading industries: ${e.message}")
+            emptyList()
+        } catch (e: IOException) {
+            Log.w(TAG, "IO error loading industries", e)
+            println("DEBUG: IO error loading industries: ${e.message}")
             emptyList()
         }
     }
@@ -99,15 +129,15 @@ class DataRepositoryImpl(
         } catch (e: UnknownHostException) {
             Log.w(TAG, "Network connection error", e)
             Resource.Error("Проверьте подключение к интернету")
+        } catch (e: SocketTimeoutException) {
+            Log.w(TAG, "Request timeout", e)
+            Resource.Error("Превышено время ожидания ответа")
         } catch (e: SSLHandshakeException) {
             Log.w(TAG, "SSL handshake error", e)
             Resource.Error("Ошибка безопасности соединения")
         } catch (e: IOException) {
             Log.w(TAG, "IO error during network request", e)
             Resource.Error("Ошибка сети: ${e.message ?: "Неизвестная ошибка"}")
-        } catch (e: Exception) {
-            Log.w(TAG, "Unexpected error", e)
-            Resource.Error("Неизвестная ошибка: ${e.message ?: "Попробуйте позже"}")
         }
     }
 
@@ -146,7 +176,7 @@ class DataRepositoryImpl(
         }
 
     private fun mapSalary(salaryDto: SalaryDto?) = salaryDto?.let { dto ->
-        ru.practicum.android.diploma.domain.models.Salary(
+        Salary(
             from = dto.from,
             to = dto.to,
             currency = dto.currency
@@ -154,7 +184,7 @@ class DataRepositoryImpl(
     }
 
     private fun mapEmployer(employerDto: EmployerDto?) = employerDto?.let { dto ->
-        ru.practicum.android.diploma.domain.models.Employer(
+        Employer(
             id = dto.id,
             name = dto.name,
             logoUrl = dto.logo
@@ -162,35 +192,35 @@ class DataRepositoryImpl(
     }
 
     private fun mapArea(areaDto: AreaDto?) = areaDto?.let { dto ->
-        ru.practicum.android.diploma.domain.models.Area(
+        Area(
             id = dto.id,
             name = dto.name
         )
     }
 
     private fun mapIndustry(industryDto: FilterIndustryDto?) = industryDto?.let { dto ->
-        ru.practicum.android.diploma.domain.models.FilterIndustry(
+        FilterIndustry(
             id = dto.id,
             name = dto.name
         )
     }
 
     private fun mapExperience(experienceDto: ExperienceDto?) = experienceDto?.let { dto ->
-        ru.practicum.android.diploma.domain.models.Experience(
+        Experience(
             id = dto.id,
             name = dto.name
         )
     }
 
     private fun mapSchedule(scheduleDto: ScheduleDto?) = scheduleDto?.let { dto ->
-        ru.practicum.android.diploma.domain.models.Schedule(
+        Schedule(
             id = dto.id,
             name = dto.name
         )
     }
 
     private fun mapEmployment(employmentDto: EmploymentDto?) = employmentDto?.let { dto ->
-        ru.practicum.android.diploma.domain.models.Employment(
+        Employment(
             id = dto.id,
             name = dto.name
         )
