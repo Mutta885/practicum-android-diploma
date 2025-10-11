@@ -5,5 +5,5 @@ import ru.practicum.android.diploma.domain.models.SearchResult
 import ru.practicum.android.diploma.util.Resource
 
 interface SearchVacanciesWithFilterUseCase {
-    fun execute(): Flow<Resource<SearchResult>>
+    fun execute(query: Map<String,String>, page: Int): Flow<Resource<SearchResult>>
 }

@@ -17,7 +17,6 @@ import ru.practicum.android.diploma.data.dto.VacancyDetailSearchResponse
 import ru.practicum.android.diploma.data.dto.VacancyDto
 import ru.practicum.android.diploma.data.dto.VacancySearchResponse
 import ru.practicum.android.diploma.data.network.HhApi
-import ru.practicum.android.diploma.domain.models.Contact
 import ru.practicum.android.diploma.domain.models.SearchResult
 import ru.practicum.android.diploma.domain.models.SearchResultVacancyDetail
 import ru.practicum.android.diploma.domain.models.Vacancy
@@ -40,11 +39,10 @@ class DataRepositoryImpl(
         private const val TAG = "DataRepositoryImpl"
     }
 
-    override fun searchVacanciesWithFilter(): Flow<Resource<SearchResult>> {
+    override fun searchVacanciesWithFilter(query: Map<String, String>, page: Int): Flow<Resource<SearchResult>> {
         return flow {
             try {
-                val response = api.searchVacancyWithFilter()
-                Log.v("my", "searchVacanciesWithFilter = \n ${response.body()}")
+                val response = api.searchVacancyWithFilter(query, page = page)
                 when (response.code()) {
                     HTTP_OK -> {
                         emit(handleSuccessResponse(response.body()))

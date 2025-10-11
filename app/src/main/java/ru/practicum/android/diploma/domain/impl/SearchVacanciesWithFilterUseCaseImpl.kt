@@ -9,7 +9,7 @@ import ru.practicum.android.diploma.util.Resource
 class SearchVacanciesWithFilterUseCaseImpl(
     val repository: DataRepository
 ) : SearchVacanciesWithFilterUseCase {
-    override fun execute(): Flow<Resource<SearchResult>> {
-        return  repository.searchVacanciesWithFilter()
+    override fun execute(query: Map<String,String>, page: Int): Flow<Resource<SearchResult>> {
+        return  repository.searchVacanciesWithFilter(query = query, page = page)
     }
 }

@@ -8,5 +8,5 @@ import ru.practicum.android.diploma.util.Resource
 interface DataRepository {
     suspend fun searchVacancies(query: String, page: Int): Resource<SearchResult>
     suspend fun searchVacancyDetail(query: String): Resource<SearchResultVacancyDetail>
-    fun searchVacanciesWithFilter(): Flow<Resource<SearchResult>>
+    fun searchVacanciesWithFilter(query: Map<String, String>, page: Int): Flow<Resource<SearchResult>>
 }

@@ -110,6 +110,9 @@ class FiltrationFragment : Fragment() {
         viewModel.isAnyFilterActive.observe(viewLifecycleOwner) { isActive ->
             binding.applyButton.visibility = if (isActive) View.VISIBLE else View.GONE
             binding.resetButton.visibility = if (isActive) View.VISIBLE else View.GONE
+            if(!isActive) {
+                viewModel.clearFilterInSharedPreferences()
+            }
         }
 
         viewModel.isSalaryInputNotEmpty.observe(viewLifecycleOwner) { isNotEmpty ->

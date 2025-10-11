@@ -23,7 +23,9 @@ interface HhApi {
 
     @GET("vacancies")
     suspend fun searchVacancyWithFilter(
-        @QueryMap options: Map<String, String> = hashMapOf(Pair("only_with_salary", "true"))
+        @QueryMap options: Map<String, String>,
+        @Query("page") page: Int,
+        @Query("per_page") perPage: Int = 20
     ): Response<VacancySearchResponse>
 }
 
