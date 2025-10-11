@@ -83,6 +83,7 @@ class FiltrationFragment : Fragment() {
             // Кнопка "Применить"
             applyButton.setOnClickListener {
                 Toast.makeText(context, "Фильтры применены", Toast.LENGTH_SHORT).show()
+                viewModel.saveFilterInSharedPreferences()
                 findNavController().navigateUp()
             }
 

@@ -26,6 +26,10 @@ class FiltrationViewModel : ViewModel() {
         updateSalaryInputState()
     }
 
+    fun saveFilterInSharedPreferences() {
+
+    }
+
     fun onSalaryChanged(value: String) {
         // Проверяем, что введено только число
         val filteredValue = value.filter { it.isDigit() }
