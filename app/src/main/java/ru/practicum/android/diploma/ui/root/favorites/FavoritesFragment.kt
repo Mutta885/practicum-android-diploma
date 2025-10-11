@@ -47,9 +47,6 @@ class FavoritesFragment : Fragment() {
         binding.recycler.adapter = adapter
         viewModel.getListAllFavorites()
         setupObservers()
-        binding.button.setOnClickListener {
-            viewModel.click()
-        }
     }
 
     private fun setupObservers() {
