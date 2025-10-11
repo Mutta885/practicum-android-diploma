@@ -29,15 +29,19 @@ class IndustryAdapter(
         onSelectionChanged?.invoke()
     }
 
-    fun getSelectedIndustry(): Industry? =
-        items.getOrNull(selectedPosition)?.industry
+    fun getSelectedIndustry(): Industry? {
+        return items.getOrNull(selectedPosition)?.industry
+    }
 
-    fun getCurrentList(): List<Industry> =
-        items.map { it.industry }
+    fun getCurrentList(): List<Industry> {
+        return items.map { it.industry }
+    }
 
     fun filter(query: String) {
-        val filtered = if (query.isEmpty()) originalList else originalList.filter {
-            it.name.contains(query, ignoreCase = true)
+        val filtered = if (query.isEmpty()) {
+            originalList
+        } else {
+            originalList.filter { it.name.contains(query, ignoreCase = true) }
         }
 
         // Восстанавливаем выбранный элемент, если он есть в фильтре
@@ -83,7 +87,9 @@ class IndustryAdapter(
                         }
                     }
 
-                    if (previousSelected != -1) notifyItemChanged(previousSelected)
+                    if (previousSelected != -1) {
+                        notifyItemChanged(previousSelected)
+                    }
                     notifyItemChanged(position)
                     onSelectionChanged?.invoke()
                 }

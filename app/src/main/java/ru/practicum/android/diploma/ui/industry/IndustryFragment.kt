@@ -29,7 +29,11 @@ class IndustryFragment : Fragment() {
     private val adapter: IndustryAdapter by lazy {
         IndustryAdapter {
             binding.selectButton.visibility =
-                if (adapter.getSelectedIndustry() != null) View.VISIBLE else View.GONE
+                if (adapter.getSelectedIndustry() != null) {
+                    View.VISIBLE
+                } else {
+                    View.GONE
+                }
         }
     }
 
@@ -82,8 +86,16 @@ class IndustryFragment : Fragment() {
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) = Unit
             override fun afterTextChanged(s: Editable) {
                 val text = s.toString().trim()
-                searchIcon.visibility = if (text.isNotEmpty()) View.GONE else View.VISIBLE
-                clearIcon.visibility = if (text.isNotEmpty()) View.VISIBLE else View.GONE
+                searchIcon.visibility = if (text.isNotEmpty()) {
+                    View.GONE
+                } else {
+                    View.VISIBLE
+                }
+                clearIcon.visibility = if (text.isNotEmpty()) {
+                    View.VISIBLE
+                } else {
+                    View.GONE
+                }
                 adapter.filter(text)
             }
         })
@@ -92,7 +104,9 @@ class IndustryFragment : Fragment() {
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                 adapter.filter(editText.text.toString().trim())
                 true
-            } else false
+            } else {
+                false
+            }
         }
     }
 
@@ -106,17 +120,31 @@ class IndustryFragment : Fragment() {
             binding.loadingIndicator.visibility = View.GONE
             binding.errorText.visibility = View.GONE
             binding.selectButton.visibility =
-                if (adapter.getSelectedIndustry() != null) View.VISIBLE else View.GONE
+                if (adapter.getSelectedIndustry() != null) {
+                    View.VISIBLE
+                } else {
+                    View.GONE
+                }
         }
 
         viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
-            binding.loadingIndicator.visibility = if (isLoading) View.VISIBLE else View.GONE
+            binding.loadingIndicator.visibility = if (isLoading) {
+                View.VISIBLE
+            } else {
+                View.GONE
+            }
         }
 
         viewModel.error.observe(viewLifecycleOwner) { error ->
-            binding.errorText.visibility = if (error != null) View.VISIBLE else View.GONE
+            binding.errorText.visibility = if (error != null) {
+                View.VISIBLE
+            } else {
+                View.GONE
+            }
             binding.errorText.text = error ?: ""
-            if (error != null) binding.loadingIndicator.visibility = View.GONE
+            if (error != null) {
+                binding.loadingIndicator.visibility = View.GONE
+            }
         }
     }
 
