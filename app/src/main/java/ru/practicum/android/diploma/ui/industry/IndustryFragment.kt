@@ -26,7 +26,12 @@ class IndustryFragment : Fragment() {
         ViewModelProvider(requireActivity())[FiltrationViewModel::class.java]
     }
 
-    private lateinit var adapter: IndustryAdapter
+    private val adapter: IndustryAdapter by lazy {
+        IndustryAdapter {
+            binding.selectButton.visibility =
+                if (adapter.getSelectedIndustry() != null) View.VISIBLE else View.GONE
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -34,23 +39,20 @@ class IndustryFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentIndustryBinding.inflate(inflater, container, false)
-        setupAdapter()
-        setupViews()
+        setupRecyclerView()
+        setupButtons()
+        setupSearch()
+        setupErrorHandling()
         observeViewModel()
         return binding.root
     }
 
-    private fun setupAdapter() {
-        adapter = IndustryAdapter {
-            binding.selectButton.visibility =
-                if (adapter.getSelectedIndustry() != null) View.VISIBLE else View.GONE
-        }
-    }
-
-    private fun setupViews() {
+    private fun setupRecyclerView() {
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerView.adapter = adapter
+    }
 
+    private fun setupButtons() {
         binding.returnButton.setOnClickListener {
             requireActivity().onBackPressed()
         }
@@ -61,9 +63,6 @@ class IndustryFragment : Fragment() {
             }
             requireActivity().onBackPressed()
         }
-
-        setupSearch()
-        binding.errorText.setOnClickListener { viewModel.refresh() }
     }
 
     private fun setupSearch() {
@@ -93,10 +92,12 @@ class IndustryFragment : Fragment() {
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                 adapter.filter(editText.text.toString().trim())
                 true
-            } else {
-                false
-            }
+            } else false
         }
+    }
+
+    private fun setupErrorHandling() {
+        binding.errorText.setOnClickListener { viewModel.refresh() }
     }
 
     private fun observeViewModel() {

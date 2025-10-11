@@ -10,48 +10,42 @@ class IndustryAdapter(
     private val onSelectionChanged: (() -> Unit)? = null
 ) : RecyclerView.Adapter<IndustryAdapter.IndustryViewHolder>() {
 
-    // Внутренний класс для хранения состояния выбора
+    // Элементы адаптера полностью иммутабельны
     data class Item(
         val industry: Industry,
-        var isSelectedInternal: Boolean = false
+        val isSelected: Boolean = false
     )
 
     private val originalList = mutableListOf<Industry>()
-    private val items = mutableListOf<Item>()
+    private var items = listOf<Item>()
     private var selectedPosition: Int = -1
 
     fun submitList(newIndustries: List<Industry>) {
         originalList.clear()
         originalList.addAll(newIndustries)
-        items.clear()
-        items.addAll(newIndustries.map { Item(it, false) })
-        selectedPosition = items.indexOfFirst { it.isSelectedInternal }
+        items = originalList.map { Item(it, false) }
+        selectedPosition = items.indexOfFirst { it.isSelected }
         notifyDataSetChanged()
         onSelectionChanged?.invoke()
     }
 
-    fun getSelectedIndustry(): Industry? {
-        return items.getOrNull(selectedPosition)?.industry
-    }
+    fun getSelectedIndustry(): Industry? =
+        items.getOrNull(selectedPosition)?.industry
 
-    fun getCurrentList(): List<Industry> {
-        return items.map { it.industry }
-    }
+    fun getCurrentList(): List<Industry> =
+        items.map { it.industry }
 
     fun filter(query: String) {
-        val filtered = if (query.isEmpty()) {
-            originalList
-        } else {
-            originalList.filter { it.name.contains(query, ignoreCase = true) }
+        val filtered = if (query.isEmpty()) originalList else originalList.filter {
+            it.name.contains(query, ignoreCase = true)
         }
 
-        // Сохраняем состояние выбора для совпадающих элементов
-        items.clear()
-        items.addAll(filtered.map { original ->
-            val wasSelected = items.find { it.industry.id == original.id }?.isSelectedInternal ?: false
-            Item(original, wasSelected)
-        })
-        selectedPosition = items.indexOfFirst { it.isSelectedInternal }
+        // Восстанавливаем выбранный элемент, если он есть в фильтре
+        items = filtered.map { industry ->
+            val isSelected = items.find { it.industry.id == industry.id }?.isSelected ?: false
+            Item(industry, isSelected)
+        }
+        selectedPosition = items.indexOfFirst { it.isSelected }
         notifyDataSetChanged()
         onSelectionChanged?.invoke()
     }
@@ -80,14 +74,17 @@ class IndustryAdapter(
                     val previousSelected = selectedPosition
                     selectedPosition = position
 
-                    if (previousSelected != -1) {
-                        items[previousSelected].isSelectedInternal = false
-                        notifyItemChanged(previousSelected)
+                    // Создаём новый список с обновлённым выбранным элементом
+                    items = items.mapIndexed { index, currentItem ->
+                        when (index) {
+                            previousSelected -> currentItem.copy(isSelected = false)
+                            position -> currentItem.copy(isSelected = true)
+                            else -> currentItem
+                        }
                     }
 
-                    items[position].isSelectedInternal = true
+                    if (previousSelected != -1) notifyItemChanged(previousSelected)
                     notifyItemChanged(position)
-
                     onSelectionChanged?.invoke()
                 }
             }
