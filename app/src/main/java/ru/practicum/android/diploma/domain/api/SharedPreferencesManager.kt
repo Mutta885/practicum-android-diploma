@@ -6,4 +6,5 @@ import ru.practicum.android.diploma.domain.models.FilterParameters
 interface SharedPreferencesManager {
     suspend fun setFilterSetting(filter: FilterParameters)
     fun getFilterSetting(): Flow<FilterParameters>
+    suspend fun clearFilterSetting()
 }

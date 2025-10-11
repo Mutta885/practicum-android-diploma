@@ -3,8 +3,16 @@ package ru.practicum.android.diploma.presentation.vmodels.filter
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.launch
+import ru.practicum.android.diploma.domain.api.SharedPreferencesFilterInteractor
+import ru.practicum.android.diploma.domain.models.FilterParameters
 
-class FiltrationViewModel : ViewModel() {
+class FiltrationViewModel(
+    val filterInteractor: SharedPreferencesFilterInteractor
+) : ViewModel() {
+    private val _filterParametersState = MutableLiveData<FilterParameters>()
+    val observeFilterParametersState: LiveData<FilterParameters> = _filterParametersState
 
     // Состояние фильтров
     private val _salary = MutableLiveData<String>()
@@ -26,8 +34,28 @@ class FiltrationViewModel : ViewModel() {
         updateSalaryInputState()
     }
 
-    fun saveFilterInSharedPreferences() {
+    fun fetchFilterInSharedPreferences() {
+        viewModelScope.launch {
+            filterInteractor.getFilter().collect { filter ->
+                filter?.let { _filterParametersState.postValue(it) }
+            }
+        }
+    }
 
+    fun saveFilterInSharedPreferences() {
+        viewModelScope.launch {
+            _filterParametersState.value?.let {
+                it.onlyWithSalary = _hideWithoutSalary.value ?: false
+                it.salary = _salary.value ?: ""
+                filterInteractor.setFilter(it)
+            }
+        }
+    }
+
+    fun clearFilterInSharedPreferences(){
+        viewModelScope.launch {
+            filterInteractor.clearFilter()
+        }
     }
 
     fun onSalaryChanged(value: String) {

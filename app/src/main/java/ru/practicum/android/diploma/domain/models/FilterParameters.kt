@@ -1,5 +1,6 @@
 package ru.practicum.android.diploma.domain.models
 
 data class FilterParameters(
-    val onlyWithSalary: Boolean = false
+    var onlyWithSalary: Boolean = false,
+    var salary: String = ""
 )

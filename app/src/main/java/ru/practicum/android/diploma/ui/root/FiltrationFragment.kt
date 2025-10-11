@@ -9,10 +9,11 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.databinding.FragmentFilterBinding
+import ru.practicum.android.diploma.domain.models.FilterParameters
 import ru.practicum.android.diploma.presentation.vmodels.filter.FiltrationViewModel
 
 class FiltrationFragment : Fragment() {
@@ -20,9 +21,7 @@ class FiltrationFragment : Fragment() {
     private var _binding: FragmentFilterBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: FiltrationViewModel by lazy {
-        ViewModelProvider(this)[FiltrationViewModel::class.java]
-    }
+    private val viewModel: FiltrationViewModel by viewModel()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -37,6 +36,11 @@ class FiltrationFragment : Fragment() {
         return binding.root
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        viewModel.fetchFilterInSharedPreferences()
+    }
+
     private fun setupViews() {
         with(binding) {
             // Кнопка возврата
@@ -46,13 +50,13 @@ class FiltrationFragment : Fragment() {
 
             // Поле ввода зарплаты
             salaryInput.addTextChangedListener(object : TextWatcher {
-                override fun afterTextChanged(s: Editable?) {
-                    viewModel.onSalaryChanged(s.toString())
-                }
+                override fun afterTextChanged(s: Editable?) = Unit
 
                 override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
 
-                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                    viewModel.onSalaryChanged(s.toString())
+                }
             })
 
             // Следим за фокусом
@@ -93,11 +97,16 @@ class FiltrationFragment : Fragment() {
                 salaryInput.text?.clear()
                 hideWithoutSalaryCheckbox.isChecked = false
                 selectedIndustryText.text = "Отрасль"
+                viewModel.clearFilterInSharedPreferences()
             }
         }
     }
 
     private fun observeViewModel() {
+        viewModel.observeFilterParametersState.observe(viewLifecycleOwner){ state ->
+                renderUI(state)
+        }
+
         viewModel.isAnyFilterActive.observe(viewLifecycleOwner) { isActive ->
             binding.applyButton.visibility = if (isActive) View.VISIBLE else View.GONE
             binding.resetButton.visibility = if (isActive) View.VISIBLE else View.GONE
@@ -106,6 +115,23 @@ class FiltrationFragment : Fragment() {
         viewModel.isSalaryInputNotEmpty.observe(viewLifecycleOwner) { isNotEmpty ->
             binding.clearSalaryButton.visibility = if (isNotEmpty) View.VISIBLE else View.GONE
         }
+    }
+
+    private fun renderUI(state: FilterParameters){
+        if(state.onlyWithSalary) {
+            renderCheckBox(true)
+        }
+        if(state.salary.isNotEmpty()){
+            renderSalaryEditText(state.salary)
+        }
+    }
+
+    private fun renderCheckBox(value: Boolean){
+        binding.hideWithoutSalaryCheckbox.isChecked = value
+    }
+
+    private fun renderSalaryEditText(value: String){
+        binding.salaryInput.setText(value)
     }
 
     override fun onDestroyView() {

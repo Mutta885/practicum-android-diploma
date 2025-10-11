@@ -5,7 +5,9 @@ import android.content.SharedPreferences
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 import ru.practicum.android.diploma.data.sharedprefs.SharedPreferencesManagerImpl
+import ru.practicum.android.diploma.domain.api.SharedPreferencesFilterInteractor
 import ru.practicum.android.diploma.domain.api.SharedPreferencesManager
+import ru.practicum.android.diploma.domain.impl.SharedPreferencesFilterInteractorImpl
 
 val sharedPrefsModule = module {
     single<SharedPreferencesManager> {
@@ -14,5 +16,9 @@ val sharedPrefsModule = module {
 
     single<SharedPreferences> {
         androidContext().getSharedPreferences("filter_preferences", MODE_PRIVATE)
+    }
+
+    single<SharedPreferencesFilterInteractor> {
+        SharedPreferencesFilterInteractorImpl(get())
     }
 }
