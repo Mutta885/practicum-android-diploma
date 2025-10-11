@@ -12,65 +12,38 @@ class SearchVacanciesUseCase(
     suspend fun execute(
         query: String,
         page: Int,
-        filters: FiltrationViewModel.Filters // УБРАНО значение по умолчанию
+        filters: FiltrationViewModel.Filters
     ): Resource<SearchResult> {
 
         println("DEBUG: SearchVacanciesUseCase.execute() called")
         println("DEBUG: Original query: '$query'")
         println("DEBUG: Filters: $filters")
 
-        // Собираем финальный запрос с фильтрами
-        val finalQuery = buildQueryWithFilters(query, filters)
-        println("DEBUG: Final search query: '$finalQuery'")
+        // Получаем параметры фильтров
+        val industry = getIndustryId(filters)
+        val salary = getSalary(filters)
+        val onlyWithSalary = filters.hideWithoutSalary
 
-        val result = repository.searchVacancies(finalQuery, page)
+        println("DEBUG: API params - industry: $industry, salary: $salary, onlyWithSalary: $onlyWithSalary")
+
+        // Передаем фильтры как отдельные параметры
+        val result = repository.searchVacancies(
+            query = query,
+            page = page,
+            industry = industry,
+            salary = salary,
+            onlyWithSalary = onlyWithSalary
+        )
+
         println("DEBUG: Search result: $result")
-
         return result
     }
 
-    private fun buildQueryWithFilters(
-        baseQuery: String,
-        filters: FiltrationViewModel.Filters
-    ): String {
-        val queryBuilder = StringBuilder(baseQuery.trim())
+    private fun getIndustryId(filters: FiltrationViewModel.Filters): String? {
+        return filters.industries.firstOrNull()?.id
+    }
 
-        println("DEBUG: Building query with filters: $filters")
-
-        // Добавляем фильтр по отрасли
-        if (filters.industries.isNotEmpty()) {
-            // Берем ID первой выбранной отрасли
-            val industryId = filters.industries.first().id
-            if (queryBuilder.isNotEmpty()) {
-                queryBuilder.append(" ")
-            }
-            queryBuilder.append("industry:$industryId")
-            println("DEBUG: Added industry filter: industry:$industryId")
-        }
-
-        // Добавляем фильтр по зарплате
-        filters.salary?.let { salary ->
-            if (salary.isNotEmpty()) {
-                val salaryValue = salary.toIntOrNull() ?: 0
-                if (queryBuilder.isNotEmpty()) {
-                    queryBuilder.append(" ")
-                }
-                queryBuilder.append("salary:$salaryValue")
-                println("DEBUG: Added salary filter: salary:$salaryValue")
-            }
-        }
-
-        // Добавляем фильтр "только с зарплатой"
-        if (filters.hideWithoutSalary) {
-            if (queryBuilder.isNotEmpty()) {
-                queryBuilder.append(" ")
-            }
-            queryBuilder.append("with_salary:true")
-            println("DEBUG: Added 'only with salary' filter")
-        }
-
-        val finalQuery = queryBuilder.toString().trim()
-        println("DEBUG: Built final query: '$finalQuery'")
-        return finalQuery
+    private fun getSalary(filters: FiltrationViewModel.Filters): Int? {
+        return filters.salary?.toIntOrNull()
     }
 }

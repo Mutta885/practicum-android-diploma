@@ -13,7 +13,10 @@ interface HhApi {
     suspend fun searchVacancies(
         @Query("text") query: String,
         @Query("page") page: Int,
-        @Query("per_page") perPage: Int = 20
+        @Query("per_page") perPage: Int = 20,
+        @Query("industry") industry: String? = null,
+        @Query("salary") salary: Int? = null,
+        @Query("only_with_salary") onlyWithSalary: Boolean = false
     ): Response<VacancySearchResponse>
 
     @GET("industries")

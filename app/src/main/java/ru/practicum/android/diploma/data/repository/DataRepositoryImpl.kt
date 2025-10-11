@@ -37,9 +37,25 @@ class DataRepositoryImpl(
         private const val TAG = "DataRepositoryImpl"
     }
 
-    override suspend fun searchVacancies(query: String, page: Int): Resource<SearchResult> {
+    override suspend fun searchVacancies(
+        query: String,
+        page: Int,
+        industry: String?,
+        salary: Int?,
+        onlyWithSalary: Boolean
+    ): Resource<SearchResult> {
+        println("DEBUG: Repository search - query: '$query', page: $page, industry: $industry, salary: $salary, onlyWithSalary: $onlyWithSalary")
+
         return try {
-            val response = api.searchVacancies(query, page)
+            val response = api.searchVacancies(
+                query = query,
+                page = page,
+                industry = industry,
+                salary = salary,
+                onlyWithSalary = onlyWithSalary
+            )
+
+            println("DEBUG: API response code: ${response.code()}, message: ${response.message()}")
 
             when (response.code()) {
                 HTTP_OK -> handleSuccessResponse(response.body())
@@ -58,12 +74,19 @@ class DataRepositoryImpl(
         } catch (e: IOException) {
             Log.w(TAG, "IO error during network request", e)
             Resource.Error("Ошибка сети: ${e.message ?: "Неизвестная ошибка"}")
+        } catch (e: Exception) {
+            Log.w(TAG, "Unexpected error", e)
+            Resource.Error("Неизвестная ошибка: ${e.message ?: "Попробуйте позже"}")
         }
     }
 
     override suspend fun getIndustries(): List<Industry> {
+        println("DEBUG: Repository getIndustries called")
+
         return try {
             val response = api.getIndustries()
+            println("DEBUG: Industries loaded: ${response.size} items")
+
             response.map { dto ->
                 Industry(
                     id = dto.id,
@@ -71,13 +94,19 @@ class DataRepositoryImpl(
                 )
             }
         } catch (e: Exception) {
+            Log.w(TAG, "Error loading industries", e)
+            println("DEBUG: Error loading industries: ${e.message}")
             emptyList()
         }
     }
 
     override suspend fun searchVacancyDetail(query: String): Resource<SearchResultVacancyDetail> {
+        println("DEBUG: Repository searchVacancyDetail called for id: $query")
+
         return try {
             val response = api.searchVacancyDetail(query)
+
+            println("DEBUG: Vacancy detail response code: ${response.code()}, message: ${response.message()}")
 
             when (response.code()) {
                 HTTP_OK -> {
@@ -85,7 +114,7 @@ class DataRepositoryImpl(
                 }
                 HTTP_UNAUTHORIZED -> Resource.Error("Ошибка авторизации")
                 HTTP_FORBIDDEN -> Resource.Error("Доступ запрещен")
-                HTTP_NOT_FOUND -> Resource.Error("Ресурс не найден")
+                HTTP_NOT_FOUND -> Resource.Error("Вакансия не найдена")
                 HTTP_SERVER_ERROR -> Resource.Error("Ошибка сервера")
                 else -> Resource.Error("Ошибка: ${response.code()} - ${response.message()}")
             }
@@ -98,14 +127,20 @@ class DataRepositoryImpl(
         } catch (e: IOException) {
             Log.w(TAG, "IO error during network request", e)
             Resource.Error("Ошибка сети: ${e.message ?: "Неизвестная ошибка"}")
+        } catch (e: Exception) {
+            Log.w(TAG, "Unexpected error", e)
+            Resource.Error("Неизвестная ошибка: ${e.message ?: "Попробуйте позже"}")
         }
     }
 
     private fun handleSuccessResponse(body: VacancySearchResponse?): Resource<SearchResult> {
         return if (body != null) {
+            println("DEBUG: Search response - found: ${body.found}, pages: ${body.pages}, page: ${body.page}, items: ${body.items.size}")
+
             val vacancies = mapVacancies(body.items)
             createSuccessResult(body, vacancies)
         } else {
+            println("DEBUG: Empty search response body")
             Resource.Error("Пустой ответ от сервера")
         }
     }
@@ -113,8 +148,10 @@ class DataRepositoryImpl(
     private fun handleSuccessResponseVacancyDetail(body: VacancyDetailSearchResponse?):
         Resource<SearchResultVacancyDetail> {
         return if (body != null) {
+            println("DEBUG: Vacancy detail loaded - id: ${body.id}, name: ${body.name}")
             createSuccessResultVacancyDetail(body)
         } else {
+            println("DEBUG: Empty vacancy detail response body")
             Resource.Error("Пустой ответ от сервера")
         }
     }
@@ -184,7 +221,7 @@ class DataRepositoryImpl(
     }
 
     private fun mapContacts(contactDto: ContactDto) = contactDto?.let { dto ->
-        ru.practicum.android.diploma.domain.models.Contact(
+        Contact(
             id = dto.id,
             name = dto.name,
             email = dto.email,
