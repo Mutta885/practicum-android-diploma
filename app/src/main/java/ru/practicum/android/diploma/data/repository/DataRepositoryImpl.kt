@@ -1,6 +1,10 @@
 package ru.practicum.android.diploma.data.repository
 
 import android.util.Log
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import ru.practicum.android.diploma.data.dto.AreaDto
 import ru.practicum.android.diploma.data.dto.ContactDto
 import ru.practicum.android.diploma.data.dto.EmployerDto
@@ -36,6 +40,34 @@ class DataRepositoryImpl(
         private const val TAG = "DataRepositoryImpl"
     }
 
+    override fun searchVacanciesWithFilter(): Flow<Resource<SearchResult>> {
+        return flow {
+            try {
+                val response = api.searchVacancyWithFilter()
+                Log.v("my", "searchVacanciesWithFilter = \n ${response.body()}")
+                when (response.code()) {
+                    HTTP_OK -> {
+                        emit(handleSuccessResponse(response.body()))
+                    }
+                    HTTP_UNAUTHORIZED -> Resource.Error("Ошибка авторизации")
+                    HTTP_FORBIDDEN -> Resource.Error("Доступ запрещен")
+                    HTTP_NOT_FOUND -> Resource.Error("Ресурс не найден")
+                    HTTP_SERVER_ERROR -> Resource.Error("Ошибка сервера")
+                    else -> Resource.Error("Ошибка: ${response.code()} - ${response.message()}")
+                }
+            } catch (e: UnknownHostException) {
+                Log.w(TAG, "Network connection error", e)
+                Resource.Error("Проверьте подключение к интернету")
+            } catch (e: SSLHandshakeException) {
+                Log.w(TAG, "SSL handshake error", e)
+                Resource.Error("Ошибка безопасности соединения")
+            } catch (e: IOException) {
+                Log.w(TAG, "IO error during network request", e)
+                Resource.Error("Ошибка сети: ${e.message ?: "Неизвестная ошибка"}")
+            }
+        }.flowOn(Dispatchers.IO)
+    }
+
     override suspend fun searchVacancies(query: String, page: Int): Resource<SearchResult> {
         return try {
             val response = api.searchVacancies(query, page)
@@ -68,6 +100,7 @@ class DataRepositoryImpl(
                 HTTP_OK -> {
                     handleSuccessResponseVacancyDetail(response.body())
                 }
+
                 HTTP_UNAUTHORIZED -> Resource.Error("Ошибка авторизации")
                 HTTP_FORBIDDEN -> Resource.Error("Доступ запрещен")
                 HTTP_NOT_FOUND -> Resource.Error("Ресурс не найден")

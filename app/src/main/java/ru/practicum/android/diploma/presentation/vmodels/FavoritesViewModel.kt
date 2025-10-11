@@ -1,5 +1,6 @@
 package ru.practicum.android.diploma.presentation.vmodels
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -7,12 +8,16 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import ru.practicum.android.diploma.data.repository.DataRepositoryImpl
 import ru.practicum.android.diploma.domain.api.FavoritesInteractor
+import ru.practicum.android.diploma.domain.impl.SearchVacanciesWithFilterUseCaseImpl
 import ru.practicum.android.diploma.domain.models.Vacancy
+import ru.practicum.android.diploma.domain.usecase.SearchVacanciesWithFilterUseCase
 import ru.practicum.android.diploma.ui.root.favorites.models.FavoritesState
 
 class FavoritesViewModel(
-    private val favoritesInteractor: FavoritesInteractor
+    private val favoritesInteractor: FavoritesInteractor,
+    private val  u: SearchVacanciesWithFilterUseCase
 ) : ViewModel() {
     private val _favoritesState = MutableLiveData<FavoritesState>(FavoritesState.Idle)
     val favoritesState: LiveData<FavoritesState> = _favoritesState
@@ -20,6 +25,14 @@ class FavoritesViewModel(
     private var allFavoritesJob: Job? = null
     private val coroutineError = CoroutineExceptionHandler { _, _ ->
         _favoritesState.postValue(FavoritesState.Error)
+    }
+
+    fun click(){
+        viewModelScope.launch {
+            u.execute().collect {
+                Log.v("my", it.toString())
+            }
+        }
     }
 
     fun getListAllFavorites() {
