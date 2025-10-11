@@ -9,7 +9,7 @@ import ru.practicum.android.diploma.domain.api.SharedPreferencesManager
 
 val sharedPrefsModule = module {
     single<SharedPreferencesManager> {
-        SharedPreferencesManagerImpl()
+        SharedPreferencesManagerImpl(get(), get())
     }
 
     single<SharedPreferences> {
