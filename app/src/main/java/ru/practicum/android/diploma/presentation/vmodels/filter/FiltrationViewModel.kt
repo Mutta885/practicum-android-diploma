@@ -3,9 +3,12 @@ package ru.practicum.android.diploma.presentation.vmodels.filter
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import ru.practicum.android.diploma.domain.models.Industry
 
-class FiltrationViewModel : ViewModel() {
+class FiltrationViewModel(
+    val filterInteractor: StorageInteractor
+) : ViewModel() {
+    private val _filterParametersState = MutableLiveData<FilterParameters>(FilterParameters())
+    val observeFilterParametersState: LiveData<FilterParameters> = _filterParametersState
 
     // Состояние фильтров
     private val _salary = MutableLiveData<String>()
@@ -30,6 +33,32 @@ class FiltrationViewModel : ViewModel() {
     init {
         updateFilterState()
         updateSalaryInputState()
+    }
+
+    fun fetchFilterInSharedPreferences() {
+        viewModelScope.launch {
+            filterInteractor.getFilter().collect { filter ->
+                filter?.let { _filterParametersState.postValue(it) }
+            }
+        }
+    }
+
+    fun saveFilterInSharedPreferences() {
+        viewModelScope.launch {
+            _filterParametersState.value?.let {
+                it.onlyWithSalary = _hideWithoutSalary.value ?: false
+                it.salary = _salary.value ?: ""
+                filterInteractor.setFilter(it)
+            }
+        }
+    }
+
+    fun clearFilterInSharedPreferences(){
+        viewModelScope.launch {
+            if(hideWithoutSalary.value == false && _salary.value.isNullOrEmpty()) {
+                filterInteractor.clearFilter()
+            }
+        }
     }
 
     fun onSalaryChanged(value: String) {

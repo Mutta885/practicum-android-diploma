@@ -9,10 +9,12 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import ru.practicum.android.diploma.domain.api.FavoritesInteractor
 import ru.practicum.android.diploma.domain.models.Vacancy
+import ru.practicum.android.diploma.domain.usecase.SearchVacanciesWithFilterUseCase
 import ru.practicum.android.diploma.ui.root.favorites.models.FavoritesState
 
 class FavoritesViewModel(
-    private val favoritesInteractor: FavoritesInteractor
+    private val favoritesInteractor: FavoritesInteractor,
+    private val  u: SearchVacanciesWithFilterUseCase
 ) : ViewModel() {
     private val _favoritesState = MutableLiveData<FavoritesState>(FavoritesState.Idle)
     val favoritesState: LiveData<FavoritesState> = _favoritesState

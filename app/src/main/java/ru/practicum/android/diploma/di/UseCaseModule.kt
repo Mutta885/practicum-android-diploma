@@ -1,9 +1,12 @@
 package ru.practicum.android.diploma.di
 
 import org.koin.dsl.module
+import ru.practicum.android.diploma.domain.impl.SearchVacanciesWithFilterUseCaseImpl
 import ru.practicum.android.diploma.domain.usecase.GetVacanciesUseCase
 import ru.practicum.android.diploma.domain.usecase.SearchVacanciesUseCase
+import ru.practicum.android.diploma.domain.usecase.SearchVacanciesWithFilterUseCase
 import ru.practicum.android.diploma.domain.usecase.SearchVacancyDetailUseCase
+import ru.practicum.android.diploma.domain.usecases.GetIndustriesUseCase
 import ru.practicum.android.diploma.domain.usecases.GetIndustriesUseCase
 
 val useCaseModule = module {
@@ -11,4 +14,7 @@ val useCaseModule = module {
     factory { SearchVacanciesUseCase(repository = get()) }
     factory { SearchVacancyDetailUseCase(repository = get()) }
     factory { GetIndustriesUseCase(repository = get()) }
+    factory<SearchVacanciesWithFilterUseCase> {
+        SearchVacanciesWithFilterUseCaseImpl(repository = get())
+    }
 }

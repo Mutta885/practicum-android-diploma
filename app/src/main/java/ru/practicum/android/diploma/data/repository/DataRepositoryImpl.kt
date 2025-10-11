@@ -1,6 +1,10 @@
 package ru.practicum.android.diploma.data.repository
 
 import android.util.Log
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import ru.practicum.android.diploma.data.dto.AreaDto
 import ru.practicum.android.diploma.data.dto.ContactDto
 import ru.practicum.android.diploma.data.dto.EmployerDto
@@ -14,7 +18,6 @@ import ru.practicum.android.diploma.data.dto.VacancyDto
 import ru.practicum.android.diploma.data.dto.VacancySearchResponse
 import ru.practicum.android.diploma.data.network.HhApi
 import ru.practicum.android.diploma.domain.models.Contact
-import ru.practicum.android.diploma.domain.models.Industry
 import ru.practicum.android.diploma.domain.models.SearchResult
 import ru.practicum.android.diploma.domain.models.SearchResultVacancyDetail
 import ru.practicum.android.diploma.domain.models.Vacancy
@@ -35,6 +38,33 @@ class DataRepositoryImpl(
         private const val HTTP_NOT_FOUND = 404
         private const val HTTP_SERVER_ERROR = 500
         private const val TAG = "DataRepositoryImpl"
+    }
+
+    override fun searchVacanciesWithFilter(query: Map<String, String>, page: Int): Flow<Resource<SearchResult>> {
+        return flow {
+            try {
+                val response = api.searchVacancyWithFilter(query, page = page)
+                when (response.code()) {
+                    HTTP_OK -> {
+                        emit(handleSuccessResponse(response.body()))
+                    }
+                    HTTP_UNAUTHORIZED -> Resource.Error("Ошибка авторизации")
+                    HTTP_FORBIDDEN -> Resource.Error("Доступ запрещен")
+                    HTTP_NOT_FOUND -> Resource.Error("Ресурс не найден")
+                    HTTP_SERVER_ERROR -> Resource.Error("Ошибка сервера")
+                    else -> Resource.Error("Ошибка: ${response.code()} - ${response.message()}")
+                }
+            } catch (e: UnknownHostException) {
+                Log.w(TAG, "Network connection error", e)
+                Resource.Error("Проверьте подключение к интернету")
+            } catch (e: SSLHandshakeException) {
+                Log.w(TAG, "SSL handshake error", e)
+                Resource.Error("Ошибка безопасности соединения")
+            } catch (e: IOException) {
+                Log.w(TAG, "IO error during network request", e)
+                Resource.Error("Ошибка сети: ${e.message ?: "Неизвестная ошибка"}")
+            }
+        }.flowOn(Dispatchers.IO)
     }
 
     override suspend fun searchVacancies(query: String, page: Int): Resource<SearchResult> {
@@ -58,20 +88,6 @@ class DataRepositoryImpl(
         } catch (e: IOException) {
             Log.w(TAG, "IO error during network request", e)
             Resource.Error("Ошибка сети: ${e.message ?: "Неизвестная ошибка"}")
-        }
-    }
-
-    override suspend fun getIndustries(): List<Industry> {
-        return try {
-            val response = api.getIndustries()
-            response.map { dto ->
-                Industry(
-                    id = dto.id,
-                    name = dto.name
-                )
-            }
-        } catch (e: Exception) {
-            emptyList()
         }
     }
 

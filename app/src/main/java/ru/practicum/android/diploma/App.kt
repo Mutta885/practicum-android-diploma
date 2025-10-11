@@ -7,7 +7,8 @@ import org.koin.core.context.startKoin
 import ru.practicum.android.diploma.di.appModule
 import ru.practicum.android.diploma.di.favoritesModule
 import ru.practicum.android.diploma.di.mainModule
-import ru.practicum.android.diploma.di.sharedModule
+import ru.practicum.android.diploma.di.sharedPrefsModule
+import ru.practicum.android.diploma.di.sharingModule
 
 class App : Application() {
     override fun onCreate() {
@@ -20,7 +21,8 @@ class App : Application() {
                 appModule,
                 favoritesModule,
                 mainModule,
-                sharedModule
+                sharedPrefsModule,
+                sharingModule
             )
         }
     }

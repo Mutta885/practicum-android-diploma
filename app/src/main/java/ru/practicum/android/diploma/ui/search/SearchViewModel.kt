@@ -7,13 +7,15 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import ru.practicum.android.diploma.domain.api.StorageInteractor
 import ru.practicum.android.diploma.domain.models.Vacancy
 import ru.practicum.android.diploma.domain.usecase.SearchVacanciesUseCase
-import ru.practicum.android.diploma.presentation.vmodels.filter.FiltrationViewModel
 import ru.practicum.android.diploma.util.Resource
 
 class SearchViewModel(
-    private val searchVacanciesUseCase: SearchVacanciesUseCase
+    private val searchVacanciesUseCase: SearchVacanciesUseCase,
+    private val storageInteractor: StorageInteractor,
+    private val searchFilter: SearchVacanciesWithFilterUseCase
 ) : ViewModel() {
 
     companion object {
@@ -22,7 +24,8 @@ class SearchViewModel(
 
     private val _searchState = MutableLiveData<SearchState>()
     val searchState: LiveData<SearchState> = _searchState
-
+    private var storage: Boolean = false
+    private val storageOption: HashMap<String, String> = HashMap()
     private var currentQuery = ""
     private var currentPage = 0
     private var totalPages = 1
@@ -37,6 +40,46 @@ class SearchViewModel(
 
     private val _allVacancies = mutableListOf<Vacancy>()
     val allVacancies: List<Vacancy> get() = _allVacancies
+
+    fun getFilter() {
+        viewModelScope.launch {
+            storageInteractor.getFilter().collect { filter ->
+                if (filter == null) {
+                    storage = false
+                } else {
+                    storage = true
+                    if (filter.onlyWithSalary) {
+                        storageOption["only_with_salary"] = "true"
+                    }
+                    if (filter.salary.isNotEmpty()) {
+                        storageOption["salary"] = filter.salary
+                    }
+                }
+            }
+        }
+    }
+
+    private fun queryFromStorage(query: String, page: Int, isNewSearch: Boolean) {
+        if (isLoading || isLoadingNextPage) {
+            println(
+                "DEBUG: Search already in progress - " +
+                    "isLoading=$isLoading, isLoadingNextPage=$isLoadingNextPage"
+            )
+            return
+        }
+
+        setLoadingStates(isNewSearch)
+
+        viewModelScope.launch {
+            searchFilter.execute(page = page, query = storageOption).collect{ result ->
+                when (result) {
+                    is Resource.Success -> handleSearchSuccess(result, isNewSearch)
+                    is Resource.Error -> handleSearchError(result, isNewSearch)
+                    is Resource.Loading -> handleSearchLoading()
+                }
+            }
+        }
+    }
 
     // Метод для установки фильтров - ИСПРАВЛЕНО
     fun setFilters(filters: FiltrationViewModel.Filters) {
@@ -84,6 +127,11 @@ class SearchViewModel(
             currentQuery = trimmedQuery
             _searchState.value = SearchState.Loading
             println("DEBUG: New search query: '$currentQuery', cleared vacancies")
+        }
+
+        if (storage) {
+            queryFromStorage(query = currentQuery, page = 0, isNewSearch = true)
+            return
         }
 
         searchJob?.cancel()

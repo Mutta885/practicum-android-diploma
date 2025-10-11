@@ -50,6 +50,7 @@ class MainFragment : Fragment() {
         setupSearchField()
         setupClickListeners()
         observeViewModel()
+        viewModel.getFilter()
     }
 
     private fun setupRecyclerView() {

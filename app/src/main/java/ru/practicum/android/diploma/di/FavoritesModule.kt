@@ -16,7 +16,7 @@ import ru.practicum.android.diploma.presentation.vmodels.FavoritesViewModel
 
 val favoritesModule = module {
     viewModel {
-        FavoritesViewModel(get())
+        FavoritesViewModel(get(), get())
     }
     single<VacancyDao> {
         Room.databaseBuilder(androidContext(), AppDatabase::class.java, "database.db")
