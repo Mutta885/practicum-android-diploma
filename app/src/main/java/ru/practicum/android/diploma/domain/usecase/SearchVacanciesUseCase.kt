@@ -44,6 +44,6 @@ class SearchVacanciesUseCase(
     }
 
     private fun getSalary(filters: FiltrationViewModel.Filters): Int? {
-        return filters.salary?.toIntOrNull()
+        return filters.salary?.toIntOrNull()?.takeIf { it > 0 }
     }
 }

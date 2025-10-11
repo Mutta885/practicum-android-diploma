@@ -13,8 +13,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import org.koin.androidx.viewmodel.ext.android.activityViewModel
-import org.koin.androidx.viewmodel.ext.android.sharedViewModel
-import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.databinding.FragmentFilterBinding
 import ru.practicum.android.diploma.presentation.vmodels.filter.FiltrationViewModel
@@ -30,8 +28,6 @@ class FiltrationFragment : Fragment() {
     }
 
     private val searchViewModel: SearchViewModel by activityViewModel()
-
-
 
     companion object {
         private const val TAG = "FiltrationFragment"
@@ -93,10 +89,18 @@ class FiltrationFragment : Fragment() {
                 findNavController().navigate(R.id.action_filtrationFragment_to_industryFragment)
             }
 
-            // Чекбокс "Не показывать без зарплаты"
+            // Чекбокс "Не показывать без зарплаты" - ИСПРАВЛЕНО
             hideWithoutSalaryCheckbox.setOnCheckedChangeListener { _, isChecked ->
                 Log.d(TAG, "Hide without salary checkbox changed: $isChecked")
                 viewModel.onHideWithoutSalaryChanged(isChecked)
+            }
+
+            // ДОБАВЛЕНО: Обработка клика на всю строку чекбокса
+            hideSalaryContainer.setOnClickListener {
+                Log.d(TAG, "Hide salary container clicked")
+                val currentState = hideWithoutSalaryCheckbox.isChecked
+                hideWithoutSalaryCheckbox.isChecked = !currentState
+                // Слушатель onCheckedChangeListener автоматически вызовется
             }
 
             // Кнопка "Применить"
@@ -122,7 +126,8 @@ class FiltrationFragment : Fragment() {
                 Log.d(TAG, "Reset button clicked")
                 viewModel.resetFilters()
                 salaryInput.text?.clear()
-                hideWithoutSalaryCheckbox.isChecked = false
+
+                // НЕ устанавливаем чекбокс напрямую - он обновится через observeViewModel()
                 selectedIndustryText.text = "Отрасль"
 
                 // Также сбрасываем фильтры в SearchViewModel
@@ -160,6 +165,25 @@ class FiltrationFragment : Fragment() {
         viewModel.isSalaryInputNotEmpty.observe(viewLifecycleOwner) { isNotEmpty ->
             Log.d(TAG, "isSalaryInputNotEmpty changed: $isNotEmpty")
             binding.clearSalaryButton.visibility = if (isNotEmpty) View.VISIBLE else View.GONE
+        }
+
+        // Следим за состоянием чекбокса
+        viewModel.hideWithoutSalary.observe(viewLifecycleOwner) { isChecked ->
+            Log.d(TAG, "hideWithoutSalary observed: $isChecked")
+            // Временно отключаем слушатель чтобы избежать рекурсии
+            binding.hideWithoutSalaryCheckbox.setOnCheckedChangeListener(null)
+            binding.hideWithoutSalaryCheckbox.isChecked = isChecked
+            binding.hideWithoutSalaryCheckbox.setOnCheckedChangeListener { _, checked ->
+                viewModel.onHideWithoutSalaryChanged(checked)
+            }
+        }
+
+        // Следим за зарплатой для предзаполнения поля
+        viewModel.salary.observe(viewLifecycleOwner) { salary ->
+            Log.d(TAG, "salary observed: '$salary'")
+            if (salary != null && binding.salaryInput.text?.toString() != salary) {
+                binding.salaryInput.setText(salary)
+            }
         }
     }
 
