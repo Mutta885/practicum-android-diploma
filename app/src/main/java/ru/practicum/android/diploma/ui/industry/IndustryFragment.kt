@@ -9,7 +9,6 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.practicum.android.diploma.databinding.FragmentIndustryBinding
@@ -27,13 +26,7 @@ class IndustryFragment : Fragment() {
         ViewModelProvider(requireActivity())[FiltrationViewModel::class.java]
     }
 
-    private val adapter: IndustryAdapter by lazy {
-        IndustryAdapter { binding.selectButton.visibility = View.VISIBLE }
-    }
-
-    companion object {
-        private const val TAG = "IndustryFragment"
-    }
+    private lateinit var adapter: IndustryAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -41,35 +34,36 @@ class IndustryFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentIndustryBinding.inflate(inflater, container, false)
-
+        setupAdapter()
         setupViews()
         observeViewModel()
-
         return binding.root
     }
 
-    private fun setupViews() {
-        setupButtons()
-        setupRecyclerView()
-        setupSearch()
-        setupErrorHandling()
+    private fun setupAdapter() {
+        adapter = IndustryAdapter {
+            binding.selectButton.visibility =
+                if (adapter.getSelectedIndustry() != null) View.VISIBLE else View.GONE
+        }
     }
 
-    private fun setupButtons() {
+    private fun setupViews() {
+        binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        binding.recyclerView.adapter = adapter
+
         binding.returnButton.setOnClickListener {
-            findNavController().navigateUp()
+            requireActivity().onBackPressed()
         }
 
         binding.selectButton.setOnClickListener {
-            val selectedIndustries = viewModel.getSelectedIndustries()
-            filtrationViewModel.onIndustriesSelected(selectedIndustries)
-            findNavController().navigateUp()
+            adapter.getSelectedIndustry()?.let {
+                filtrationViewModel.onIndustriesSelected(listOf(it))
+            }
+            requireActivity().onBackPressed()
         }
-    }
 
-    private fun setupRecyclerView() {
-        binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        binding.recyclerView.adapter = adapter
+        setupSearch()
+        binding.errorText.setOnClickListener { viewModel.refresh() }
     }
 
     private fun setupSearch() {
@@ -79,7 +73,7 @@ class IndustryFragment : Fragment() {
 
         clearIcon.setOnClickListener {
             editText.text.clear()
-            viewModel.search("")
+            adapter.submitList(adapter.getCurrentList())
             clearIcon.visibility = View.GONE
             searchIcon.visibility = View.VISIBLE
         }
@@ -91,13 +85,13 @@ class IndustryFragment : Fragment() {
                 val text = s.toString().trim()
                 searchIcon.visibility = if (text.isNotEmpty()) View.GONE else View.VISIBLE
                 clearIcon.visibility = if (text.isNotEmpty()) View.VISIBLE else View.GONE
-                viewModel.search(text)
+                adapter.filter(text)
             }
         })
 
         editText.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                viewModel.search(editText.text.toString().trim())
+                adapter.filter(editText.text.toString().trim())
                 true
             } else {
                 false
@@ -105,17 +99,13 @@ class IndustryFragment : Fragment() {
         }
     }
 
-    private fun setupErrorHandling() {
-        binding.errorText.setOnClickListener { viewModel.retry() }
-    }
-
     private fun observeViewModel() {
         viewModel.industries.observe(viewLifecycleOwner) { industries ->
-            val selectedCount = industries.count { it.isSelected }
             adapter.submitList(industries)
             binding.loadingIndicator.visibility = View.GONE
             binding.errorText.visibility = View.GONE
-            binding.selectButton.visibility = if (selectedCount > 0) View.VISIBLE else View.GONE
+            binding.selectButton.visibility =
+                if (adapter.getSelectedIndustry() != null) View.VISIBLE else View.GONE
         }
 
         viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
@@ -123,13 +113,9 @@ class IndustryFragment : Fragment() {
         }
 
         viewModel.error.observe(viewLifecycleOwner) { error ->
-            if (error != null) {
-                binding.errorText.visibility = View.VISIBLE
-                binding.errorText.text = error
-                binding.loadingIndicator.visibility = View.GONE
-            } else {
-                binding.errorText.visibility = View.GONE
-            }
+            binding.errorText.visibility = if (error != null) View.VISIBLE else View.GONE
+            binding.errorText.text = error ?: ""
+            if (error != null) binding.loadingIndicator.visibility = View.GONE
         }
     }
 

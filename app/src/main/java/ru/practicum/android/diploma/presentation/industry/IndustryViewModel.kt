@@ -21,10 +21,11 @@ class IndustryViewModel(
     private val _error = MutableLiveData<String?>()
     val error: LiveData<String?> = _error
 
-    private var originalIndustries: List<Industry> = emptyList()
+    fun refresh() {
+        loadIndustries()
+    }
 
     init {
-        println("DEBUG: IndustryViewModel init")
         loadIndustries()
     }
 
@@ -33,16 +34,11 @@ class IndustryViewModel(
             _isLoading.value = true
             _error.value = null
 
-            println("DEBUG: Loading industries from use case")
             val result = getIndustriesUseCase()
-
             if (result.isSuccess) {
-                originalIndustries = result.getOrNull() ?: emptyList()
-                println("DEBUG: Loaded ${originalIndustries.size} industries")
-                _industries.value = originalIndustries
+                _industries.value = result.getOrNull() ?: emptyList()
             } else {
                 _error.value = result.exceptionOrNull()?.message ?: "Ошибка загрузки отраслей"
-                println("DEBUG: Error loading industries: ${_error.value}")
             }
 
             _isLoading.value = false
@@ -50,25 +46,11 @@ class IndustryViewModel(
     }
 
     fun search(query: String) {
-        println("DEBUG: Searching industries with query: '$query'")
         val filtered = if (query.isEmpty()) {
-            originalIndustries
+            _industries.value ?: emptyList()
         } else {
-            originalIndustries.filter { it.name.contains(query, ignoreCase = true) }
+            _industries.value?.filter { it.name.contains(query, ignoreCase = true) } ?: emptyList()
         }
-        println("DEBUG: Found ${filtered.size} industries after search")
         _industries.value = filtered
-    }
-
-    fun getSelectedIndustries(): List<Industry> {
-        val selected = _industries.value?.filter { it.isSelected } ?: emptyList()
-        println("DEBUG: getSelectedIndustries - total: ${_industries.value?.size}, selected: ${selected.size}")
-        selected.forEach { println("DEBUG: Selected industry: ${it.name} (id: ${it.id})") }
-        return selected
-    }
-
-    fun retry() {
-        println("DEBUG: Retry loading industries")
-        loadIndustries()
     }
 }
