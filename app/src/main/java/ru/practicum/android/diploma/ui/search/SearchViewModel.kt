@@ -10,6 +10,8 @@ import kotlinx.coroutines.launch
 import ru.practicum.android.diploma.domain.api.StorageInteractor
 import ru.practicum.android.diploma.domain.models.Vacancy
 import ru.practicum.android.diploma.domain.usecase.SearchVacanciesUseCase
+import ru.practicum.android.diploma.domain.usecase.SearchVacanciesWithFilterUseCase
+import ru.practicum.android.diploma.presentation.vmodels.filter.FiltrationViewModel
 import ru.practicum.android.diploma.util.Resource
 
 class SearchViewModel(

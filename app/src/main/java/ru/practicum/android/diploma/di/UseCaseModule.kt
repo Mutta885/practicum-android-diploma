@@ -7,7 +7,6 @@ import ru.practicum.android.diploma.domain.usecase.SearchVacanciesUseCase
 import ru.practicum.android.diploma.domain.usecase.SearchVacanciesWithFilterUseCase
 import ru.practicum.android.diploma.domain.usecase.SearchVacancyDetailUseCase
 import ru.practicum.android.diploma.domain.usecases.GetIndustriesUseCase
-import ru.practicum.android.diploma.domain.usecases.GetIndustriesUseCase
 
 val useCaseModule = module {
     factory { GetVacanciesUseCase(repository = get()) }

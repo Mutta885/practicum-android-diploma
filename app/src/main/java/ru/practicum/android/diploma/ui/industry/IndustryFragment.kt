@@ -22,9 +22,7 @@ class IndustryFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val viewModel: IndustryViewModel by viewModel()
-    private val filtrationViewModel: FiltrationViewModel by lazy {
-        ViewModelProvider(requireActivity())[FiltrationViewModel::class.java]
-    }
+    private val filtrationViewModel: FiltrationViewModel by viewModel()
     private lateinit var adapter: IndustryAdapter
 
     companion object {

@@ -3,6 +3,11 @@ package ru.practicum.android.diploma.presentation.vmodels.filter
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.launch
+import ru.practicum.android.diploma.domain.api.StorageInteractor
+import ru.practicum.android.diploma.domain.models.FilterParameters
+import ru.practicum.android.diploma.domain.models.Industry
 
 class FiltrationViewModel(
     val filterInteractor: StorageInteractor

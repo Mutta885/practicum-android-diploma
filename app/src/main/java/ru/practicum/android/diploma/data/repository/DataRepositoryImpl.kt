@@ -18,6 +18,7 @@ import ru.practicum.android.diploma.data.dto.VacancyDto
 import ru.practicum.android.diploma.data.dto.VacancySearchResponse
 import ru.practicum.android.diploma.data.network.HhApi
 import ru.practicum.android.diploma.domain.models.Contact
+import ru.practicum.android.diploma.domain.models.Industry
 import ru.practicum.android.diploma.domain.models.SearchResult
 import ru.practicum.android.diploma.domain.models.SearchResultVacancyDetail
 import ru.practicum.android.diploma.domain.models.Vacancy
@@ -38,6 +39,20 @@ class DataRepositoryImpl(
         private const val HTTP_NOT_FOUND = 404
         private const val HTTP_SERVER_ERROR = 500
         private const val TAG = "DataRepositoryImpl"
+    }
+
+    override suspend fun getIndustries(): List<Industry> {
+        return try {
+            val response = api.getIndustries()
+            response.map { dto ->
+                Industry(
+                    id = dto.id,
+                    name = dto.name
+                )
+            }
+        } catch (e: Exception) {
+            emptyList()
+        }
     }
 
     override fun searchVacanciesWithFilter(query: Map<String, String>, page: Int): Flow<Resource<SearchResult>> {

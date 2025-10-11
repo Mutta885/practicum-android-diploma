@@ -1,5 +1,6 @@
 package ru.practicum.android.diploma.ui.root
 
+import android.content.ContentValues.TAG
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -11,6 +12,8 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import org.koin.androidx.viewmodel.ext.android.activityViewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.databinding.FragmentFilterBinding
 import ru.practicum.android.diploma.domain.models.FilterParameters
@@ -23,6 +26,8 @@ class FiltrationFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val viewModel: FiltrationViewModel by viewModel()
+
+    private val searchViewModel: SearchViewModel by activityViewModel()
 
     override fun onCreateView(
         inflater: LayoutInflater,
