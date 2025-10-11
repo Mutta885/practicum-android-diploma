@@ -6,6 +6,7 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -75,13 +76,56 @@ class MainFragment : Fragment() {
     }
 
     private fun setupSearchField() {
-        binding.searchEditText.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
+        val editText = binding.searchEditText
+        val searchIcon = binding.searchIcon
+        val clearIcon = binding.clearIcon
+
+        // Слушатель изменений текста
+        editText.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+
             override fun afterTextChanged(s: Editable?) {
-                viewModel.search(s.toString())
+                val text = s.toString().trim()
+
+                // Управляем видимостью иконок
+                if (text.isNotEmpty()) {
+                    searchIcon.visibility = View.GONE
+                    clearIcon.visibility = View.VISIBLE
+                } else {
+                    searchIcon.visibility = View.VISIBLE
+                    clearIcon.visibility = View.GONE
+                }
+
+                // Выполняем поиск
+                viewModel.search(text)
             }
         })
+
+        // Клик по лупе — запуск поиска
+        searchIcon.setOnClickListener {
+            val query = editText.text.toString().trim()
+            viewModel.search(query)
+        }
+
+        // Клик по крестику — очистка и поиск пустого запроса
+        clearIcon.setOnClickListener {
+            editText.text.clear()
+            viewModel.search("")
+            clearIcon.visibility = View.GONE
+            searchIcon.visibility = View.VISIBLE
+        }
+
+        // Нажатие Enter / Search на клавиатуре
+        editText.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                val query = editText.text.toString().trim()
+                viewModel.search(query)
+                true
+            } else {
+                false
+            }
+        }
     }
 
     private fun setupClickListeners() {
@@ -131,8 +175,8 @@ class MainFragment : Fragment() {
             vacanciesRecyclerView.isVisible = false
             errorStateContainer.isVisible = false
             noResultsContainer.isVisible = false
-            emptyStateText.isVisible = true
             resultsCountText.isVisible = false
+            emptyStateContainer.isVisible = true // 👈 Показываем (хотя и так visible, но для ясности)
         }
         adapter.submitVacancies(emptyList())
         adapter.setLoading(false)
@@ -145,7 +189,7 @@ class MainFragment : Fragment() {
             vacanciesRecyclerView.isVisible = false
             errorStateContainer.isVisible = false
             noResultsContainer.isVisible = false
-            emptyStateText.isVisible = false
+            emptyStateContainer.isVisible = false // 👈 Скрываем
             resultsCountText.isVisible = false
         }
         adapter.setLoading(false)
@@ -156,7 +200,7 @@ class MainFragment : Fragment() {
         binding.apply {
             loadingProgressBar.isVisible = false
             errorStateContainer.isVisible = false
-            emptyStateText.isVisible = false
+            emptyStateContainer.isVisible = false // 👈 Скрываем
 
             if (state.vacancies.isEmpty()) {
                 vacanciesRecyclerView.isVisible = false
@@ -182,7 +226,7 @@ class MainFragment : Fragment() {
         binding.apply {
             loadingProgressBar.isVisible = false
             vacanciesRecyclerView.isVisible = false
-            emptyStateText.isVisible = false
+            emptyStateContainer.isVisible = false // 👈 Скрываем
             noResultsContainer.isVisible = false
             errorStateContainer.isVisible = true
             errorStateText.text = message

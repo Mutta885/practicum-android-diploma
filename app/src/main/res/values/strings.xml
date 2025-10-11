@@ -8,7 +8,7 @@
     <string name="sharing_there_are_no_apps">Приложения не найдены</string>
     <string name="job_search">Поиск вакансий</string>
     <string name="filtration_settings">Настройки фильтрации</string>
-    <string name="search_hint">Должность, навыки или компания</string>
+    <string name="search_hint">Введите запрос</string>
     <string name="empty_query_text">Введите запрос для поиска вакансий</string>
     <string name="no_results_text">По вашему запросу ничего не найдено</string>
     <string name="retry">Повторить</string>

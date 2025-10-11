@@ -1,11 +1,13 @@
 package ru.practicum.android.diploma.ui.industry
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.SearchView
+import android.view.inputmethod.EditorInfo
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
@@ -66,25 +68,56 @@ class IndustryFragment : Fragment() {
             // Адаптер
             adapter = IndustryAdapter { industry ->
                 Log.d(TAG, "Industry selected: ${industry.name} (selected: ${industry.isSelected})")
-                // При выборе отрасли показываем кнопку "Выбрать"
                 selectButton.visibility = View.VISIBLE
             }
             recyclerView.layoutManager = LinearLayoutManager(requireContext())
             recyclerView.adapter = adapter
 
-            searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-                override fun onQueryTextSubmit(query: String?): Boolean {
-                    Log.d(TAG, "Search submitted: $query")
-                    viewModel.search(query.orEmpty())
-                    return true
-                }
+            // Поиск через EditText + иконки
+            val editText = searchEditText
+            val searchIcon = searchIcon
+            val clearIcon = clearIcon
 
-                override fun onQueryTextChange(newText: String?): Boolean {
-                    Log.d(TAG, "Search text changed: $newText")
-                    viewModel.search(newText.orEmpty())
-                    return true
+            // При клике на крестик — очистка и поиск пустого запроса
+            clearIcon.setOnClickListener {
+                editText.text.clear()
+                viewModel.search("")
+                clearIcon.visibility = View.GONE
+                searchIcon.visibility = View.VISIBLE
+            }
+
+            // Слушатель изменений текста
+            editText.addTextChangedListener(object : TextWatcher {
+                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+
+                override fun afterTextChanged(s: Editable?) {
+                    val text = s.toString().trim()
+
+                    // Управляем видимостью иконок
+                    if (text.isNotEmpty()) {
+                        searchIcon.visibility = View.GONE
+                        clearIcon.visibility = View.VISIBLE
+                    } else {
+                        searchIcon.visibility = View.VISIBLE
+                        clearIcon.visibility = View.GONE
+                    }
+
+                    // Выполняем поиск
+                    viewModel.search(text)
                 }
             })
+
+            // При нажатии Enter (или Search на клавиатуре)
+            editText.setOnEditorActionListener { _, actionId, _ ->
+                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                    val query = editText.text.toString().trim()
+                    viewModel.search(query)
+                    true
+                } else {
+                    false
+                }
+            }
 
             errorText.setOnClickListener {
                 Log.d(TAG, "Error text clicked - retrying")
