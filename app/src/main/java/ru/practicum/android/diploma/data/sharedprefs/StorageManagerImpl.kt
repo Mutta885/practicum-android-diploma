@@ -17,9 +17,7 @@ class StorageManagerImpl(
     override suspend fun setFilterSetting(filter: FilterParameters) {
         withContext(Dispatchers.IO) {
             sharedPrefs.edit()
-                .putString(
-                    KEY, gson.toJson(filter)
-                )
+                .putString(KEY, gson.toJson(filter))
                 .apply()
         }
     }
@@ -27,15 +25,21 @@ class StorageManagerImpl(
     override fun getFilterSetting(): Flow<FilterParameters?> {
         return flow {
             val string = sharedPrefs.getString(KEY, null)
-            val prefs = gson.fromJson<FilterParameters>(string, FilterParameters::class.java)
-            emit(prefs)
+            if (string != null) {
+                val prefs = gson.fromJson<FilterParameters>(string, FilterParameters::class.java)
+                emit(prefs)
+            } else {
+                emit(null)
+            }
         }.flowOn(Dispatchers.IO)
     }
 
     override suspend fun clearFilterSetting() {
-        sharedPrefs.edit()
-            .clear()
-            .apply()
+        withContext(Dispatchers.IO) {
+            sharedPrefs.edit()
+                .remove(KEY)
+                .apply()
+        }
     }
 
     private companion object {

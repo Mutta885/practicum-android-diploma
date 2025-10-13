@@ -233,7 +233,7 @@
             android:clickable="true"
             android:background="@drawable/rounded_reset_background"
             android:focusable="true"
-            android:layout_marginBottom="24dp" />
+            android:layout_marginBottom="48dp" />
 
     </LinearLayout>
 

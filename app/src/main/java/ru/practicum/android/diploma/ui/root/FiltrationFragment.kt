@@ -23,9 +23,7 @@ class FiltrationFragment : Fragment() {
     private var _binding: FragmentFilterBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: FiltrationViewModel by lazy {
-        ViewModelProvider(requireActivity())[FiltrationViewModel::class.java]
-    }
+    private val viewModel: FiltrationViewModel by activityViewModel()
 
     private val searchViewModel: SearchViewModel by activityViewModel()
 
