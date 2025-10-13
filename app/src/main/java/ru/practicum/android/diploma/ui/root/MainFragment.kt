@@ -29,7 +29,9 @@ class MainFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val searchViewModel: SearchViewModel by sharedViewModel()
-    private lateinit var filtrationViewModel: FiltrationViewModel
+    private val filtrationViewModel: FiltrationViewModel by lazy {
+        ViewModelProvider(requireActivity())[FiltrationViewModel::class.java]
+    }
 
     private val adapter: VacanciesAdapter by lazy {
         VacanciesAdapter(onItemClick = { vacancy -> onVacancyClick(vacancy) })
@@ -50,9 +52,6 @@ class MainFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        // Инициализируем FiltrationViewModel
-        filtrationViewModel = ViewModelProvider(requireActivity())[FiltrationViewModel::class.java]
 
         setupRecyclerView()
         setupSearchField()
