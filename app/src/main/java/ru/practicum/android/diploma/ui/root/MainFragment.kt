@@ -248,7 +248,7 @@ class MainFragment : Fragment() {
             emptyStateContainer.isVisible = false
             noResultsContainer.isVisible = false
             errorStateContainer.isVisible = true
-            errorStateText.text = message
+            errorStateText.text = "Нет интернета"
             resultsCountText.isVisible = false
         }
         adapter.setLoading(false)

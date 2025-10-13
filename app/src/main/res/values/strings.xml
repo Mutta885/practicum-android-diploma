@@ -14,7 +14,7 @@
     <string name="retry">Повторить</string>
     <string name="sharedMailto">mailto:</string>
     <string name="contacts">Контакты</string>
-    <string name="error_network">Проверьте подключение к интернету</string>
+    <string name="error_network">Нет интернета</string>
     <string name="error_server">Ошибка сервера</string>
     <string name="error_unknown">Произошла неизвестная ошибка</string>
     <string name="vacancy">Вакансии</string>
