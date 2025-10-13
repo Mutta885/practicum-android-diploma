@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -16,6 +17,7 @@ import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.databinding.FragmentMainBinding
 import ru.practicum.android.diploma.domain.models.Vacancy
+import ru.practicum.android.diploma.presentation.vmodels.filter.FiltrationViewModel
 import ru.practicum.android.diploma.ui.search.SearchState
 import ru.practicum.android.diploma.ui.search.SearchViewModel
 import ru.practicum.android.diploma.ui.search.VacanciesAdapter
@@ -26,7 +28,10 @@ class MainFragment : Fragment() {
     private var _binding: FragmentMainBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: SearchViewModel by sharedViewModel()
+    private val searchViewModel: SearchViewModel by sharedViewModel()
+    private val filtrationViewModel: FiltrationViewModel by lazy {
+        ViewModelProvider(requireActivity())[FiltrationViewModel::class.java]
+    }
 
     private val adapter: VacanciesAdapter by lazy {
         VacanciesAdapter(onItemClick = { vacancy -> onVacancyClick(vacancy) })
@@ -47,10 +52,12 @@ class MainFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         setupRecyclerView()
         setupSearchField()
         setupClickListeners()
         observeViewModel()
+        observeFilterState()
     }
 
     private fun setupRecyclerView() {
@@ -61,14 +68,14 @@ class MainFragment : Fragment() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
 
-                if (dy > 0 && !viewModel.isLoading() && viewModel.hasMorePages()) {
+                if (dy > 0 && !searchViewModel.isLoading() && searchViewModel.hasMorePages()) {
                     val layoutManager = recyclerView.layoutManager as LinearLayoutManager
                     val totalItemCount = layoutManager.itemCount
                     val lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition()
 
                     if (lastVisibleItemPosition >= totalItemCount - LOAD_MORE_THRESHOLD) {
                         println("DEBUG: Loading next page... current items: $totalItemCount")
-                        viewModel.loadNextPage()
+                        searchViewModel.loadNextPage()
                     }
                 }
             }
@@ -99,20 +106,20 @@ class MainFragment : Fragment() {
                 }
 
                 // Выполняем поиск
-                viewModel.search(text)
+                searchViewModel.search(text)
             }
         })
 
         // Клик по лупе — запуск поиска
         searchIcon.setOnClickListener {
             val query = editText.text.toString().trim()
-            viewModel.search(query)
+            searchViewModel.search(query)
         }
 
         // Клик по крестику — очистка и поиск пустого запроса
         clearIcon.setOnClickListener {
             editText.text.clear()
-            viewModel.search("")
+            searchViewModel.search("")
             clearIcon.visibility = View.GONE
             searchIcon.visibility = View.VISIBLE
         }
@@ -121,7 +128,7 @@ class MainFragment : Fragment() {
         editText.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                 val query = editText.text.toString().trim()
-                viewModel.search(query)
+                searchViewModel.search(query)
                 true
             } else {
                 false
@@ -136,7 +143,7 @@ class MainFragment : Fragment() {
     }
 
     private fun observeViewModel() {
-        viewModel.searchState.observe(viewLifecycleOwner) { state ->
+        searchViewModel.searchState.observe(viewLifecycleOwner) { state ->
             println("DEBUG: State changed to: ${state.javaClass.simpleName}")
 
             when (state) {
@@ -150,7 +157,7 @@ class MainFragment : Fragment() {
                     showSuccessState(state)
                     adapter.submitVacancies(state.vacancies)
                     adapter.setLoading(false)
-                    adapter.setHasMore(viewModel.hasMorePages())
+                    adapter.setHasMore(searchViewModel.hasMorePages())
                 }
 
                 is SearchState.Error -> state.message?.let { showErrorState(it) }
@@ -166,6 +173,17 @@ class MainFragment : Fragment() {
                 }
 
                 else -> {}
+            }
+        }
+    }
+
+    private fun observeFilterState() {
+        filtrationViewModel.isAnyFilterActive.observe(viewLifecycleOwner) { isActive ->
+            // Обновляем иконку в зависимости от состояния фильтров
+            if (isActive) {
+                binding.trailingButton.setImageResource(R.drawable.trailing_icon_2)
+            } else {
+                binding.trailingButton.setImageResource(R.drawable.trailing_icon)
             }
         }
     }
@@ -216,7 +234,7 @@ class MainFragment : Fragment() {
 
         adapter.submitVacancies(state.vacancies)
         adapter.setLoading(false)
-        adapter.setHasMore(viewModel.hasMorePages())
+        adapter.setHasMore(searchViewModel.hasMorePages())
 
         if (state.vacancies.isNotEmpty() && state.isFirstPage) {
             requireContext().showToast("Найдено вакансий: ${state.found}")
@@ -230,7 +248,7 @@ class MainFragment : Fragment() {
             emptyStateContainer.isVisible = false
             noResultsContainer.isVisible = false
             errorStateContainer.isVisible = true
-            errorStateText.text = message
+            errorStateText.text = "Нет интернета"
             resultsCountText.isVisible = false
         }
         adapter.setLoading(false)

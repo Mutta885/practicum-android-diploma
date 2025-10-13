@@ -4,8 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp">
+    android:orientation="vertical">
 
     <!-- Заголовок -->
     <RelativeLayout
@@ -29,6 +28,7 @@
             android:layout_width="@dimen/button_size"
             android:layout_height="@dimen/button_size"
             android:layout_alignParentLeft="true"
+            android:layout_marginStart="4dp"
             android:layout_centerVertical="true"
             android:layout_marginEnd="@dimen/merge_size"
             android:background="@null"
@@ -56,7 +56,9 @@
                 android:orientation="horizontal"
                 android:paddingVertical="20.5dp"
                 android:layout_marginTop="8dp"
-                android:gravity="center_vertical">
+                android:gravity="center_vertical"
+                android:layout_marginStart="16dp"
+                android:layout_marginBottom="4dp">
 
                 <TextView
                     android:layout_width="0dp"
@@ -80,6 +82,8 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:paddingVertical="20.5dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginBottom="4dp"
                 android:gravity="center_vertical">
 
                 <TextView
@@ -171,6 +175,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
+                android:layout_marginStart="16dp"
+                android:layout_marginBottom="4dp"
                 android:paddingVertical="20.5dp"
                 android:layout_marginTop="8dp"
                 android:gravity="center_vertical"
