@@ -2,6 +2,7 @@ package ru.practicum.android.diploma.di
 
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
+import ru.practicum.android.diploma.presentation.vmodels.AreasViewModel
 import ru.practicum.android.diploma.presentation.vmodels.VacancyDetailViewModel
 import ru.practicum.android.diploma.ui.search.SearchViewModel
 
@@ -13,5 +14,8 @@ val viewModelModule = module {
             interactorFavorites = get(),
             shared = get()
         )
+    }
+    viewModel {
+        AreasViewModel(getAreasUseCase = get())
     }
 }
