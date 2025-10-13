@@ -9,10 +9,13 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import org.koin.androidx.viewmodel.ext.android.activityViewModel
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.databinding.FragmentMainBinding
@@ -29,9 +32,7 @@ class MainFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val searchViewModel: SearchViewModel by sharedViewModel()
-    private val filtrationViewModel: FiltrationViewModel by lazy {
-        ViewModelProvider(requireActivity())[FiltrationViewModel::class.java]
-    }
+    private val filtrationViewModel: FiltrationViewModel by activityViewModel()
 
     private val adapter: VacanciesAdapter by lazy {
         VacanciesAdapter(onItemClick = { vacancy -> onVacancyClick(vacancy) })
@@ -39,6 +40,7 @@ class MainFragment : Fragment() {
 
     private companion object {
         const val LOAD_MORE_THRESHOLD = 3
+        const val DELAY_FOR_FILTERS = 500L // Увеличена задержка для гарантированной загрузки
     }
 
     override fun onCreateView(
@@ -58,6 +60,9 @@ class MainFragment : Fragment() {
         setupClickListeners()
         observeViewModel()
         observeFilterState()
+
+        // ✅ Принудительно применяем сохраненные фильтры при создании
+        applySavedFiltersOnStart()
     }
 
     private fun setupRecyclerView() {
@@ -172,6 +177,14 @@ class MainFragment : Fragment() {
                     state.message?.let { requireContext().showToast(it) }
                 }
 
+                is SearchState.FiltersApplied -> {
+                    println("DEBUG: Filters applied: ${state.filters}")
+                    // Можно показать уведомление о примененных фильтрах
+                    if (state.filters.salary != null || state.filters.hideWithoutSalary || state.filters.industries.isNotEmpty()) {
+                        requireContext().showToast("Фильтры восстановлены")
+                    }
+                }
+
                 else -> {}
             }
         }
@@ -184,6 +197,36 @@ class MainFragment : Fragment() {
                 binding.trailingButton.setImageResource(R.drawable.trailing_icon_2)
             } else {
                 binding.trailingButton.setImageResource(R.drawable.trailing_icon)
+            }
+        }
+    }
+
+    // ✅ Принудительно применяем сохраненные фильтры при старте
+    private fun applySavedFiltersOnStart() {
+        lifecycleScope.launch {
+            // Даем время на полную инициализацию всех ViewModel
+            delay(DELAY_FOR_FILTERS)
+
+            val currentQuery = searchViewModel.getCurrentQuery()
+            val currentFilters = filtrationViewModel.getCurrentFilters()
+
+            println("DEBUG: applySavedFiltersOnStart - query: '$currentQuery', filters: $currentFilters")
+
+            // Всегда применяем восстановленные фильтры, если они есть
+            val hasActiveFilters = currentFilters.salary != null ||
+                currentFilters.hideWithoutSalary ||
+                currentFilters.industries.isNotEmpty()
+
+            if (hasActiveFilters) {
+                println("DEBUG: Applying saved filters on start: $currentFilters")
+                searchViewModel.setFilters(currentFilters)
+
+                // Если есть активный поисковый запрос, обновим UI
+                if (currentQuery.isNotEmpty()) {
+                    binding.searchEditText.setText(currentQuery)
+                }
+            } else {
+                println("DEBUG: No active filters to apply on start")
             }
         }
     }

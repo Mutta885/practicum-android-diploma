@@ -38,16 +38,17 @@ class SearchViewModel(
     private val _allVacancies = mutableListOf<Vacancy>()
     val allVacancies: List<Vacancy> get() = _allVacancies
 
-    // Метод для установки фильтров - ИСПРАВЛЕНО
+    // Метод для установки фильтров - УЛУЧШЕНО
     fun setFilters(filters: FiltrationViewModel.Filters) {
         println("DEBUG: setFilters() called with: $filters")
         println("DEBUG: Current query: '$currentQuery'")
 
+        val filtersChanged = currentFilters != filters
         currentFilters = filters
-        println("DEBUG: Filters updated: $currentFilters")
+        println("DEBUG: Filters updated: $currentFilters, changed: $filtersChanged")
 
-        // ВСЕГДА перезапускаем поиск если есть активный запрос
-        if (currentQuery.isNotEmpty()) {
+        // Всегда перезапускаем поиск при изменении фильтров, если есть активный запрос
+        if (currentQuery.isNotEmpty() && filtersChanged) {
             println("DEBUG: Restarting search with new filters")
             _allVacancies.clear()
             currentPage = 0
@@ -59,17 +60,18 @@ class SearchViewModel(
             searchJob = viewModelScope.launch {
                 performSearch(query = currentQuery, page = 0, isNewSearch = true)
             }
-        } else {
-            println("DEBUG: Filters saved, will be used for next search")
-            // Даже если нет активного запроса, обновляем состояние
+        } else if (currentQuery.isEmpty() && filtersChanged) {
+            println("DEBUG: Filters saved for future searches")
             _searchState.value = SearchState.FiltersApplied(filters)
+        } else {
+            println("DEBUG: Filters not changed or no active query")
         }
     }
 
     fun search(query: String) {
         val trimmedQuery = query.trim()
         println("DEBUG: search() called with: '$trimmedQuery'")
-        println("DEBUG: Current filters: $currentFilters") // ДОБАВЛЕНО: логируем текущие фильтры
+        println("DEBUG: Current filters: $currentFilters")
 
         if (trimmedQuery.isEmpty()) {
             _allVacancies.clear()
@@ -147,7 +149,7 @@ class SearchViewModel(
         println("DEBUG: Search cleared")
     }
 
-    // ИСПРАВЛЕНО: Добавлен метод для получения текущих фильтров
+    // Метод для получения текущих фильтров
     fun getCurrentFilters(): FiltrationViewModel.Filters {
         return currentFilters
     }
@@ -172,7 +174,7 @@ class SearchViewModel(
         setLoadingStates(isNewSearch)
 
         viewModelScope.launch {
-            // Передаем фильтры в use case - ИСПРАВЛЕНО: используем currentFilters
+            // Передаем фильтры в use case
             println("DEBUG: Performing search with filters: $currentFilters")
             when (val result = searchVacanciesUseCase.execute(query, page, currentFilters)) {
                 is Resource.Success -> handleSearchSuccess(result, isNewSearch)

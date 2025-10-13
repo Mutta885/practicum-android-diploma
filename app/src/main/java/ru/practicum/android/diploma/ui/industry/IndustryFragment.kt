@@ -10,6 +10,7 @@ import android.view.inputmethod.EditorInfo
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import org.koin.androidx.viewmodel.ext.android.activityViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.practicum.android.diploma.databinding.FragmentIndustryBinding
 import ru.practicum.android.diploma.presentation.industry.IndustryAdapter
@@ -22,9 +23,7 @@ class IndustryFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val viewModel: IndustryViewModel by viewModel()
-    private val filtrationViewModel: FiltrationViewModel by lazy {
-        ViewModelProvider(requireActivity())[FiltrationViewModel::class.java]
-    }
+    private val filtrationViewModel: FiltrationViewModel by activityViewModel()
 
     private val adapter: IndustryAdapter by lazy {
         IndustryAdapter {
