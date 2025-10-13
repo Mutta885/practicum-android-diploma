@@ -31,7 +31,6 @@ class RegionFragment : Fragment(), RegionAdapter.RegionListener {
 
         viewModel.getRegions(countryId)
         observeViewModel()
-
         binding.returnButton.setOnClickListener {
             findNavController().navigateUp()
         }
