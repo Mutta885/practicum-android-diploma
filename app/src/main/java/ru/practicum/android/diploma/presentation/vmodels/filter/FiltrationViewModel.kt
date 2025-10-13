@@ -30,6 +30,10 @@ class FiltrationViewModel(
     private val _isSalaryInputNotEmpty = MutableLiveData<Boolean>()
     val isSalaryInputNotEmpty: LiveData<Boolean> = _isSalaryInputNotEmpty
 
+    private companion object {
+        const val FILTERS_DELAY_MS = 200L
+    }
+
     init {
         loadSavedFilters()
     }
@@ -42,7 +46,12 @@ class FiltrationViewModel(
                     _hideWithoutSalary.value = savedFilter.onlyWithSalary
                     _selectedIndustries.value = savedFilter.industries
 
-                    println("DEBUG: Filters loaded from storage: salary=${_salary.value}, hideWithoutSalary=${_hideWithoutSalary.value}, industries=${_selectedIndustries.value?.size}")
+                    println(
+                        "DEBUG: Filters loaded from storage: " +
+                            "salary=${_salary.value}, " +
+                            "hideWithoutSalary=${_hideWithoutSalary.value}, " +
+                            "industries=${_selectedIndustries.value?.size}"
+                    )
                 } else {
                     _salary.value = null
                     _hideWithoutSalary.value = false
@@ -97,8 +106,8 @@ class FiltrationViewModel(
 
     private fun updateFilterState() {
         val isActive = !_salary.value.isNullOrEmpty() ||
-            (_hideWithoutSalary.value == true) ||
-            (_selectedIndustries.value?.isNotEmpty() == true)
+            _hideWithoutSalary.value == true ||
+            _selectedIndustries.value?.isNotEmpty() == true
 
         _isAnyFilterActive.value = isActive
     }
@@ -107,7 +116,6 @@ class FiltrationViewModel(
         _isSalaryInputNotEmpty.value = !_salary.value.isNullOrEmpty()
     }
 
-    // ✅ Метод для получения текущих фильтров
     fun getCurrentFilters(): Filters {
         return Filters(
             salary = _salary.value,
@@ -116,11 +124,9 @@ class FiltrationViewModel(
         )
     }
 
-    // ✅ Метод для принудительного применения сохраненных фильтров к поиску
     fun applySavedFiltersToSearch(searchViewModel: SearchViewModel) {
         viewModelScope.launch {
-            // Даем время на восстановление состояния
-            delay(200L)
+            delay(FILTERS_DELAY_MS)
 
             val currentFilters = getCurrentFilters()
             val hasActiveFilters = currentFilters.salary != null ||
@@ -128,7 +134,10 @@ class FiltrationViewModel(
                 currentFilters.industries.isNotEmpty()
 
             if (hasActiveFilters) {
-                println("DEBUG: FiltrationViewModel applying saved filters to search: $currentFilters")
+                println(
+                    "DEBUG: FiltrationViewModel applying saved filters to search: " +
+                        "$currentFilters"
+                )
                 searchViewModel.setFilters(currentFilters)
             } else {
                 println("DEBUG: FiltrationViewModel no active filters to apply")

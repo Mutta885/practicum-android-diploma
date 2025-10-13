@@ -40,7 +40,7 @@ class MainFragment : Fragment() {
 
     private companion object {
         const val LOAD_MORE_THRESHOLD = 3
-        const val DELAY_FOR_FILTERS = 500L // Увеличена задержка для гарантированной загрузки
+        const val DELAY_FOR_FILTERS = 500L
     }
 
     override fun onCreateView(
@@ -60,8 +60,6 @@ class MainFragment : Fragment() {
         setupClickListeners()
         observeViewModel()
         observeFilterState()
-
-        // ✅ Принудительно применяем сохраненные фильтры при создании
         applySavedFiltersOnStart()
     }
 
@@ -79,7 +77,6 @@ class MainFragment : Fragment() {
                     val lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition()
 
                     if (lastVisibleItemPosition >= totalItemCount - LOAD_MORE_THRESHOLD) {
-                        println("DEBUG: Loading next page... current items: $totalItemCount")
                         searchViewModel.loadNextPage()
                     }
                 }
@@ -92,7 +89,6 @@ class MainFragment : Fragment() {
         val searchIcon = binding.searchIcon
         val clearIcon = binding.clearIcon
 
-        // Слушатель изменений текста
         editText.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
 
@@ -101,7 +97,6 @@ class MainFragment : Fragment() {
             override fun afterTextChanged(s: Editable?) {
                 val text = s.toString().trim()
 
-                // Управляем видимостью иконок
                 if (text.isNotEmpty()) {
                     searchIcon.visibility = View.GONE
                     clearIcon.visibility = View.VISIBLE
@@ -110,18 +105,15 @@ class MainFragment : Fragment() {
                     clearIcon.visibility = View.GONE
                 }
 
-                // Выполняем поиск
                 searchViewModel.search(text)
             }
         })
 
-        // Клик по лупе — запуск поиска
         searchIcon.setOnClickListener {
             val query = editText.text.toString().trim()
             searchViewModel.search(query)
         }
 
-        // Клик по крестику — очистка и поиск пустого запроса
         clearIcon.setOnClickListener {
             editText.text.clear()
             searchViewModel.search("")
@@ -129,7 +121,6 @@ class MainFragment : Fragment() {
             searchIcon.visibility = View.VISIBLE
         }
 
-        // Нажатие Enter / Search на клавиатуре
         editText.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                 val query = editText.text.toString().trim()
@@ -149,16 +140,10 @@ class MainFragment : Fragment() {
 
     private fun observeViewModel() {
         searchViewModel.searchState.observe(viewLifecycleOwner) { state ->
-            println("DEBUG: State changed to: ${state.javaClass.simpleName}")
-
             when (state) {
                 is SearchState.EmptyQuery -> showEmptyQueryState()
                 is SearchState.Loading -> showLoadingState()
                 is SearchState.Success -> {
-                    println(
-                        "DEBUG: Success state - vacancies: ${state.vacancies.size}, " +
-                            "isFirstPage: ${state.isFirstPage}"
-                    )
                     showSuccessState(state)
                     adapter.submitVacancies(state.vacancies)
                     adapter.setLoading(false)
@@ -167,7 +152,6 @@ class MainFragment : Fragment() {
 
                 is SearchState.Error -> state.message?.let { showErrorState(it) }
                 is SearchState.LoadingNextPage -> {
-                    println("DEBUG: Loading next page state")
                     adapter.setLoading(true)
                     adapter.setHasMore(true)
                 }
@@ -178,9 +162,11 @@ class MainFragment : Fragment() {
                 }
 
                 is SearchState.FiltersApplied -> {
-                    println("DEBUG: Filters applied: ${state.filters}")
-                    // Можно показать уведомление о примененных фильтрах
-                    if (state.filters.salary != null || state.filters.hideWithoutSalary || state.filters.industries.isNotEmpty()) {
+                    val hasActiveFilters = state.filters.salary != null ||
+                        state.filters.hideWithoutSalary ||
+                        state.filters.industries.isNotEmpty()
+
+                    if (hasActiveFilters) {
                         requireContext().showToast("Фильтры восстановлены")
                     }
                 }
@@ -192,7 +178,6 @@ class MainFragment : Fragment() {
 
     private fun observeFilterState() {
         filtrationViewModel.isAnyFilterActive.observe(viewLifecycleOwner) { isActive ->
-            // Обновляем иконку в зависимости от состояния фильтров
             if (isActive) {
                 binding.trailingButton.setImageResource(R.drawable.trailing_icon_2)
             } else {
@@ -201,32 +186,23 @@ class MainFragment : Fragment() {
         }
     }
 
-    // ✅ Принудительно применяем сохраненные фильтры при старте
     private fun applySavedFiltersOnStart() {
         lifecycleScope.launch {
-            // Даем время на полную инициализацию всех ViewModel
             delay(DELAY_FOR_FILTERS)
 
             val currentQuery = searchViewModel.getCurrentQuery()
             val currentFilters = filtrationViewModel.getCurrentFilters()
 
-            println("DEBUG: applySavedFiltersOnStart - query: '$currentQuery', filters: $currentFilters")
-
-            // Всегда применяем восстановленные фильтры, если они есть
             val hasActiveFilters = currentFilters.salary != null ||
                 currentFilters.hideWithoutSalary ||
                 currentFilters.industries.isNotEmpty()
 
             if (hasActiveFilters) {
-                println("DEBUG: Applying saved filters on start: $currentFilters")
                 searchViewModel.setFilters(currentFilters)
 
-                // Если есть активный поисковый запрос, обновим UI
                 if (currentQuery.isNotEmpty()) {
                     binding.searchEditText.setText(currentQuery)
                 }
-            } else {
-                println("DEBUG: No active filters to apply on start")
             }
         }
     }
