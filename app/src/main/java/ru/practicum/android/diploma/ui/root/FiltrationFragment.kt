@@ -149,48 +149,37 @@ class FiltrationFragment : Fragment() {
 
     private fun observeViewModel() {
         viewModel.isAnyFilterActive.observe(viewLifecycleOwner) { isActive ->
-            Log.d(TAG, "isAnyFilterActive changed: $isActive")
             binding.applyButton.visibility = if (isActive) View.VISIBLE else View.GONE
             binding.resetButton.visibility = if (isActive) View.VISIBLE else View.GONE
         }
 
         viewModel.selectedIndustries.observe(viewLifecycleOwner) { industries ->
-            Log.d(TAG, "selectedIndustries observed: ${industries.size} items")
-            industries.forEach { Log.d(TAG, "Received industry: ${it.name} (id: ${it.id})") }
-
             if (industries.isNotEmpty()) {
                 if (industries.size == 1) {
                     binding.selectedIndustryText.text = industries[0].name
-                    Log.d(TAG, "Setting industry text to: ${industries[0].name}")
                 } else {
                     binding.selectedIndustryText.text = "Выбрано: ${industries.size}"
-                    Log.d(TAG, "Setting industry text to: Выбрано: ${industries.size}")
                 }
             } else {
                 binding.selectedIndustryText.text = "Отрасль"
-                Log.d(TAG, "Setting industry text to: Отрасль")
             }
         }
 
         // Наблюдение за местом работы
         viewModel.selectedCountry.observe(viewLifecycleOwner) { country ->
-            Log.d(TAG, "selectedCountry observed: $country")
             updateWorkplaceText()
         }
 
         viewModel.selectedRegion.observe(viewLifecycleOwner) { region ->
-            Log.d(TAG, "selectedRegion observed: $region")
-            updateWorkplaceText()
+               updateWorkplaceText()
         }
 
         viewModel.isSalaryInputNotEmpty.observe(viewLifecycleOwner) { isNotEmpty ->
-            Log.d(TAG, "isSalaryInputNotEmpty changed: $isNotEmpty")
             binding.clearSalaryButton.visibility = if (isNotEmpty) View.VISIBLE else View.GONE
         }
 
         // Следим за состоянием чекбокса
         viewModel.hideWithoutSalary.observe(viewLifecycleOwner) { isChecked ->
-            Log.d(TAG, "hideWithoutSalary observed: $isChecked")
             // Временно отключаем слушатель чтобы избежать рекурсии
             binding.hideWithoutSalaryCheckbox.setOnCheckedChangeListener(null)
             binding.hideWithoutSalaryCheckbox.isChecked = isChecked
@@ -201,7 +190,6 @@ class FiltrationFragment : Fragment() {
 
         // Следим за зарплатой для предзаполнения поля
         viewModel.salary.observe(viewLifecycleOwner) { salary ->
-            Log.d(TAG, "salary observed: '$salary'")
             if (salary != null && binding.salaryInput.text?.toString() != salary) {
                 binding.salaryInput.setText(salary)
             }
