@@ -121,20 +121,35 @@ class RegionFragment : Fragment(), RegionAdapter.RegionListener {
         } else {
             allRegions.filter { it.name.contains(query, ignoreCase = true) }
         }
+
         regionAdapter?.updateRegions(filtered)
+
+        // Показываем состояние "ничего не найдено" если после фильтрации список пуст
+        if (filtered.isEmpty() && query.isNotEmpty()) {
+            showNoResultsState()
+        } else if (filtered.isEmpty()) {
+            // Если изначально список пуст (нет регионов для этой страны)
+            showNoResultsState()
+        } else {
+            showSuccessState()
+        }
     }
 
     private fun observeViewModel() {
         viewModel.filterAreaState.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is FilterAreaState.RegionsStateByCountry -> {
-                    showRegions(state.regions)
+                    if (state.regions.isNotEmpty()) {
+                        showRegions(state.regions)
+                    } else {
+                        showNoResultsState()
+                    }
                 }
                 is FilterAreaState.Loading -> {
-                    showLoading()
+                    showLoadingState()
                 }
                 is FilterAreaState.Error -> {
-                    showError(state.message)
+                    showErrorState(state.message)
                 }
                 is FilterAreaState.CountriesState,
                 is FilterAreaState.GetCountryNameState -> {
@@ -151,15 +166,36 @@ class RegionFragment : Fragment(), RegionAdapter.RegionListener {
 
         allRegions = regions
         regionAdapter?.updateRegions(regions)
-        binding.regionRecyclerView.visibility = View.VISIBLE
+        showSuccessState()
     }
 
-    private fun showLoading() {
-        binding.regionRecyclerView.visibility = View.GONE
+    private fun showLoadingState() {
+        binding.loadingContainer.visibility = View.VISIBLE
+        binding.errorContainer.visibility = View.GONE
+        binding.noResultsContainer.visibility = View.GONE
+        binding.successContainer.visibility = View.GONE
     }
 
-    private fun showError(message: String) {
-        binding.regionRecyclerView.visibility = View.GONE
+    private fun showErrorState(message: String) {
+        binding.errorText.text = message
+        binding.loadingContainer.visibility = View.GONE
+        binding.errorContainer.visibility = View.VISIBLE
+        binding.noResultsContainer.visibility = View.GONE
+        binding.successContainer.visibility = View.GONE
+    }
+
+    private fun showNoResultsState() {
+        binding.loadingContainer.visibility = View.GONE
+        binding.errorContainer.visibility = View.GONE
+        binding.noResultsContainer.visibility = View.VISIBLE
+        binding.successContainer.visibility = View.GONE
+    }
+
+    private fun showSuccessState() {
+        binding.loadingContainer.visibility = View.GONE
+        binding.errorContainer.visibility = View.GONE
+        binding.noResultsContainer.visibility = View.GONE
+        binding.successContainer.visibility = View.VISIBLE
     }
 
     override fun onRegionClick(region: FilterArea) {
