@@ -41,6 +41,7 @@ class MainFragment : Fragment() {
     private companion object {
         const val LOAD_MORE_THRESHOLD = 3
         const val DELAY_FOR_FILTERS = 500L
+        private const val DEBUG_TAG = "MainFragment"
     }
 
     override fun onCreateView(
@@ -189,20 +190,37 @@ class MainFragment : Fragment() {
     private fun applySavedFiltersOnStart() {
         lifecycleScope.launch {
             delay(DELAY_FOR_FILTERS)
+            handleSavedFilters()
+        }
+    }
 
-            val currentQuery = searchViewModel.getCurrentQuery()
-            val currentFilters = filtrationViewModel.getCurrentFilters()
+    private suspend fun handleSavedFilters() {
+        val filtersJustApplied = filtrationViewModel.filtersJustApplied.value == true
 
-            val hasActiveFilters = currentFilters.salary != null ||
-                currentFilters.hideWithoutSalary ||
-                currentFilters.industries.isNotEmpty()
+        if (filtersJustApplied) {
+            filtrationViewModel.setFiltersJustApplied(false)
+            println("$DEBUG_TAG: Filters were just applied - skipping auto-application")
+        } else {
+            applySavedFilters()
+        }
+    }
 
-            if (hasActiveFilters) {
-                searchViewModel.setFilters(currentFilters)
+    private fun applySavedFilters() {
+        val currentQuery = searchViewModel.getCurrentQuery()
+        val currentFilters = filtrationViewModel.getCurrentFilters()
 
-                if (currentQuery.isNotEmpty()) {
-                    binding.searchEditText.setText(currentQuery)
-                }
+        val hasActiveFilters = currentFilters.salary != null ||
+            currentFilters.hideWithoutSalary ||
+            currentFilters.industries.isNotEmpty() ||
+            currentFilters.country != null ||
+            currentFilters.region != null
+
+        if (hasActiveFilters) {
+            println("$DEBUG_TAG: Applying saved filters on start")
+            searchViewModel.setFilters(currentFilters)
+
+            if (currentQuery.isNotEmpty()) {
+                binding.searchEditText.setText(currentQuery)
             }
         }
     }

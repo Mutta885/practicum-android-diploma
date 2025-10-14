@@ -1,8 +1,14 @@
 package ru.practicum.android.diploma.data.dto
 
+import com.google.gson.annotations.SerializedName
+
 data class FilterAreaDto(
+    @SerializedName("id")
     val id: Int,
-    val parentId: Int,
+    @SerializedName("name")
     val name: String,
-    val areas: List<FilterAreaDto>
+    @SerializedName("parent_id")
+    val parentId: Int?,
+    @SerializedName("areas")
+    val areas: List<FilterAreaDto>?
 )

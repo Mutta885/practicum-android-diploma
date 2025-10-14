@@ -8,6 +8,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import ru.practicum.android.diploma.domain.usecase.GetAreasUseCase
 import ru.practicum.android.diploma.ui.models.FilterAreaState
+import ru.practicum.android.diploma.util.Resource
 
 class AreasViewModel(private val getAreasUseCase: GetAreasUseCase) : ViewModel() {
 
@@ -18,22 +19,49 @@ class AreasViewModel(private val getAreasUseCase: GetAreasUseCase) : ViewModel()
     fun getCountries() {
         searchJob?.cancel()
         searchJob = viewModelScope.launch {
-            val result = getAreasUseCase.execute()
-            val searchResult = result.getOrThrow()
-            val countriesList = searchResult.filter { it.parentId == 0 }
-            _filterAreaState.postValue(FilterAreaState.CountriesState(countriesList))
+            _filterAreaState.postValue(FilterAreaState.Loading)
+            when (val result = getAreasUseCase.getCountries()) {
+                is Resource.Success -> {
+                    val countries = result.data
+                    if (countries.isNotEmpty()) {
+                        _filterAreaState.postValue(FilterAreaState.CountriesState(countries))
+                    } else {
+                        _filterAreaState.postValue(FilterAreaState.Error("Список стран пуст"))
+                    }
+                }
+                is Resource.Error -> {
+                    _filterAreaState.postValue(FilterAreaState.Error(result.message ?: "Ошибка загрузки стран"))
+                }
+
+                else -> {}
+            }
         }
     }
 
     fun getRegions(countryId: Int?) {
         searchJob?.cancel()
         searchJob = viewModelScope.launch {
-            val result = getAreasUseCase.execute()
-            val searchResult = result.getOrThrow()
-            val countries = searchResult.filter { it.id == countryId }
-            if (countryId != null) {
-                val regionsByCountry = countries.first().areas
-                _filterAreaState.postValue(FilterAreaState.RegionsStateByCountry(regionsByCountry))
+            _filterAreaState.postValue(FilterAreaState.Loading)
+            val result = if (countryId != null) {
+                getAreasUseCase.getRegionsByCountry(countryId)
+            } else {
+                getAreasUseCase.getAllRegions()
+            }
+
+            when (result) {
+                is Resource.Success -> {
+                    val regions = result.data
+                    if (regions.isNotEmpty()) {
+                        _filterAreaState.postValue(FilterAreaState.RegionsStateByCountry(regions))
+                    } else {
+                        _filterAreaState.postValue(FilterAreaState.Error("Список регионов пуст"))
+                    }
+                }
+                is Resource.Error -> {
+                    _filterAreaState.postValue(FilterAreaState.Error(result.message ?: "Ошибка загрузки регионов"))
+                }
+
+                else -> {}
             }
         }
     }
@@ -41,10 +69,24 @@ class AreasViewModel(private val getAreasUseCase: GetAreasUseCase) : ViewModel()
     fun getCountryNameByRegion(parentId: Int?) {
         searchJob?.cancel()
         searchJob = viewModelScope.launch {
-            val result = getAreasUseCase.execute()
-            val searchResult = result.getOrThrow()
-            val countryName = searchResult.filter { it.id == parentId }.first().name.toString()
-            _filterAreaState.postValue(FilterAreaState.GetCountryNameState(countryName, parentId!!))
+            _filterAreaState.postValue(FilterAreaState.Loading)
+            if (parentId != null) {
+                when (val result = getAreasUseCase.getCountryById(parentId)) {
+                    is Resource.Success -> {
+                        val country = result.data
+                        if (country != null) {
+                            _filterAreaState.postValue(FilterAreaState.GetCountryNameState(country.name, country.id))
+                        } else {
+                            _filterAreaState.postValue(FilterAreaState.Error("Страна не найдена"))
+                        }
+                    }
+                    is Resource.Error -> {
+                        _filterAreaState.postValue(FilterAreaState.Error(result.message ?: "Ошибка загрузки страны"))
+                    }
+
+                    else -> {}
+                }
+            }
         }
     }
 }

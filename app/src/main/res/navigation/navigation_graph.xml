@@ -22,6 +22,7 @@
             android:id="@+id/action_mainFragment_to_vacancyDetailFragment"
             app:destination="@id/vacancyDetailFragment" />
     </fragment>
+
     <fragment
         android:id="@+id/favoritesFragment"
         android:name="ru.practicum.android.diploma.ui.root.favorites.FavoritesFragment"
@@ -36,6 +37,7 @@
             android:id="@+id/action_favoritesFragment_to_vacancyDetailFragment"
             app:destination="@id/vacancyDetailFragment" />
     </fragment>
+
     <fragment
         android:id="@+id/teamFragment"
         android:name="ru.practicum.android.diploma.ui.root.TeamFragment"
@@ -47,26 +49,31 @@
             android:id="@+id/action_teamFragment_to_mainFragment"
             app:destination="@id/mainFragment" />
     </fragment>
+
     <fragment
         android:id="@+id/industryFragment"
         android:name="ru.practicum.android.diploma.ui.industry.IndustryFragment"
         android:label="Выбор отрасли"
-        tools:layout="@layout/fragment_industry" />
+        tools:layout="@layout/fragment_industry">
+        <action
+            android:id="@+id/action_industryFragment_to_filtrationFragment"
+            app:destination="@id/filtrationFragment"
+            app:popUpTo="@id/filtrationFragment"
+            app:popUpToInclusive="false" />
+    </fragment>
 
-    <!-- И в filtrationFragment добавь действие для перехода: -->
     <fragment
         android:id="@+id/filtrationFragment"
         android:name="ru.practicum.android.diploma.ui.root.FiltrationFragment"
         android:label="FiltrationFragment">
         <action
             android:id="@+id/action_filtrationFragment_to_mainFragment"
-            app:destination="@id/mainFragment" />
+            app:destination="@id/mainFragment"
+            app:popUpTo="@id/mainFragment"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_filtrationFragment_to_workPlaceFragment"
             app:destination="@id/workPlaceFragment" />
-        <action
-            android:id="@+id/action_filtrationFragment_to_countryFragment"
-            app:destination="@id/countryFragment" />
         <action
             android:id="@+id/action_filtrationFragment_to_industryFragment"
             app:destination="@id/industryFragment" />
@@ -75,11 +82,19 @@
     <fragment
         android:id="@+id/vacancyDetailFragment"
         android:name="ru.practicum.android.diploma.ui.root.VacancyDetailFragment"
-        android:label="VacancyDetailFragment" />
+        android:label="VacancyDetailFragment">
+        <action
+            android:id="@+id/action_vacancyDetailFragment_to_mainFragment"
+            app:destination="@id/mainFragment" />
+        <action
+            android:id="@+id/action_vacancyDetailFragment_to_favoritesFragment"
+            app:destination="@id/favoritesFragment" />
+    </fragment>
+
     <fragment
         android:id="@+id/workPlaceFragment"
         android:name="ru.practicum.android.diploma.ui.root.WorkPlaceFragment"
-        android:label="WorkPlaceFragment" >
+        android:label="WorkPlaceFragment">
         <action
             android:id="@+id/action_workPlaceFragment_to_countryFragment"
             app:destination="@id/countryFragment" />
@@ -88,14 +103,57 @@
             app:destination="@id/regionFragment" />
         <action
             android:id="@+id/action_workPlaceFragment_to_filtrationFragment"
-            app:destination="@id/filtrationFragment" />
+            app:destination="@id/filtrationFragment"
+            app:popUpTo="@id/filtrationFragment"
+            app:popUpToInclusive="false" />
+
+        <!-- Аргументы для WorkPlaceFragment -->
+        <argument
+            android:name="country_id"
+            android:defaultValue="-1"
+            app:argType="integer" />
+        <argument
+            android:name="country_name"
+            app:argType="string" />
+        <argument
+            android:name="region_parentId"
+            android:defaultValue="-1"
+            app:argType="integer" />
+        <argument
+            android:name="region_name"
+            app:argType="string" />
+        <argument
+            android:name="region_id"
+            android:defaultValue="-1"
+            app:argType="integer" />
     </fragment>
+
     <fragment
         android:id="@+id/countryFragment"
         android:name="ru.practicum.android.diploma.ui.root.CountryFragment"
-        android:label="CountryFragment" />
+        android:label="CountryFragment">
+        <action
+            android:id="@+id/action_countryFragment_to_workPlaceFragment"
+            app:destination="@id/workPlaceFragment"
+            app:popUpTo="@id/workPlaceFragment"
+            app:popUpToInclusive="false" />
+    </fragment>
+
     <fragment
         android:id="@+id/regionFragment"
         android:name="ru.practicum.android.diploma.ui.root.RegionFragment"
-        android:label="RegionFragment" />
+        android:label="RegionFragment">
+        <action
+            android:id="@+id/action_regionFragment_to_workPlaceFragment"
+            app:destination="@id/workPlaceFragment"
+            app:popUpTo="@id/workPlaceFragment"
+            app:popUpToInclusive="false" />
+
+        <!-- Аргументы для RegionFragment -->
+        <argument
+            android:name="country_id"
+            android:defaultValue="-1"
+            app:argType="integer" />
+    </fragment>
+
 </navigation>

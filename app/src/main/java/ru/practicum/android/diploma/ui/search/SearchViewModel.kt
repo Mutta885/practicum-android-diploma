@@ -38,7 +38,7 @@ class SearchViewModel(
     private val _allVacancies = mutableListOf<Vacancy>()
     val allVacancies: List<Vacancy> get() = _allVacancies
 
-    // Метод для установки фильтров - УЛУЧШЕНО
+    // В SearchViewModel
     fun setFilters(filters: FiltrationViewModel.Filters) {
         println("DEBUG: setFilters() called with: $filters")
         println("DEBUG: Current query: '$currentQuery'")
@@ -47,7 +47,6 @@ class SearchViewModel(
         currentFilters = filters
         println("DEBUG: Filters updated: $currentFilters, changed: $filtersChanged")
 
-        // Всегда перезапускаем поиск при изменении фильтров, если есть активный запрос
         if (currentQuery.isNotEmpty() && filtersChanged) {
             println("DEBUG: Restarting search with new filters")
             _allVacancies.clear()
@@ -55,7 +54,6 @@ class SearchViewModel(
             totalPages = 1
             _searchState.value = SearchState.Loading
 
-            // Отменяем предыдущий поиск и запускаем новый
             searchJob?.cancel()
             searchJob = viewModelScope.launch {
                 performSearch(query = currentQuery, page = 0, isNewSearch = true)

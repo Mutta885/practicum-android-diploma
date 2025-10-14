@@ -9,32 +9,42 @@ class SearchVacanciesUseCase(
     private val repository: DataRepository
 ) {
 
+    private companion object {
+        private const val DEBUG_TAG = "SearchVacanciesUseCase"
+    }
+
     suspend fun execute(
         query: String,
         page: Int,
         filters: FiltrationViewModel.Filters
     ): Resource<SearchResult> {
-        println("DEBUG: SearchVacanciesUseCase.execute() called")
-        println("DEBUG: Original query: '$query'")
-        println("DEBUG: Filters: $filters")
+        println("$DEBUG_TAG: execute() called")
+        println("$DEBUG_TAG: Original query: '$query'")
+        println("$DEBUG_TAG: Filters: $filters")
 
-        // Получаем параметры фильтров
         val industry = getIndustryId(filters)
         val salary = getSalary(filters)
         val onlyWithSalary = filters.hideWithoutSalary
+        val area = getAreaId(filters)
 
-        println("DEBUG: API params - industry: $industry, salary: $salary, onlyWithSalary: $onlyWithSalary")
+        println(
+            "$DEBUG_TAG: API params - " +
+                "industry: $industry, " +
+                "salary: $salary, " +
+                "onlyWithSalary: $onlyWithSalary, " +
+                "area: $area"
+        )
 
-        // Передаем фильтры как отдельные параметры
         val result = repository.searchVacancies(
             query = query,
             page = page,
             industry = industry,
             salary = salary,
-            onlyWithSalary = onlyWithSalary
+            onlyWithSalary = onlyWithSalary,
+            area = area
         )
 
-        println("DEBUG: Search result: $result")
+        println("$DEBUG_TAG: Search result: $result")
         return result
     }
 
@@ -44,5 +54,9 @@ class SearchVacanciesUseCase(
 
     private fun getSalary(filters: FiltrationViewModel.Filters): Int? {
         return filters.salary?.toIntOrNull()?.takeIf { it > 0 }
+    }
+
+    private fun getAreaId(filters: FiltrationViewModel.Filters): String? {
+        return filters.regionId ?: filters.countryId
     }
 }

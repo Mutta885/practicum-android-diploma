@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.domain.models.FilterArea
 
-open class RegionViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+class RegionViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     private val regionText: TextView = itemView.findViewById(R.id.region_name)
 
     fun bind(region: FilterArea, regionListener: RegionAdapter.RegionListener) {
@@ -16,4 +16,3 @@ open class RegionViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) 
         }
     }
 }
-

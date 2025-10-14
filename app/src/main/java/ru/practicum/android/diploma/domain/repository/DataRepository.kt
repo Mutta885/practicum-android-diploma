@@ -12,10 +12,16 @@ interface DataRepository {
         page: Int,
         industry: String? = null,
         salary: Int? = null,
-        onlyWithSalary: Boolean = false
+        onlyWithSalary: Boolean = false,
+        area: String? = null
     ): Resource<SearchResult>
 
     suspend fun getIndustries(): List<Industry>
     suspend fun searchVacancyDetail(query: String): Resource<SearchResultVacancyDetail>
-    suspend fun getAreas(): List<FilterArea>
+
+    suspend fun getAreas(): Resource<List<FilterArea>>
+    suspend fun getCountries(): Resource<List<FilterArea>>
+    suspend fun getRegionsByCountry(countryId: Int): Resource<List<FilterArea>>
+    suspend fun getAllRegions(): Resource<List<FilterArea>>
+    suspend fun getCountryById(countryId: Int): Resource<FilterArea?>
 }

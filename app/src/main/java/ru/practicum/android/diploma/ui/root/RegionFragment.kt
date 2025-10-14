@@ -1,9 +1,12 @@
 package ru.practicum.android.diploma.ui.root
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -19,41 +22,167 @@ class RegionFragment : Fragment(), RegionAdapter.RegionListener {
     private val viewModel: AreasViewModel by viewModel()
     private var _binding: FragmentRegionBinding? = null
     private val binding get() = _binding!!
+    private var regionAdapter: RegionAdapter? = null
+    private var allRegions: List<FilterArea> = emptyList()
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    companion object {
+        private const val DEBUG_TAG = "RegionFragment"
+        private const val COUNTRY_ID_KEY = "country_id"
+        private const val REGION_NAME_KEY = "region_name"
+        private const val REGION_ID_KEY = "region_id"
+        private const val REGION_PARENT_ID_KEY = "region_parentId"
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         _binding = FragmentRegionBinding.inflate(layoutInflater)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val countryId = arguments?.getInt("country_id")
-        viewModel.getRegions(countryId)
+
+        setupRecyclerView()
+        setupSearchField()
+        setupClickListeners()
         observeViewModel()
+
+        val countryId = arguments?.getInt(COUNTRY_ID_KEY)
+        println("$DEBUG_TAG: received countryId: $countryId")
+        viewModel.getRegions(countryId)
+    }
+
+    private fun setupRecyclerView() {
+        regionAdapter = RegionAdapter(emptyList(), this)
+        binding.regionRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+        binding.regionRecyclerView.adapter = regionAdapter
+    }
+
+    private fun setupSearchField() {
+        val editText = binding.searchEditText
+        val searchIcon = binding.searchIcon
+        val clearIcon = binding.clearIcon
+
+        editText.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
+
+            override fun afterTextChanged(s: Editable?) {
+                val text = s.toString().trim()
+
+                if (text.isNotEmpty()) {
+                    searchIcon.visibility = View.GONE
+                    clearIcon.visibility = View.VISIBLE
+                } else {
+                    searchIcon.visibility = View.VISIBLE
+                    clearIcon.visibility = View.GONE
+                }
+
+                filterRegions(text)
+            }
+        })
+
+        searchIcon.setOnClickListener {
+            val query = editText.text.toString().trim()
+            filterRegions(query)
+        }
+
+        clearIcon.setOnClickListener {
+            editText.text.clear()
+            filterRegions("")
+            clearIcon.visibility = View.GONE
+            searchIcon.visibility = View.VISIBLE
+        }
+
+        editText.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                val query = editText.text.toString().trim()
+                filterRegions(query)
+                true
+            } else {
+                false
+            }
+        }
+    }
+
+    private fun setupClickListeners() {
         binding.returnButton.setOnClickListener {
             findNavController().navigateUp()
         }
     }
 
+    private fun filterRegions(query: String) {
+        val filtered = if (query.isEmpty()) {
+            allRegions
+        } else {
+            allRegions.filter { it.name.contains(query, ignoreCase = true) }
+        }
+        regionAdapter?.updateRegions(filtered)
+    }
+
     private fun observeViewModel() {
         viewModel.filterAreaState.observe(viewLifecycleOwner) { state ->
-            if (state is FilterAreaState.RegionsStateByCountry) {
-                getRegionsByCountry(state.regions)
+            when (state) {
+                is FilterAreaState.RegionsStateByCountry -> {
+                    showRegions(state.regions)
+                }
+                is FilterAreaState.Loading -> {
+                    showLoading()
+                }
+                is FilterAreaState.Error -> {
+                    showError(state.message)
+                }
+                is FilterAreaState.CountriesState,
+                is FilterAreaState.GetCountryNameState -> {
+                    // Не используется в этом фрагменте
+                }
             }
         }
     }
 
-    private fun getRegionsByCountry(regions: List<FilterArea>) {
-        val recyclerView = binding.regionRecyclerView
-        recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        val regionAdapter = RegionAdapter(regions, this)
-        recyclerView.adapter = regionAdapter
+    private fun showRegions(regions: List<FilterArea>) {
+        regions.forEach { region ->
+            println("$DEBUG_TAG: Region: ${region.name}, parentId: ${region.parentId}")
+        }
+
+        allRegions = regions
+        regionAdapter?.updateRegions(regions)
+        binding.regionRecyclerView.visibility = View.VISIBLE
+    }
+
+    private fun showLoading() {
+        binding.regionRecyclerView.visibility = View.GONE
+    }
+
+    private fun showError(message: String) {
+        binding.regionRecyclerView.visibility = View.GONE
     }
 
     override fun onRegionClick(region: FilterArea) {
-        val bundle = Bundle()
-        bundle.putInt("region_parentId", region.parentId!!)
-        bundle.putString("region_name", region.name)
-        findNavController().navigate(R.id.workPlaceFragment, bundle)
+        val countryIdFromArgs = arguments?.getInt(COUNTRY_ID_KEY)
+
+        val bundle = Bundle().apply {
+            putString(REGION_NAME_KEY, region.name)
+            putInt(REGION_ID_KEY, region.id)
+            if (region.parentId != null) {
+                putInt(REGION_PARENT_ID_KEY, region.parentId)
+            }
+            if (countryIdFromArgs != null) {
+                putInt(COUNTRY_ID_KEY, countryIdFromArgs)
+                println("$DEBUG_TAG: Passing back countryId to WorkPlaceFragment: $countryIdFromArgs")
+            }
+        }
+
+        findNavController().navigate(R.id.action_regionFragment_to_workPlaceFragment, bundle)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+        regionAdapter = null
     }
 }

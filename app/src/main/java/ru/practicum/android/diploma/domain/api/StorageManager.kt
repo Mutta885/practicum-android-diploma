@@ -4,7 +4,7 @@ import kotlinx.coroutines.flow.Flow
 import ru.practicum.android.diploma.domain.models.FilterParameters
 
 interface StorageManager {
-    suspend fun setFilterSetting(filter: FilterParameters)
+    suspend fun setFilterSetting(filterParameters: FilterParameters)
     fun getFilterSetting(): Flow<FilterParameters?>
     suspend fun clearFilterSetting()
 }

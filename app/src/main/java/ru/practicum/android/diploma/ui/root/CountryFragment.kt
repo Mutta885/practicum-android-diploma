@@ -19,40 +19,88 @@ class CountryFragment : Fragment(), CountryAdapter.CountryListener {
     private val viewModel: AreasViewModel by viewModel()
     private var _binding: FragmentCountryBinding? = null
     private val binding get() = _binding!!
+    private var countryAdapter: CountryAdapter? = null
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    companion object {
+        private const val COUNTRY_NAME_KEY = "country_name"
+        private const val COUNTRY_ID_KEY = "country_id"
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         _binding = FragmentCountryBinding.inflate(layoutInflater)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        setupRecyclerView()
+        setupClickListeners()
+        observeViewModel()
+
+        viewModel.getCountries()
+    }
+
+    private fun setupRecyclerView() {
+        countryAdapter = CountryAdapter(emptyList(), this)
+        binding.countriesRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+        binding.countriesRecyclerView.adapter = countryAdapter
+    }
+
+    private fun setupClickListeners() {
         binding.returnButton.setOnClickListener {
             findNavController().navigateUp()
         }
-
-        viewModel.getCountries()
-        observeViewModel()
     }
 
     private fun observeViewModel() {
         viewModel.filterAreaState.observe(viewLifecycleOwner) { state ->
-            if (state is FilterAreaState.CountriesState) {
-                getCountries(state.countries)
+            when (state) {
+                is FilterAreaState.CountriesState -> {
+                    showCountries(state.countries)
+                }
+                is FilterAreaState.Loading -> {
+                    showLoading()
+                }
+                is FilterAreaState.Error -> {
+                    showError(state.message)
+                }
+                is FilterAreaState.GetCountryNameState,
+                is FilterAreaState.RegionsStateByCountry -> {
+                    // Не используется в CountryFragment
+                }
             }
         }
     }
 
-    private fun getCountries(countries: List<FilterArea>) {
-        val recyclerView = binding.countriesRecyclerView
-        recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        val countryAdapter = CountryAdapter(countries, this)
-        recyclerView.adapter = countryAdapter
+    private fun showCountries(countries: List<FilterArea>) {
+        countryAdapter?.updateCountries(countries)
+        binding.countriesRecyclerView.visibility = View.VISIBLE
+    }
+
+    private fun showLoading() {
+        binding.countriesRecyclerView.visibility = View.GONE
+    }
+
+    private fun showError(message: String) {
+        binding.countriesRecyclerView.visibility = View.GONE
     }
 
     override fun onCountryClick(country: FilterArea) {
-        val bundle = Bundle()
-        bundle.putString("country_name", country.name)
-        bundle.putInt("country_id", country.id!!)
-        findNavController().navigate(R.id.workPlaceFragment, bundle)
+        val bundle = Bundle().apply {
+            putString(COUNTRY_NAME_KEY, country.name)
+            putInt(COUNTRY_ID_KEY, country.id)
+        }
+        findNavController().navigate(R.id.action_countryFragment_to_workPlaceFragment, bundle)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+        countryAdapter = null
     }
 }

@@ -5,6 +5,7 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
 import ru.practicum.android.diploma.di.appModule
+import ru.practicum.android.diploma.di.areasModule
 import ru.practicum.android.diploma.di.dataModule
 import ru.practicum.android.diploma.di.favoritesModule
 import ru.practicum.android.diploma.di.mainModule
@@ -22,7 +23,8 @@ class App : Application() {
                 favoritesModule,
                 mainModule,
                 sharedModule,
-                dataModule
+                dataModule,
+                areasModule
             )
         }
     }

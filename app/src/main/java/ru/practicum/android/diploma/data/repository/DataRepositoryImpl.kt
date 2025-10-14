@@ -6,7 +6,7 @@ import ru.practicum.android.diploma.data.dto.ContactDto
 import ru.practicum.android.diploma.data.dto.EmployerDto
 import ru.practicum.android.diploma.data.dto.EmploymentDto
 import ru.practicum.android.diploma.data.dto.ExperienceDto
-import ru.practicum.android.diploma.data.dto.FilterAreaDto
+import ru.practicum.android.diploma.data.dto.toDomain
 import ru.practicum.android.diploma.data.dto.FilterIndustryDto
 import ru.practicum.android.diploma.data.dto.SalaryDto
 import ru.practicum.android.diploma.data.dto.ScheduleDto
@@ -27,6 +27,7 @@ import ru.practicum.android.diploma.domain.models.Schedule
 import ru.practicum.android.diploma.domain.models.SearchResult
 import ru.practicum.android.diploma.domain.models.SearchResultVacancyDetail
 import ru.practicum.android.diploma.domain.models.Vacancy
+import ru.practicum.android.diploma.domain.models.isCountry
 import ru.practicum.android.diploma.domain.repository.DataRepository
 import ru.practicum.android.diploma.util.Resource
 import java.io.IOException
@@ -47,16 +48,18 @@ class DataRepositoryImpl(
         private const val TAG = "DataRepositoryImpl"
     }
 
+    // ОБНОВЛЕНО: Добавлен параметр area
     override suspend fun searchVacancies(
         query: String,
         page: Int,
         industry: String?,
         salary: Int?,
-        onlyWithSalary: Boolean
+        onlyWithSalary: Boolean,
+        area: String? // ДОБАВЛЕНО
     ): Resource<SearchResult> {
         println(
             "DEBUG: Repository search - query: '$query', page: $page, " +
-                "industry: $industry, salary: $salary, onlyWithSalary: $onlyWithSalary"
+                "industry: $industry, salary: $salary, onlyWithSalary: $onlyWithSalary, area: $area"
         )
 
         return try {
@@ -65,7 +68,8 @@ class DataRepositoryImpl(
                 page = page,
                 industry = industry,
                 salary = salary,
-                onlyWithSalary = onlyWithSalary
+                onlyWithSalary = onlyWithSalary,
+                area = area
             )
 
             println("DEBUG: API response code: ${response.code()}, message: ${response.message()}")
@@ -74,7 +78,7 @@ class DataRepositoryImpl(
                 HTTP_OK -> handleSuccessResponse(response.body())
                 HTTP_UNAUTHORIZED -> Resource.Error("Ошибка авторизации")
                 HTTP_FORBIDDEN -> Resource.Error("Доступ запрещен")
-                HTTP_NOT_FOUND -> Resource.Error("Ресурс не найден")
+                HTTP_NOT_FOUND -> Resource.Error("Ресурс не найдена")
                 HTTP_SERVER_ERROR -> Resource.Error("Ошибка сервера")
                 else -> Resource.Error("Ошибка: ${response.code()} - ${response.message()}")
             }
@@ -93,6 +97,7 @@ class DataRepositoryImpl(
         }
     }
 
+    // Остальные методы остаются без изменений...
     override suspend fun getIndustries(): List<Industry> {
         println("DEBUG: Repository getIndustries called")
         return try {
@@ -146,31 +151,101 @@ class DataRepositoryImpl(
         }
     }
 
-    override suspend fun getAreas(): List<FilterArea> {
-        println("DEBUG: Repository getIndustries called")
+    override suspend fun getAreas(): Resource<List<FilterArea>> {
+        println("DEBUG: Repository getAreas called")
         return try {
             val response = api.searchAreas()
-            println("DEBUG: areas loaded: ${response.size} items")
-            response.map { dto ->
-                FilterArea(
-                    id = dto.id,
-                    parentId = dto.parentId,
-                    name = dto.name,
-                    areas = mapAreas(dto.areas)
-                )
+            println("DEBUG: Areas API response received: ${response.size} items")
+
+            if (response.isNotEmpty()) {
+                val areas = response.map { it.toDomain() }
+                Resource.Success(areas)
+            } else {
+                Resource.Error("Пустой список регионов")
             }
         } catch (e: UnknownHostException) {
-            Log.w(TAG, "Network connection error loading industries", e)
-            println("DEBUG: Network error loading industries: ${e.message}")
-            emptyList()
+            Log.w(TAG, "Network connection error loading areas", e)
+            println("DEBUG: Network error loading areas: ${e.message}")
+            Resource.Error("Проверьте подключение к интернету")
         } catch (e: SocketTimeoutException) {
-            Log.w(TAG, "Timeout loading industries", e)
-            println("DEBUG: Timeout loading industries: ${e.message}")
-            emptyList()
+            Log.w(TAG, "Timeout loading areas", e)
+            println("DEBUG: Timeout loading areas: ${e.message}")
+            Resource.Error("Превышено время ожидания")
         } catch (e: IOException) {
-            Log.w(TAG, "IO error loading industries", e)
-            println("DEBUG: IO error loading industries: ${e.message}")
-            emptyList()
+            Log.w(TAG, "IO error loading areas", e)
+            println("DEBUG: IO error loading areas: ${e.message}")
+            Resource.Error("Ошибка загрузки данных: ${e.message ?: "Неизвестная ошибка"}")
+        }
+    }
+
+    override suspend fun getCountries(): Resource<List<FilterArea>> {
+        println("DEBUG: Repository getCountries called")
+        return when (val areasResult = getAreas()) {
+            is Resource.Success -> {
+                val countries = areasResult.data.filter { it.isCountry() }
+                println("DEBUG: Found ${countries.size} countries")
+                Resource.Success(countries)
+            }
+            is Resource.Error -> areasResult
+            Resource.Loading -> TODO()
+        }
+    }
+
+    override suspend fun getRegionsByCountry(countryId: Int): Resource<List<FilterArea>> {
+        println("DEBUG: Repository getRegionsByCountry called for country: $countryId")
+        return when (val areasResult = getAreas()) {
+            is Resource.Success -> {
+                val country = areasResult.data.find { it.id == countryId }
+                if (country != null) {
+                    // Исправляем регионы с null parentId
+                    val regions = country.areas.map { region ->
+                        if (region.parentId == null) {
+                            FilterArea(
+                                id = region.id,
+                                name = region.name,
+                                parentId = countryId,
+                                areas = region.areas
+                            )
+                        } else {
+                            region
+                        }
+                    }
+                    println("DEBUG: Found ${regions.size} regions for country $countryId")
+                    Resource.Success(regions)
+                } else {
+                    println("DEBUG: Country $countryId not found")
+                    Resource.Error("Страна не найдена")
+                }
+            }
+            is Resource.Error -> areasResult
+            else -> Resource.Error("Неизвестная ошибка")
+        }
+    }
+
+    override suspend fun getAllRegions(): Resource<List<FilterArea>> {
+        println("DEBUG: Repository getAllRegions called")
+        return when (val areasResult = getAreas()) {
+            is Resource.Success -> {
+                val allRegions = areasResult.data.flatMap { country ->
+                    country.areas.filter { it.areas.isEmpty() }
+                }
+                println("DEBUG: Found ${allRegions.size} total regions")
+                Resource.Success(allRegions)
+            }
+            is Resource.Error -> areasResult
+            Resource.Loading -> TODO()
+        }
+    }
+
+    override suspend fun getCountryById(countryId: Int): Resource<FilterArea?> {
+        println("DEBUG: Repository getCountryById called for: $countryId")
+        return when (val areasResult = getAreas()) {
+            is Resource.Success -> {
+                val country = areasResult.data.find { it.id == countryId }
+                Resource.Success(country)
+            }
+            is Resource.Error -> areasResult
+            Resource.Loading -> TODO()
         }
     }
 
@@ -207,17 +282,6 @@ class DataRepositoryImpl(
                 description = dto.description ?: "Описание не указано"
             )
         }
-
-    private fun mapAreas(items: List<FilterAreaDto>): List<FilterArea> {
-        return items.map { dto ->
-            FilterArea(
-                id = dto.id,
-                name = dto.name,
-                parentId = dto.parentId,
-                areas = mapAreas(dto.areas)
-            )
-        }
-    }
 
     private fun mapSalary(salaryDto: SalaryDto?) = salaryDto?.let { dto ->
         Salary(
