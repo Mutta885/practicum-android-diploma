@@ -9,21 +9,31 @@ class SearchVacanciesUseCase(
     private val repository: DataRepository
 ) {
 
+    private companion object {
+        private const val DEBUG_TAG = "SearchVacanciesUseCase"
+    }
+
     suspend fun execute(
         query: String,
         page: Int,
         filters: FiltrationViewModel.Filters
     ): Resource<SearchResult> {
-        println("DEBUG: SearchVacanciesUseCase.execute() called")
-        println("DEBUG: Original query: '$query'")
-        println("DEBUG: Filters: $filters")
+        println("$DEBUG_TAG: execute() called")
+        println("$DEBUG_TAG: Original query: '$query'")
+        println("$DEBUG_TAG: Filters: $filters")
 
         val industry = getIndustryId(filters)
         val salary = getSalary(filters)
         val onlyWithSalary = filters.hideWithoutSalary
         val area = getAreaId(filters)
 
-        println("DEBUG: API params - industry: $industry, salary: $salary, onlyWithSalary: $onlyWithSalary, area: $area")
+        println(
+            "$DEBUG_TAG: API params - " +
+                "industry: $industry, " +
+                "salary: $salary, " +
+                "onlyWithSalary: $onlyWithSalary, " +
+                "area: $area"
+        )
 
         val result = repository.searchVacancies(
             query = query,
@@ -34,7 +44,7 @@ class SearchVacanciesUseCase(
             area = area
         )
 
-        println("DEBUG: Search result: $result")
+        println("$DEBUG_TAG: Search result: $result")
         return result
     }
 

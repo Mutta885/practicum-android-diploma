@@ -19,7 +19,12 @@ class CountryFragment : Fragment(), CountryAdapter.CountryListener {
     private val viewModel: AreasViewModel by viewModel()
     private var _binding: FragmentCountryBinding? = null
     private val binding get() = _binding!!
-    private lateinit var countryAdapter: CountryAdapter
+    private var countryAdapter: CountryAdapter? = null
+
+    companion object {
+        private const val COUNTRY_NAME_KEY = "country_name"
+        private const val COUNTRY_ID_KEY = "country_id"
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -64,9 +69,7 @@ class CountryFragment : Fragment(), CountryAdapter.CountryListener {
                 is FilterAreaState.Error -> {
                     showError(state.message)
                 }
-                is FilterAreaState.GetCountryNameState -> {
-                    // Не используется в CountryFragment
-                }
+                is FilterAreaState.GetCountryNameState,
                 is FilterAreaState.RegionsStateByCountry -> {
                     // Не используется в CountryFragment
                 }
@@ -75,25 +78,22 @@ class CountryFragment : Fragment(), CountryAdapter.CountryListener {
     }
 
     private fun showCountries(countries: List<FilterArea>) {
-        countryAdapter.updateCountries(countries)
+        countryAdapter?.updateCountries(countries)
         binding.countriesRecyclerView.visibility = View.VISIBLE
-        // Скрыть состояния загрузки/ошибки если они есть
     }
 
     private fun showLoading() {
-        // Показать индикатор загрузки
         binding.countriesRecyclerView.visibility = View.GONE
     }
 
     private fun showError(message: String) {
-        // Показать состояние ошибки
         binding.countriesRecyclerView.visibility = View.GONE
     }
 
     override fun onCountryClick(country: FilterArea) {
         val bundle = Bundle().apply {
-            putString("country_name", country.name)
-            putInt("country_id", country.id) // ИСПРАВЛЕНО: используем putInt для ID
+            putString(COUNTRY_NAME_KEY, country.name)
+            putInt(COUNTRY_ID_KEY, country.id)
         }
         findNavController().navigate(R.id.action_countryFragment_to_workPlaceFragment, bundle)
     }
@@ -101,5 +101,6 @@ class CountryFragment : Fragment(), CountryAdapter.CountryListener {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+        countryAdapter = null
     }
 }

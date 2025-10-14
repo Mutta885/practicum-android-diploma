@@ -5,6 +5,6 @@ data class FilterArea(
     val name: String,
     val parentId: Int?,
     val areas: List<FilterArea>
-) {
-    fun isCountry(): Boolean = parentId == null || parentId == 0
-}
+)
+
+fun FilterArea.isCountry(): Boolean = parentId == null || parentId == 0

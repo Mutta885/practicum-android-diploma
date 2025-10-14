@@ -23,6 +23,14 @@ class RegionFragment : Fragment(), RegionAdapter.RegionListener {
     private lateinit var regionAdapter: RegionAdapter
     private var allRegions: List<FilterArea> = emptyList()
 
+    companion object {
+        private const val DEBUG_TAG = "RegionFragment"
+        private const val COUNTRY_ID_KEY = "country_id"
+        private const val REGION_NAME_KEY = "region_name"
+        private const val REGION_ID_KEY = "region_id"
+        private const val REGION_PARENT_ID_KEY = "region_parentId"
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -40,8 +48,8 @@ class RegionFragment : Fragment(), RegionAdapter.RegionListener {
         setupClickListeners()
         observeViewModel()
 
-        val countryId = arguments?.getInt("country_id")
-        println("DEBUG: RegionFragment - received countryId: $countryId")
+        val countryId = arguments?.getInt(COUNTRY_ID_KEY)
+        println("$DEBUG_TAG: received countryId: $countryId")
         viewModel.getRegions(countryId)
     }
 
@@ -91,9 +99,7 @@ class RegionFragment : Fragment(), RegionAdapter.RegionListener {
                 is FilterAreaState.Error -> {
                     showError(state.message)
                 }
-                is FilterAreaState.CountriesState -> {
-                    // Не используется в этом фрагменте
-                }
+                is FilterAreaState.CountriesState,
                 is FilterAreaState.GetCountryNameState -> {
                     // Не используется в этом фрагменте
                 }
@@ -102,9 +108,8 @@ class RegionFragment : Fragment(), RegionAdapter.RegionListener {
     }
 
     private fun showRegions(regions: List<FilterArea>) {
-        // Логируем для отладки
         regions.forEach { region ->
-            println("DEBUG: Region: ${region.name}, parentId: ${region.parentId}")
+            println("$DEBUG_TAG: Region: ${region.name}, parentId: ${region.parentId}")
         }
 
         allRegions = regions
@@ -113,30 +118,25 @@ class RegionFragment : Fragment(), RegionAdapter.RegionListener {
     }
 
     private fun showLoading() {
-        // Показать индикатор загрузки
         binding.regionRecyclerView.visibility = View.GONE
     }
 
     private fun showError(message: String) {
-        // Показать состояние ошибки
         binding.regionRecyclerView.visibility = View.GONE
     }
 
     override fun onRegionClick(region: FilterArea) {
-        // Получаем countryId из аргументов (переданный из WorkPlaceFragment)
-        val countryIdFromArgs = arguments?.getInt("country_id")
+        val countryIdFromArgs = arguments?.getInt(COUNTRY_ID_KEY)
 
         val bundle = Bundle().apply {
-            putString("region_name", region.name)
-            putInt("region_id", region.id) // ИСПРАВЛЕНО: используем putInt
-            // Добавляем parentId региона
+            putString(REGION_NAME_KEY, region.name)
+            putInt(REGION_ID_KEY, region.id)
             if (region.parentId != null) {
-                putInt("region_parentId", region.parentId) // ИСПРАВЛЕНО: используем putInt
+                putInt(REGION_PARENT_ID_KEY, region.parentId)
             }
-            // ВАЖНО: передаем countryId обратно в WorkPlaceFragment
             if (countryIdFromArgs != null) {
-                putInt("country_id", countryIdFromArgs)
-                println("DEBUG: Passing back countryId to WorkPlaceFragment: $countryIdFromArgs")
+                putInt(COUNTRY_ID_KEY, countryIdFromArgs)
+                println("$DEBUG_TAG: Passing back countryId to WorkPlaceFragment: $countryIdFromArgs")
             }
         }
 

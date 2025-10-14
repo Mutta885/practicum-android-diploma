@@ -27,6 +27,16 @@ class WorkPlaceFragment : Fragment() {
     private var regionId: Int? = null
     private val binding get() = _binding!!
 
+    companion object {
+        private const val ARG_INVALID_ID = -1
+        private const val DEBUG_TAG = "WorkPlaceFragment"
+        private const val COUNTRY_ID_KEY = "country_id"
+        private const val COUNTRY_NAME_KEY = "country_name"
+        private const val REGION_PARENT_ID_KEY = "region_parentId"
+        private const val REGION_NAME_KEY = "region_name"
+        private const val REGION_ID_KEY = "region_id"
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -40,9 +50,8 @@ class WorkPlaceFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        println("DEBUG: WorkPlaceFragment onViewCreated")
+        println("$DEBUG_TAG: onViewCreated")
 
-        // Восстановление состояния из аргументов
         restoreStateFromArguments()
         setupClickListeners()
         observeViewModel()
@@ -51,18 +60,23 @@ class WorkPlaceFragment : Fragment() {
 
     private fun restoreStateFromArguments() {
         val args = arguments
-        countryId = args?.getInt("country_id", -1)?.takeIf { it != -1 }
-        countryName = args?.getString("country_name")
-        val regionParentId = args?.getInt("region_parentId", -1)?.takeIf { it != -1 }
-        regionName = args?.getString("region_name")
-        regionId = args?.getInt("region_id", -1)?.takeIf { it != -1 }
+        countryId = args?.getInt(COUNTRY_ID_KEY, ARG_INVALID_ID)?.takeIf { it != ARG_INVALID_ID }
+        countryName = args?.getString(COUNTRY_NAME_KEY)
+        val regionParentId = args?.getInt(REGION_PARENT_ID_KEY, ARG_INVALID_ID)?.takeIf { it != ARG_INVALID_ID }
+        regionName = args?.getString(REGION_NAME_KEY)
+        regionId = args?.getInt(REGION_ID_KEY, ARG_INVALID_ID)?.takeIf { it != ARG_INVALID_ID }
 
-        // Логируем полученные данные
-        println("DEBUG: WorkPlaceFragment - countryId: $countryId, countryName: $countryName, regionParentId: $regionParentId, regionName: $regionName, regionId: $regionId")
+        println(
+            "$DEBUG_TAG: " +
+                "countryId: $countryId, " +
+                "countryName: $countryName, " +
+                "regionParentId: $regionParentId, " +
+                "regionName: $regionName, " +
+                "regionId: $regionId"
+        )
 
-        // Если пришел регион, но нет страны - получаем страну по parentId региона
         if (regionParentId != null && countryName.isNullOrEmpty()) {
-            println("DEBUG: Getting country name by region parentId: $regionParentId")
+            println("$DEBUG_TAG: Getting country name by region parentId: $regionParentId")
             viewModel.getCountryNameByRegion(regionParentId)
         } else {
             updateUI()
@@ -70,72 +84,64 @@ class WorkPlaceFragment : Fragment() {
     }
 
     private fun setupClickListeners() {
-        println("DEBUG: Setting up click listeners")
+        println("$DEBUG_TAG: Setting up click listeners")
 
-        // Контейнер страны
         binding.countryContainer.setOnClickListener {
-            println("DEBUG: COUNTRY CONTAINER CLICKED")
+            println("$DEBUG_TAG: COUNTRY CONTAINER CLICKED")
             findNavController().navigate(R.id.action_workPlaceFragment_to_countryFragment)
         }
 
-        // Кнопка страны (стрелка)
         binding.countryButton.setOnClickListener {
-            println("DEBUG: COUNTRY BUTTON CLICKED")
+            println("$DEBUG_TAG: COUNTRY BUTTON CLICKED")
             findNavController().navigate(R.id.action_workPlaceFragment_to_countryFragment)
         }
 
-        // Контейнер региона
         binding.regionContainer.setOnClickListener {
-            println("DEBUG: REGION CONTAINER CLICKED")
-            val bundle = Bundle()
-            // Всегда передаем countryId если он есть
-            if (countryId != null) {
-                bundle.putInt("country_id", countryId!!)
-                println("DEBUG: Passing countryId to RegionFragment: $countryId")
-            }
-            findNavController().navigate(R.id.action_workPlaceFragment_to_regionFragment, bundle)
+            println("$DEBUG_TAG: REGION CONTAINER CLICKED")
+            navigateToRegionFragment()
         }
 
-        // Кнопка региона (стрелка)
         binding.regionButton.setOnClickListener {
-            println("DEBUG: REGION BUTTON CLICKED")
-            val bundle = Bundle()
-            if (countryId != null) {
-                bundle.putInt("country_id", countryId!!)
-                println("DEBUG: Passing countryId to RegionFragment: $countryId")
-            }
-            findNavController().navigate(R.id.action_workPlaceFragment_to_regionFragment, bundle)
+            println("$DEBUG_TAG: REGION BUTTON CLICKED")
+            navigateToRegionFragment()
         }
 
-        // Кнопка "Выбрать" - ИСПРАВЛЕНО: используем явное действие навигации
         binding.chooseButton.setOnClickListener {
-            println("DEBUG: CHOOSE BUTTON CLICKED - country: $countryName, region: $regionName")
-
-            // Проверяем, что что-то выбрано
-            if (countryName == null && regionName == null) {
-                println("DEBUG: Nothing selected, not saving")
-                return@setOnClickListener
-            }
-
-            // Сохраняем выбранное место работы в FiltrationViewModel
-            filtrationViewModel.onWorkplaceSelected(
-                countryName = countryName,
-                countryId = countryId,
-                regionName = regionName,
-                regionId = regionId
-            )
-
-            println("DEBUG: Workplace saved, navigating to filtration fragment")
-            // ИСПРАВЛЕНО: Явный переход в FiltrationFragment
-            findNavController().navigate(R.id.action_workPlaceFragment_to_filtrationFragment)
+            handleChooseButtonClick()
         }
 
-        // Кнопка возврата - ИСПРАВЛЕНО: используем явное действие навигации
         binding.returnButton.setOnClickListener {
-            println("DEBUG: RETURN BUTTON CLICKED")
-            // ИСПРАВЛЕНО: Явный переход в FiltrationFragment
+            println("$DEBUG_TAG: RETURN BUTTON CLICKED")
             findNavController().navigate(R.id.action_workPlaceFragment_to_filtrationFragment)
         }
+    }
+
+    private fun navigateToRegionFragment() {
+        val bundle = Bundle()
+        if (countryId != null) {
+            bundle.putInt(COUNTRY_ID_KEY, countryId!!)
+            println("$DEBUG_TAG: Passing countryId to RegionFragment: $countryId")
+        }
+        findNavController().navigate(R.id.action_workPlaceFragment_to_regionFragment, bundle)
+    }
+
+    private fun handleChooseButtonClick() {
+        println("$DEBUG_TAG: CHOOSE BUTTON CLICKED - country: $countryName, region: $regionName")
+
+        if (countryName == null && regionName == null) {
+            println("$DEBUG_TAG: Nothing selected, not saving")
+            return
+        }
+
+        filtrationViewModel.onWorkplaceSelected(
+            countryName = countryName,
+            countryId = countryId,
+            regionName = regionName,
+            regionId = regionId
+        )
+
+        println("$DEBUG_TAG: Workplace saved, navigating to filtration fragment")
+        findNavController().navigate(R.id.action_workPlaceFragment_to_filtrationFragment)
     }
 
     private fun observeViewModel() {
@@ -161,36 +167,25 @@ class WorkPlaceFragment : Fragment() {
     }
 
     private fun addCountryName(name: String, id: Int) {
-        println("DEBUG: addCountryName called - name: $name, id: $id")
+        println("$DEBUG_TAG: addCountryName called - name: $name, id: $id")
         countryName = name
         countryId = id
         updateUI()
     }
 
     private fun updateUI() {
-        println("DEBUG: updateUI - countryName: $countryName, regionName: $regionName")
+        println("$DEBUG_TAG: updateUI - countryName: $countryName, regionName: $regionName")
 
-        // Обновляем тексты
-        countryName?.let {
-            binding.countryText.text = it
-        } ?: run {
-            binding.countryText.text = getString(R.string.country_text)
-        }
+        binding.countryText.text = countryName ?: getString(R.string.country_text)
+        binding.regionText.text = regionName ?: getString(R.string.region_text)
 
-        regionName?.let {
-            binding.regionText.text = it
-        } ?: run {
-            binding.regionText.text = getString(R.string.region_text)
-        }
-
-        // Обновляем видимость кнопки "Выбрать"
         updateChooseButtonVisibility()
     }
 
     private fun updateChooseButtonVisibility() {
         val shouldShowButton = countryName?.isNotEmpty() == true || regionName?.isNotEmpty() == true
         binding.chooseButton.visibility = if (shouldShowButton) View.VISIBLE else View.INVISIBLE
-        println("DEBUG: Choose button visibility: $shouldShowButton")
+        println("$DEBUG_TAG: Choose button visibility: $shouldShowButton")
     }
 
     override fun onDestroyView() {

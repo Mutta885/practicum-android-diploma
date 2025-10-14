@@ -27,6 +27,7 @@ import ru.practicum.android.diploma.domain.models.Schedule
 import ru.practicum.android.diploma.domain.models.SearchResult
 import ru.practicum.android.diploma.domain.models.SearchResultVacancyDetail
 import ru.practicum.android.diploma.domain.models.Vacancy
+import ru.practicum.android.diploma.domain.models.isCountry
 import ru.practicum.android.diploma.domain.repository.DataRepository
 import ru.practicum.android.diploma.util.Resource
 import java.io.IOException
@@ -174,10 +175,6 @@ class DataRepositoryImpl(
             Log.w(TAG, "IO error loading areas", e)
             println("DEBUG: IO error loading areas: ${e.message}")
             Resource.Error("Ошибка загрузки данных: ${e.message ?: "Неизвестная ошибка"}")
-        } catch (e: Exception) {
-            Log.w(TAG, "Unexpected error loading areas", e)
-            println("DEBUG: Unexpected error loading areas: ${e.message}")
-            Resource.Error("Неизвестная ошибка: ${e.message ?: "Попробуйте позже"}")
         }
     }
 

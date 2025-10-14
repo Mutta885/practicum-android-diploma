@@ -47,6 +47,7 @@ class FiltrationViewModel(
 
     private companion object {
         const val FILTERS_DELAY_MS = 200L
+        private const val DEBUG_TAG = "FiltrationViewModel"
     }
 
     init {
@@ -60,14 +61,13 @@ class FiltrationViewModel(
                     _salary.value = savedFilter.salary.takeIf { it.isNotEmpty() }
                     _hideWithoutSalary.value = savedFilter.onlyWithSalary
                     _selectedIndustries.value = savedFilter.industries
-                    // ОБНОВЛЕНО: Загрузка страны и региона с ID
                     _selectedCountry.value = savedFilter.country
                     _selectedCountryId.value = savedFilter.countryId
                     _selectedRegion.value = savedFilter.region
                     _selectedRegionId.value = savedFilter.regionId
 
                     println(
-                        "DEBUG: Filters loaded from storage: " +
+                        "$DEBUG_TAG: Filters loaded from storage: " +
                             "salary=${_salary.value}, " +
                             "hideWithoutSalary=${_hideWithoutSalary.value}, " +
                             "industries=${_selectedIndustries.value?.size}, " +
@@ -82,7 +82,7 @@ class FiltrationViewModel(
                     _selectedCountryId.value = null
                     _selectedRegion.value = null
                     _selectedRegionId.value = null
-                    println("DEBUG: No saved filters found")
+                    println("$DEBUG_TAG: No saved filters found")
                 }
                 updateFilterState()
                 updateSalaryInputState()
@@ -110,14 +110,23 @@ class FiltrationViewModel(
         saveFilters()
     }
 
-    fun onWorkplaceSelected(countryName: String?, countryId: Int?, regionName: String?, regionId: Int?) {
+    fun onWorkplaceSelected(
+        countryName: String?,
+        countryId: Int?,
+        regionName: String?,
+        regionId: Int?
+    ) {
         _selectedCountry.value = countryName
         _selectedCountryId.value = countryId?.toString()
         _selectedRegion.value = regionName
         _selectedRegionId.value = regionId?.toString()
         updateFilterState()
         saveFilters()
-        println("DEBUG: Workplace selected - country: $countryName (id: $countryId), region: $regionName (id: $regionId)")
+        println(
+            "$DEBUG_TAG: Workplace selected - " +
+                "country: $countryName (id: $countryId), " +
+                "region: $regionName (id: $regionId)"
+        )
     }
 
     fun resetFilters() {
@@ -133,10 +142,9 @@ class FiltrationViewModel(
         saveFilters()
     }
 
-    // ДОБАВЛЕНО: Метод для установки флага применения фильтров
     fun setFiltersJustApplied(applied: Boolean) {
         _filtersJustApplied.value = applied
-        println("DEBUG: setFiltersJustApplied called with: $applied")
+        println("$DEBUG_TAG: setFiltersJustApplied called with: $applied")
     }
 
     private fun saveFilters() {
@@ -184,30 +192,40 @@ class FiltrationViewModel(
         viewModelScope.launch {
             delay(FILTERS_DELAY_MS)
 
-            // Проверяем, не были ли фильтры только что применены
-            val filtersJustApplied = _filtersJustApplied.value == true
-            if (filtersJustApplied) {
-                println("DEBUG: Filters were just applied - skipping auto-application in applySavedFiltersToSearch")
-                _filtersJustApplied.value = false
+            if (shouldSkipAutoApplication()) {
                 return@launch
             }
 
-            val currentFilters = getCurrentFilters()
-            val hasActiveFilters = currentFilters.salary != null ||
-                currentFilters.hideWithoutSalary ||
-                currentFilters.industries.isNotEmpty() ||
-                currentFilters.country != null ||
-                currentFilters.region != null
+            applyFiltersToSearch(searchViewModel)
+        }
+    }
 
-            if (hasActiveFilters) {
-                println(
-                    "DEBUG: FiltrationViewModel applying saved filters to search: " +
-                        "$currentFilters"
-                )
-                searchViewModel.setFilters(currentFilters)
-            } else {
-                println("DEBUG: FiltrationViewModel no active filters to apply")
-            }
+    private suspend fun shouldSkipAutoApplication(): Boolean {
+        val filtersJustApplied = _filtersJustApplied.value == true
+        if (filtersJustApplied) {
+            println("$DEBUG_TAG: Filters were just applied - skipping auto-application")
+            _filtersJustApplied.value = false
+            return true
+        }
+        return false
+    }
+
+    private fun applyFiltersToSearch(searchViewModel: SearchViewModel) {
+        val currentFilters = getCurrentFilters()
+        val hasActiveFilters = currentFilters.salary != null ||
+            currentFilters.hideWithoutSalary ||
+            currentFilters.industries.isNotEmpty() ||
+            currentFilters.country != null ||
+            currentFilters.region != null
+
+        if (hasActiveFilters) {
+            println(
+                "$DEBUG_TAG: Applying saved filters to search: " +
+                    "$currentFilters"
+            )
+            searchViewModel.setFilters(currentFilters)
+        } else {
+            println("$DEBUG_TAG: No active filters to apply")
         }
     }
 
