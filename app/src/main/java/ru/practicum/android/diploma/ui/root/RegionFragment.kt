@@ -1,10 +1,12 @@
 package ru.practicum.android.diploma.ui.root
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.widget.SearchView
+import android.view.inputmethod.EditorInfo
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -44,7 +46,7 @@ class RegionFragment : Fragment(), RegionAdapter.RegionListener {
         super.onViewCreated(view, savedInstanceState)
 
         setupRecyclerView()
-        setupSearchView()
+        setupSearchField()
         setupClickListeners()
         observeViewModel()
 
@@ -59,17 +61,52 @@ class RegionFragment : Fragment(), RegionAdapter.RegionListener {
         binding.regionRecyclerView.adapter = regionAdapter
     }
 
-    private fun setupSearchView() {
-        binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                return false
-            }
+    private fun setupSearchField() {
+        val editText = binding.searchEditText
+        val searchIcon = binding.searchIcon
+        val clearIcon = binding.clearIcon
 
-            override fun onQueryTextChange(newText: String?): Boolean {
-                filterRegions(newText.orEmpty())
-                return true
+        editText.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
+
+            override fun afterTextChanged(s: Editable?) {
+                val text = s.toString().trim()
+
+                if (text.isNotEmpty()) {
+                    searchIcon.visibility = View.GONE
+                    clearIcon.visibility = View.VISIBLE
+                } else {
+                    searchIcon.visibility = View.VISIBLE
+                    clearIcon.visibility = View.GONE
+                }
+
+                filterRegions(text)
             }
         })
+
+        searchIcon.setOnClickListener {
+            val query = editText.text.toString().trim()
+            filterRegions(query)
+        }
+
+        clearIcon.setOnClickListener {
+            editText.text.clear()
+            filterRegions("")
+            clearIcon.visibility = View.GONE
+            searchIcon.visibility = View.VISIBLE
+        }
+
+        editText.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                val query = editText.text.toString().trim()
+                filterRegions(query)
+                true
+            } else {
+                false
+            }
+        }
     }
 
     private fun setupClickListeners() {
