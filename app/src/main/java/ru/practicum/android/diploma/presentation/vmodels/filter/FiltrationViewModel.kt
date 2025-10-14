@@ -24,6 +24,13 @@ class FiltrationViewModel(
     private val _selectedIndustries = MutableLiveData<List<Industry>>()
     val selectedIndustries: LiveData<List<Industry>> = _selectedIndustries
 
+    // ДОБАВЛЕНО: Поля для страны и региона
+    private val _selectedCountry = MutableLiveData<String?>()
+    val selectedCountry: LiveData<String?> = _selectedCountry
+
+    private val _selectedRegion = MutableLiveData<String?>()
+    val selectedRegion: LiveData<String?> = _selectedRegion
+
     private val _isAnyFilterActive = MutableLiveData<Boolean>()
     val isAnyFilterActive: LiveData<Boolean> = _isAnyFilterActive
 
@@ -45,17 +52,24 @@ class FiltrationViewModel(
                     _salary.value = savedFilter.salary.takeIf { it.isNotEmpty() }
                     _hideWithoutSalary.value = savedFilter.onlyWithSalary
                     _selectedIndustries.value = savedFilter.industries
+                    // ДОБАВЛЕНО: Загрузка страны и региона
+                    _selectedCountry.value = savedFilter.country
+                    _selectedRegion.value = savedFilter.region
 
                     println(
                         "DEBUG: Filters loaded from storage: " +
                             "salary=${_salary.value}, " +
                             "hideWithoutSalary=${_hideWithoutSalary.value}, " +
-                            "industries=${_selectedIndustries.value?.size}"
+                            "industries=${_selectedIndustries.value?.size}, " +
+                            "country=${_selectedCountry.value}, " + // ДОБАВЛЕНО
+                            "region=${_selectedRegion.value}" // ДОБАВЛЕНО
                     )
                 } else {
                     _salary.value = null
                     _hideWithoutSalary.value = false
                     _selectedIndustries.value = emptyList()
+                    _selectedCountry.value = null // ДОБАВЛЕНО
+                    _selectedRegion.value = null // ДОБАВЛЕНО
                     println("DEBUG: No saved filters found")
                 }
                 updateFilterState()
@@ -84,10 +98,21 @@ class FiltrationViewModel(
         saveFilters()
     }
 
+    // ДОБАВЛЕНО: Метод для установки места работы
+    fun onWorkplaceSelected(country: String?, region: String?) {
+        _selectedCountry.value = country
+        _selectedRegion.value = region
+        updateFilterState()
+        saveFilters()
+        println("DEBUG: Workplace selected - country: $country, region: $region")
+    }
+
     fun resetFilters() {
         _salary.value = null
         _hideWithoutSalary.value = false
         _selectedIndustries.value = emptyList()
+        _selectedCountry.value = null // ДОБАВЛЕНО
+        _selectedRegion.value = null // ДОБАВЛЕНО
         updateFilterState()
         updateSalaryInputState()
         saveFilters()
@@ -98,7 +123,9 @@ class FiltrationViewModel(
             val filter = FilterParameters(
                 onlyWithSalary = _hideWithoutSalary.value ?: false,
                 salary = _salary.value ?: "",
-                industries = _selectedIndustries.value ?: emptyList()
+                industries = _selectedIndustries.value ?: emptyList(),
+                country = _selectedCountry.value, // ДОБАВЛЕНО
+                region = _selectedRegion.value // ДОБАВЛЕНО
             )
             storageManager.setFilterSetting(filter)
         }
@@ -107,7 +134,9 @@ class FiltrationViewModel(
     private fun updateFilterState() {
         val isActive = !_salary.value.isNullOrEmpty() ||
             _hideWithoutSalary.value == true ||
-            _selectedIndustries.value?.isNotEmpty() == true
+            _selectedIndustries.value?.isNotEmpty() == true ||
+            _selectedCountry.value != null || // ДОБАВЛЕНО
+            _selectedRegion.value != null // ДОБАВЛЕНО
 
         _isAnyFilterActive.value = isActive
     }
@@ -120,7 +149,9 @@ class FiltrationViewModel(
         return Filters(
             salary = _salary.value,
             hideWithoutSalary = _hideWithoutSalary.value ?: false,
-            industries = _selectedIndustries.value ?: emptyList()
+            industries = _selectedIndustries.value ?: emptyList(),
+            country = _selectedCountry.value, // ДОБАВЛЕНО
+            region = _selectedRegion.value // ДОБАВЛЕНО
         )
     }
 
@@ -131,7 +162,9 @@ class FiltrationViewModel(
             val currentFilters = getCurrentFilters()
             val hasActiveFilters = currentFilters.salary != null ||
                 currentFilters.hideWithoutSalary ||
-                currentFilters.industries.isNotEmpty()
+                currentFilters.industries.isNotEmpty() ||
+                currentFilters.country != null || // ДОБАВЛЕНО
+                currentFilters.region != null // ДОБАВЛЕНО
 
             if (hasActiveFilters) {
                 println(
@@ -148,6 +181,8 @@ class FiltrationViewModel(
     data class Filters(
         val salary: String? = null,
         val hideWithoutSalary: Boolean = false,
-        val industries: List<Industry> = emptyList()
+        val industries: List<Industry> = emptyList(),
+        val country: String? = null, // ДОБАВЛЕНО
+        val region: String? = null // ДОБАВЛЕНО
     )
 }
