@@ -14,11 +14,9 @@ class FiltrationFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val binding = FragmentFilterBinding.inflate(layoutInflater)
         val returnButton = binding.returnButton
-
         returnButton.setOnClickListener {
             findNavController().navigate(R.id.action_filtrationFragment_to_mainFragment)
         }
-
         return binding.root
     }
 }
