@@ -7,6 +7,4 @@ data class FilterArea(
     val areas: List<FilterArea>
 ) {
     fun isCountry(): Boolean = parentId == null || parentId == 0
-    fun isRegion(): Boolean = !isCountry() && areas.isEmpty()
-    fun hasSubregions(): Boolean = !isCountry() && areas.isNotEmpty()
 }
