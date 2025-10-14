@@ -93,7 +93,7 @@ class CountryFragment : Fragment(), CountryAdapter.CountryListener {
     override fun onCountryClick(country: FilterArea) {
         val bundle = Bundle().apply {
             putString("country_name", country.name)
-            putInt("country_id", country.id)
+            putInt("country_id", country.id) // ИСПРАВЛЕНО: используем putInt для ID
         }
         findNavController().navigate(R.id.action_countryFragment_to_workPlaceFragment, bundle)
     }

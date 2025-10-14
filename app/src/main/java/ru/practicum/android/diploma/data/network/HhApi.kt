@@ -17,7 +17,8 @@ interface HhApi {
         @Query("per_page") perPage: Int = 20,
         @Query("industry") industry: String? = null,
         @Query("salary") salary: Int? = null,
-        @Query("only_with_salary") onlyWithSalary: Boolean = false
+        @Query("only_with_salary") onlyWithSalary: Boolean = false,
+        @Query("area") area: String? = null
     ): Response<VacancySearchResponse>
 
     @GET("industries")

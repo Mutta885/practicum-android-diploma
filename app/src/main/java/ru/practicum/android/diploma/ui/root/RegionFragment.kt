@@ -128,9 +128,10 @@ class RegionFragment : Fragment(), RegionAdapter.RegionListener {
 
         val bundle = Bundle().apply {
             putString("region_name", region.name)
+            putInt("region_id", region.id) // ИСПРАВЛЕНО: используем putInt
             // Добавляем parentId региона
             if (region.parentId != null) {
-                putInt("region_parentId", region.parentId)
+                putInt("region_parentId", region.parentId) // ИСПРАВЛЕНО: используем putInt
             }
             // ВАЖНО: передаем countryId обратно в WorkPlaceFragment
             if (countryIdFromArgs != null) {

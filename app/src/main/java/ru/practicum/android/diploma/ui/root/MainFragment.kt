@@ -190,14 +190,27 @@ class MainFragment : Fragment() {
         lifecycleScope.launch {
             delay(DELAY_FOR_FILTERS)
 
+            // Проверяем, не были ли фильтры только что применены из FiltrationFragment
+            val filtersJustApplied = filtrationViewModel.filtersJustApplied.value == true
+
+            if (filtersJustApplied) {
+                // Сбрасываем флаг и НЕ применяем фильтры повторно
+                filtrationViewModel.setFiltersJustApplied(false)
+                println("DEBUG: Filters were just applied - skipping auto-application in MainFragment")
+                return@launch
+            }
+
             val currentQuery = searchViewModel.getCurrentQuery()
             val currentFilters = filtrationViewModel.getCurrentFilters()
 
             val hasActiveFilters = currentFilters.salary != null ||
                 currentFilters.hideWithoutSalary ||
-                currentFilters.industries.isNotEmpty()
+                currentFilters.industries.isNotEmpty() ||
+                currentFilters.country != null ||
+                currentFilters.region != null
 
             if (hasActiveFilters) {
+                println("DEBUG: MainFragment applying saved filters on start")
                 searchViewModel.setFilters(currentFilters)
 
                 if (currentQuery.isNotEmpty()) {

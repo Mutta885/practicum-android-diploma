@@ -5,5 +5,7 @@ data class FilterParameters(
     val salary: String = "",
     val industries: List<Industry> = emptyList(),
     val country: String? = null,
-    val region: String? = null
+    val countryId: String? = null,
+    val region: String? = null,
+    val regionId: String? = null
 )

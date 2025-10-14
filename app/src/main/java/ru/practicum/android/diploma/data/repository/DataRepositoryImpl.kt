@@ -47,16 +47,18 @@ class DataRepositoryImpl(
         private const val TAG = "DataRepositoryImpl"
     }
 
+    // ОБНОВЛЕНО: Добавлен параметр area
     override suspend fun searchVacancies(
         query: String,
         page: Int,
         industry: String?,
         salary: Int?,
-        onlyWithSalary: Boolean
+        onlyWithSalary: Boolean,
+        area: String? // ДОБАВЛЕНО
     ): Resource<SearchResult> {
         println(
             "DEBUG: Repository search - query: '$query', page: $page, " +
-                "industry: $industry, salary: $salary, onlyWithSalary: $onlyWithSalary"
+                "industry: $industry, salary: $salary, onlyWithSalary: $onlyWithSalary, area: $area"
         )
 
         return try {
@@ -65,7 +67,8 @@ class DataRepositoryImpl(
                 page = page,
                 industry = industry,
                 salary = salary,
-                onlyWithSalary = onlyWithSalary
+                onlyWithSalary = onlyWithSalary,
+                area = area
             )
 
             println("DEBUG: API response code: ${response.code()}, message: ${response.message()}")
@@ -74,7 +77,7 @@ class DataRepositoryImpl(
                 HTTP_OK -> handleSuccessResponse(response.body())
                 HTTP_UNAUTHORIZED -> Resource.Error("Ошибка авторизации")
                 HTTP_FORBIDDEN -> Resource.Error("Доступ запрещен")
-                HTTP_NOT_FOUND -> Resource.Error("Ресурс не найден")
+                HTTP_NOT_FOUND -> Resource.Error("Ресурс не найдена")
                 HTTP_SERVER_ERROR -> Resource.Error("Ошибка сервера")
                 else -> Resource.Error("Ошибка: ${response.code()} - ${response.message()}")
             }
@@ -93,6 +96,7 @@ class DataRepositoryImpl(
         }
     }
 
+    // Остальные методы остаются без изменений...
     override suspend fun getIndustries(): List<Industry> {
         println("DEBUG: Repository getIndustries called")
         return try {

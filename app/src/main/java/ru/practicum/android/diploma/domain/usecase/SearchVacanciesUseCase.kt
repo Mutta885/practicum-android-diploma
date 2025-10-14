@@ -18,20 +18,20 @@ class SearchVacanciesUseCase(
         println("DEBUG: Original query: '$query'")
         println("DEBUG: Filters: $filters")
 
-        // Получаем параметры фильтров
         val industry = getIndustryId(filters)
         val salary = getSalary(filters)
         val onlyWithSalary = filters.hideWithoutSalary
+        val area = getAreaId(filters)
 
-        println("DEBUG: API params - industry: $industry, salary: $salary, onlyWithSalary: $onlyWithSalary")
+        println("DEBUG: API params - industry: $industry, salary: $salary, onlyWithSalary: $onlyWithSalary, area: $area")
 
-        // Передаем фильтры как отдельные параметры
         val result = repository.searchVacancies(
             query = query,
             page = page,
             industry = industry,
             salary = salary,
-            onlyWithSalary = onlyWithSalary
+            onlyWithSalary = onlyWithSalary,
+            area = area
         )
 
         println("DEBUG: Search result: $result")
@@ -44,5 +44,9 @@ class SearchVacanciesUseCase(
 
     private fun getSalary(filters: FiltrationViewModel.Filters): Int? {
         return filters.salary?.toIntOrNull()?.takeIf { it > 0 }
+    }
+
+    private fun getAreaId(filters: FiltrationViewModel.Filters): String? {
+        return filters.regionId ?: filters.countryId
     }
 }

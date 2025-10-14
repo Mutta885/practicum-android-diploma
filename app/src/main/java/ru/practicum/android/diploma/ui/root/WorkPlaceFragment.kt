@@ -7,19 +7,24 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import org.koin.androidx.viewmodel.ext.android.activityViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.databinding.FragmentWorkPlaceBinding
 import ru.practicum.android.diploma.presentation.vmodels.AreasViewModel
+import ru.practicum.android.diploma.presentation.vmodels.filter.FiltrationViewModel
 import ru.practicum.android.diploma.ui.models.FilterAreaState
 
 class WorkPlaceFragment : Fragment() {
 
     private val viewModel: AreasViewModel by viewModel()
+    private val filtrationViewModel: FiltrationViewModel by activityViewModel()
+
     private var _binding: FragmentWorkPlaceBinding? = null
     private var countryName: String? = null
     private var countryId: Int? = null
     private var regionName: String? = null
+    private var regionId: Int? = null
     private val binding get() = _binding!!
 
     override fun onCreateView(
@@ -35,6 +40,8 @@ class WorkPlaceFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        println("DEBUG: WorkPlaceFragment onViewCreated")
+
         // Восстановление состояния из аргументов
         restoreStateFromArguments()
         setupClickListeners()
@@ -48,9 +55,10 @@ class WorkPlaceFragment : Fragment() {
         countryName = args?.getString("country_name")
         val regionParentId = args?.getInt("region_parentId", -1)?.takeIf { it != -1 }
         regionName = args?.getString("region_name")
+        regionId = args?.getInt("region_id", -1)?.takeIf { it != -1 }
 
         // Логируем полученные данные
-        println("DEBUG: WorkPlaceFragment - countryId: $countryId, countryName: $countryName, regionParentId: $regionParentId, regionName: $regionName")
+        println("DEBUG: WorkPlaceFragment - countryId: $countryId, countryName: $countryName, regionParentId: $regionParentId, regionName: $regionName, regionId: $regionId")
 
         // Если пришел регион, но нет страны - получаем страну по parentId региона
         if (regionParentId != null && countryName.isNullOrEmpty()) {
@@ -62,11 +70,23 @@ class WorkPlaceFragment : Fragment() {
     }
 
     private fun setupClickListeners() {
-        binding.countryButton.setOnClickListener {
+        println("DEBUG: Setting up click listeners")
+
+        // Контейнер страны
+        binding.countryContainer.setOnClickListener {
+            println("DEBUG: COUNTRY CONTAINER CLICKED")
             findNavController().navigate(R.id.action_workPlaceFragment_to_countryFragment)
         }
 
-        binding.regionButton.setOnClickListener {
+        // Кнопка страны (стрелка)
+        binding.countryButton.setOnClickListener {
+            println("DEBUG: COUNTRY BUTTON CLICKED")
+            findNavController().navigate(R.id.action_workPlaceFragment_to_countryFragment)
+        }
+
+        // Контейнер региона
+        binding.regionContainer.setOnClickListener {
+            println("DEBUG: REGION CONTAINER CLICKED")
             val bundle = Bundle()
             // Всегда передаем countryId если он есть
             if (countryId != null) {
@@ -76,15 +96,44 @@ class WorkPlaceFragment : Fragment() {
             findNavController().navigate(R.id.action_workPlaceFragment_to_regionFragment, bundle)
         }
 
-        binding.chooseButton.setOnClickListener {
+        // Кнопка региона (стрелка)
+        binding.regionButton.setOnClickListener {
+            println("DEBUG: REGION BUTTON CLICKED")
             val bundle = Bundle()
-            bundle.putString("country_name", countryName)
-            bundle.putString("region_name", regionName)
-            countryId?.let { id -> bundle.putInt("country_id", id) }
-            findNavController().navigate(R.id.action_workPlaceFragment_to_filtrationFragment, bundle)
+            if (countryId != null) {
+                bundle.putInt("country_id", countryId!!)
+                println("DEBUG: Passing countryId to RegionFragment: $countryId")
+            }
+            findNavController().navigate(R.id.action_workPlaceFragment_to_regionFragment, bundle)
         }
 
+        // Кнопка "Выбрать" - ИСПРАВЛЕНО: используем явное действие навигации
+        binding.chooseButton.setOnClickListener {
+            println("DEBUG: CHOOSE BUTTON CLICKED - country: $countryName, region: $regionName")
+
+            // Проверяем, что что-то выбрано
+            if (countryName == null && regionName == null) {
+                println("DEBUG: Nothing selected, not saving")
+                return@setOnClickListener
+            }
+
+            // Сохраняем выбранное место работы в FiltrationViewModel
+            filtrationViewModel.onWorkplaceSelected(
+                countryName = countryName,
+                countryId = countryId,
+                regionName = regionName,
+                regionId = regionId
+            )
+
+            println("DEBUG: Workplace saved, navigating to filtration fragment")
+            // ИСПРАВЛЕНО: Явный переход в FiltrationFragment
+            findNavController().navigate(R.id.action_workPlaceFragment_to_filtrationFragment)
+        }
+
+        // Кнопка возврата - ИСПРАВЛЕНО: используем явное действие навигации
         binding.returnButton.setOnClickListener {
+            println("DEBUG: RETURN BUTTON CLICKED")
+            // ИСПРАВЛЕНО: Явный переход в FiltrationFragment
             findNavController().navigate(R.id.action_workPlaceFragment_to_filtrationFragment)
         }
     }
@@ -141,6 +190,7 @@ class WorkPlaceFragment : Fragment() {
     private fun updateChooseButtonVisibility() {
         val shouldShowButton = countryName?.isNotEmpty() == true || regionName?.isNotEmpty() == true
         binding.chooseButton.visibility = if (shouldShowButton) View.VISIBLE else View.INVISIBLE
+        println("DEBUG: Choose button visibility: $shouldShowButton")
     }
 
     override fun onDestroyView() {

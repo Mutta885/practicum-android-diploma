@@ -12,7 +12,8 @@ interface DataRepository {
         page: Int,
         industry: String? = null,
         salary: Int? = null,
-        onlyWithSalary: Boolean = false
+        onlyWithSalary: Boolean = false,
+        area: String? = null
     ): Resource<SearchResult>
 
     suspend fun getIndustries(): List<Industry>

@@ -10,9 +10,9 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import org.koin.androidx.viewmodel.ext.android.activityViewModel
+import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.databinding.FragmentFilterBinding
 import ru.practicum.android.diploma.presentation.vmodels.filter.FiltrationViewModel
@@ -24,8 +24,7 @@ class FiltrationFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val viewModel: FiltrationViewModel by activityViewModel()
-
-    private val searchViewModel: SearchViewModel by activityViewModel()
+    private val searchViewModel: SearchViewModel by sharedViewModel()
 
     companion object {
         private const val TAG = "FiltrationFragment"
@@ -50,7 +49,7 @@ class FiltrationFragment : Fragment() {
             // Кнопка возврата
             returnButton.setOnClickListener {
                 Log.d(TAG, "Return button clicked")
-                findNavController().navigateUp()
+                findNavController().navigate(R.id.action_filtrationFragment_to_mainFragment)
             }
 
             // Поле ввода зарплаты
@@ -87,36 +86,49 @@ class FiltrationFragment : Fragment() {
                 findNavController().navigate(R.id.action_filtrationFragment_to_industryFragment)
             }
 
-            // Чекбокс "Не показывать без зарплаты" - ИСПРАВЛЕНО
+            // Переход на экран места работы
+            workplaceItem.setOnClickListener {
+                Log.d(TAG, "Workplace item clicked - navigating to workPlace fragment")
+                findNavController().navigate(R.id.action_filtrationFragment_to_workPlaceFragment)
+            }
+
+            // Чекбокс "Не показывать без зарплаты"
             hideWithoutSalaryCheckbox.setOnCheckedChangeListener { _, isChecked ->
                 Log.d(TAG, "Hide without salary checkbox changed: $isChecked")
                 viewModel.onHideWithoutSalaryChanged(isChecked)
             }
 
-            // ДОБАВЛЕНО: Обработка клика на всю строку чекбокса
+            // Обработка клика на всю строку чекбокса
             hideSalaryContainer.setOnClickListener {
                 Log.d(TAG, "Hide salary container clicked")
                 val currentState = hideWithoutSalaryCheckbox.isChecked
                 hideWithoutSalaryCheckbox.isChecked = !currentState
-                // Слушатель onCheckedChangeListener автоматически вызовется
             }
 
-            // Кнопка "Применить"
+            // Кнопка "Применить" - ИСПРАВЛЕНО: убираем дублирование
             applyButton.setOnClickListener {
                 Log.d(TAG, "Apply button clicked")
 
-                // Создаем объект фильтров и передаем в SearchViewModel
+                // Создаем объект фильтров
                 val filters = FiltrationViewModel.Filters(
                     salary = viewModel.salary.value,
                     hideWithoutSalary = viewModel.hideWithoutSalary.value ?: false,
-                    industries = viewModel.selectedIndustries.value ?: emptyList()
+                    industries = viewModel.selectedIndustries.value ?: emptyList(),
+                    country = viewModel.selectedCountry.value,
+                    countryId = viewModel.selectedCountryId.value,
+                    region = viewModel.selectedRegion.value,
+                    regionId = viewModel.selectedRegionId.value
                 )
 
+                // Устанавливаем флаг, что фильтры только что применены
+                viewModel.setFiltersJustApplied(true)
+
+                // Применяем фильтры
                 searchViewModel.setFilters(filters)
                 Toast.makeText(context, "Фильтры применены", Toast.LENGTH_SHORT).show()
 
-                // Возвращаемся к предыдущему экрану
-                findNavController().navigateUp()
+                // Возвращаемся на главный экран
+                findNavController().navigate(R.id.action_filtrationFragment_to_mainFragment)
             }
 
             // Кнопка "Сбросить"
@@ -125,17 +137,13 @@ class FiltrationFragment : Fragment() {
                 viewModel.resetFilters()
                 salaryInput.text?.clear()
 
-                // НЕ устанавливаем чекбокс напрямую - он обновится через observeViewModel()
-                selectedIndustryText.text = "Отрасль"
+                // Устанавливаем флаг, что фильтры сброшены
+                viewModel.setFiltersJustApplied(true)
 
                 // Также сбрасываем фильтры в SearchViewModel
                 searchViewModel.setFilters(FiltrationViewModel.Filters())
                 Toast.makeText(context, "Фильтры сброшены", Toast.LENGTH_SHORT).show()
             }
-        }
-
-        binding.workplaceItem.setOnClickListener {
-            findNavController().navigate(R.id.action_filtrationFragment_to_workPlaceFragment)
         }
     }
 
@@ -164,6 +172,17 @@ class FiltrationFragment : Fragment() {
             }
         }
 
+        // Наблюдение за местом работы
+        viewModel.selectedCountry.observe(viewLifecycleOwner) { country ->
+            Log.d(TAG, "selectedCountry observed: $country")
+            updateWorkplaceText()
+        }
+
+        viewModel.selectedRegion.observe(viewLifecycleOwner) { region ->
+            Log.d(TAG, "selectedRegion observed: $region")
+            updateWorkplaceText()
+        }
+
         viewModel.isSalaryInputNotEmpty.observe(viewLifecycleOwner) { isNotEmpty ->
             Log.d(TAG, "isSalaryInputNotEmpty changed: $isNotEmpty")
             binding.clearSalaryButton.visibility = if (isNotEmpty) View.VISIBLE else View.GONE
@@ -187,6 +206,22 @@ class FiltrationFragment : Fragment() {
                 binding.salaryInput.setText(salary)
             }
         }
+    }
+
+    // Метод для обновления текста места работы
+    private fun updateWorkplaceText() {
+        val country = viewModel.selectedCountry.value
+        val region = viewModel.selectedRegion.value
+
+        val workplaceText = when {
+            country != null && region != null -> "$country, $region"
+            country != null -> country
+            region != null -> region
+            else -> "Место работы"
+        }
+
+        binding.workplaceText.text = workplaceText
+        Log.d(TAG, "Workplace text updated to: $workplaceText")
     }
 
     override fun onDestroyView() {
