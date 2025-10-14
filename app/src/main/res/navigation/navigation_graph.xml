@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/navigation_graph"
     app:startDestination="@id/mainFragment">
 
@@ -47,6 +48,13 @@
             app:destination="@id/mainFragment" />
     </fragment>
     <fragment
+        android:id="@+id/industryFragment"
+        android:name="ru.practicum.android.diploma.ui.industry.IndustryFragment"
+        android:label="Выбор отрасли"
+        tools:layout="@layout/fragment_industry" />
+
+    <!-- И в filtrationFragment добавь действие для перехода: -->
+    <fragment
         android:id="@+id/filtrationFragment"
         android:name="ru.practicum.android.diploma.ui.root.FiltrationFragment"
         android:label="FiltrationFragment">
@@ -59,7 +67,10 @@
         <action
             android:id="@+id/action_filtrationFragment_to_countryFragment"
             app:destination="@id/countryFragment" />
+            android:id="@+id/action_filtrationFragment_to_industryFragment"
+            app:destination="@id/industryFragment" />
     </fragment>
+
     <fragment
         android:id="@+id/vacancyDetailFragment"
         android:name="ru.practicum.android.diploma.ui.root.VacancyDetailFragment"

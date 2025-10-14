@@ -5,10 +5,12 @@ import ru.practicum.android.diploma.domain.usecase.GetAreasUseCase
 import ru.practicum.android.diploma.domain.usecase.GetVacanciesUseCase
 import ru.practicum.android.diploma.domain.usecase.SearchVacanciesUseCase
 import ru.practicum.android.diploma.domain.usecase.SearchVacancyDetailUseCase
+import ru.practicum.android.diploma.domain.usecase.GetIndustriesUseCase
 
 val useCaseModule = module {
     factory { GetVacanciesUseCase(repository = get()) }
     factory { SearchVacanciesUseCase(repository = get()) }
     factory { SearchVacancyDetailUseCase(repository = get()) }
     factory { GetAreasUseCase(repository = get()) }
+    factory { GetIndustriesUseCase(repository = get()) }
 }

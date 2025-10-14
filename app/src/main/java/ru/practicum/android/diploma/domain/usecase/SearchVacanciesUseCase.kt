@@ -2,12 +2,47 @@ package ru.practicum.android.diploma.domain.usecase
 
 import ru.practicum.android.diploma.domain.models.SearchResult
 import ru.practicum.android.diploma.domain.repository.DataRepository
+import ru.practicum.android.diploma.presentation.vmodels.filter.FiltrationViewModel
 import ru.practicum.android.diploma.util.Resource
 
 class SearchVacanciesUseCase(
     private val repository: DataRepository
 ) {
-    suspend fun execute(query: String, page: Int): Resource<SearchResult> {
-        return repository.searchVacancies(query, page)
+
+    suspend fun execute(
+        query: String,
+        page: Int,
+        filters: FiltrationViewModel.Filters
+    ): Resource<SearchResult> {
+        println("DEBUG: SearchVacanciesUseCase.execute() called")
+        println("DEBUG: Original query: '$query'")
+        println("DEBUG: Filters: $filters")
+
+        // Получаем параметры фильтров
+        val industry = getIndustryId(filters)
+        val salary = getSalary(filters)
+        val onlyWithSalary = filters.hideWithoutSalary
+
+        println("DEBUG: API params - industry: $industry, salary: $salary, onlyWithSalary: $onlyWithSalary")
+
+        // Передаем фильтры как отдельные параметры
+        val result = repository.searchVacancies(
+            query = query,
+            page = page,
+            industry = industry,
+            salary = salary,
+            onlyWithSalary = onlyWithSalary
+        )
+
+        println("DEBUG: Search result: $result")
+        return result
+    }
+
+    private fun getIndustryId(filters: FiltrationViewModel.Filters): String? {
+        return filters.industries.firstOrNull()?.id
+    }
+
+    private fun getSalary(filters: FiltrationViewModel.Filters): Int? {
+        return filters.salary?.toIntOrNull()?.takeIf { it > 0 }
     }
 }
