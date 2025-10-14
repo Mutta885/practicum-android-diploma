@@ -1,5 +1,6 @@
 package ru.practicum.android.diploma.domain.repository
 
+import ru.practicum.android.diploma.domain.models.FilterArea
 import ru.practicum.android.diploma.domain.models.Industry
 import ru.practicum.android.diploma.domain.models.SearchResult
 import ru.practicum.android.diploma.domain.models.SearchResultVacancyDetail
@@ -16,4 +17,5 @@ interface DataRepository {
 
     suspend fun getIndustries(): List<Industry>
     suspend fun searchVacancyDetail(query: String): Resource<SearchResultVacancyDetail>
+    suspend fun getAreas(): List<FilterArea>
 }

@@ -6,6 +6,7 @@ import ru.practicum.android.diploma.data.dto.ContactDto
 import ru.practicum.android.diploma.data.dto.EmployerDto
 import ru.practicum.android.diploma.data.dto.EmploymentDto
 import ru.practicum.android.diploma.data.dto.ExperienceDto
+import ru.practicum.android.diploma.data.dto.FilterAreaDto
 import ru.practicum.android.diploma.data.dto.FilterIndustryDto
 import ru.practicum.android.diploma.data.dto.SalaryDto
 import ru.practicum.android.diploma.data.dto.ScheduleDto
@@ -13,6 +14,7 @@ import ru.practicum.android.diploma.data.dto.VacancyDetailSearchResponse
 import ru.practicum.android.diploma.data.dto.VacancyDto
 import ru.practicum.android.diploma.data.dto.VacancySearchResponse
 import ru.practicum.android.diploma.data.network.HhApi
+import ru.practicum.android.diploma.domain.models.FilterArea
 import ru.practicum.android.diploma.domain.models.Area
 import ru.practicum.android.diploma.domain.models.Contact
 import ru.practicum.android.diploma.domain.models.Employer
@@ -119,7 +121,10 @@ class DataRepositoryImpl(
             println("DEBUG: Vacancy detail response code: ${response.code()}, message: ${response.message()}")
 
             when (response.code()) {
-                HTTP_OK -> handleSuccessResponseVacancyDetail(response.body())
+                HTTP_OK -> {
+                    handleSuccessResponseVacancyDetail(response.body())
+                }
+
                 HTTP_UNAUTHORIZED -> Resource.Error("Ошибка авторизации")
                 HTTP_FORBIDDEN -> Resource.Error("Доступ запрещен")
                 HTTP_NOT_FOUND -> Resource.Error("Вакансия не найдена")
@@ -138,6 +143,34 @@ class DataRepositoryImpl(
         } catch (e: IOException) {
             Log.w(TAG, "IO error during network request", e)
             Resource.Error("Ошибка сети: ${e.message ?: "Неизвестная ошибка"}")
+        }
+    }
+
+    override suspend fun getAreas(): List<FilterArea> {
+        println("DEBUG: Repository getIndustries called")
+        return try {
+            val response = api.searchAreas()
+            println("DEBUG: areas loaded: ${response.size} items")
+            response.map { dto ->
+                FilterArea(
+                    id = dto.id,
+                    parentId = dto.parentId,
+                    name = dto.name,
+                    areas = mapAreas(dto.areas)
+                )
+            }
+        } catch (e: UnknownHostException) {
+            Log.w(TAG, "Network connection error loading industries", e)
+            println("DEBUG: Network error loading industries: ${e.message}")
+            emptyList()
+        } catch (e: SocketTimeoutException) {
+            Log.w(TAG, "Timeout loading industries", e)
+            println("DEBUG: Timeout loading industries: ${e.message}")
+            emptyList()
+        } catch (e: IOException) {
+            Log.w(TAG, "IO error loading industries", e)
+            println("DEBUG: IO error loading industries: ${e.message}")
+            emptyList()
         }
     }
 
@@ -174,6 +207,17 @@ class DataRepositoryImpl(
                 description = dto.description ?: "Описание не указано"
             )
         }
+
+    private fun mapAreas(items: List<FilterAreaDto>): List<FilterArea> {
+        return items.map { dto ->
+            FilterArea(
+                id = dto.id,
+                name = dto.name,
+                parentId = dto.parentId,
+                areas = mapAreas(dto.areas)
+            )
+        }
+    }
 
     private fun mapSalary(salaryDto: SalaryDto?) = salaryDto?.let { dto ->
         Salary(

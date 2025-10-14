@@ -133,6 +133,10 @@ class FiltrationFragment : Fragment() {
                 Toast.makeText(context, "Фильтры сброшены", Toast.LENGTH_SHORT).show()
             }
         }
+
+        binding.workplaceItem.setOnClickListener {
+            findNavController().navigate(R.id.action_filtrationFragment_to_workPlaceFragment)
+        }
     }
 
     private fun observeViewModel() {
