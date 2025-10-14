@@ -6,12 +6,13 @@ import androidx.recyclerview.widget.RecyclerView
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.domain.models.FilterArea
 
-class CountryAdapter(private var countries: List<FilterArea>, private val countryListener: CountryListener) :
-    RecyclerView.Adapter<CountryViewHolder>() {
+class CountryAdapter(
+    private var countries: List<FilterArea>,
+    private val countryListener: CountryListener
+) : RecyclerView.Adapter<CountryViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CountryViewHolder {
-        val view =
-            LayoutInflater.from(parent.context).inflate(R.layout.item_country, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_country, parent, false)
         return CountryViewHolder(view)
     }
 
@@ -21,6 +22,11 @@ class CountryAdapter(private var countries: List<FilterArea>, private val countr
 
     override fun onBindViewHolder(holder: CountryViewHolder, position: Int) {
         holder.bind(countries[position], countryListener)
+    }
+
+    fun updateCountries(newCountries: List<FilterArea>) {
+        countries = newCountries
+        notifyDataSetChanged()
     }
 
     interface CountryListener {

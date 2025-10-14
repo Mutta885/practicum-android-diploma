@@ -126,13 +126,6 @@
 
         </LinearLayout>
 
-<!--        <Button-->
-<!--            android:layout_width="326dp"-->
-<!--            android:layout_height="59dp"-->
-<!--            android:paddingTop="85dp"-->
-<!--            android:text="jhvhvjhvhj"-->
-<!--            android:textColor="@color/white" />-->
-
     </LinearLayout>
 
 </LinearLayout>
