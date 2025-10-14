@@ -124,6 +124,7 @@ class DataRepositoryImpl(
                 HTTP_OK -> {
                     handleSuccessResponseVacancyDetail(response.body())
                 }
+
                 HTTP_UNAUTHORIZED -> Resource.Error("Ошибка авторизации")
                 HTTP_FORBIDDEN -> Resource.Error("Доступ запрещен")
                 HTTP_NOT_FOUND -> Resource.Error("Вакансия не найдена")
@@ -150,7 +151,14 @@ class DataRepositoryImpl(
         return try {
             val response = api.searchAreas()
             println("DEBUG: areas loaded: ${response.size} items")
-            response.map { dto -> FilterArea(id = dto.id, parentId = dto.parentId, name = dto.name, areas = mapAreas(dto.areas)) }
+            response.map { dto ->
+                FilterArea(
+                    id = dto.id,
+                    parentId = dto.parentId,
+                    name = dto.name,
+                    areas = mapAreas(dto.areas)
+                )
+            }
         } catch (e: UnknownHostException) {
             Log.w(TAG, "Network connection error loading industries", e)
             println("DEBUG: Network error loading industries: ${e.message}")
