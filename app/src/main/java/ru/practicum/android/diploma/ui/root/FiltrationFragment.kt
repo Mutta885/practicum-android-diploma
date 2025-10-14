@@ -45,14 +45,23 @@ class FiltrationFragment : Fragment() {
     }
 
     private fun setupViews() {
-        with(binding) {
-            // Кнопка возврата
-            returnButton.setOnClickListener {
-                Log.d(TAG, "Return button clicked")
-                findNavController().navigate(R.id.action_filtrationFragment_to_mainFragment)
-            }
+        setupReturnButton()
+        setupSalaryInput()
+        setupIndustryNavigation()
+        setupWorkplaceNavigation()
+        setupSalaryCheckbox()
+        setupActionButtons()
+    }
 
-            // Поле ввода зарплаты
+    private fun setupReturnButton() {
+        binding.returnButton.setOnClickListener {
+            Log.d(TAG, "Return button clicked")
+            findNavController().navigate(R.id.action_filtrationFragment_to_mainFragment)
+        }
+    }
+
+    private fun setupSalaryInput() {
+        with(binding) {
             salaryInput.addTextChangedListener(object : TextWatcher {
                 override fun afterTextChanged(s: Editable?) {
                     val text = s?.toString() ?: ""
@@ -64,7 +73,6 @@ class FiltrationFragment : Fragment() {
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
             })
 
-            // Следим за фокусом
             salaryInput.setOnFocusChangeListener { _, hasFocus ->
                 Log.d(TAG, "Salary input focus changed: $hasFocus")
                 if (hasFocus) {
@@ -74,105 +82,110 @@ class FiltrationFragment : Fragment() {
                 }
             }
 
-            // Кнопка очистки зарплаты
             clearSalaryButton.setOnClickListener {
                 Log.d(TAG, "Clear salary button clicked")
                 salaryInput.text?.clear()
             }
+        }
+    }
 
-            // Переход на экран отраслей
-            industryItem.setOnClickListener {
-                Log.d(TAG, "Industry item clicked - navigating to industry fragment")
-                findNavController().navigate(R.id.action_filtrationFragment_to_industryFragment)
-            }
+    private fun setupIndustryNavigation() {
+        binding.industryItem.setOnClickListener {
+            Log.d(TAG, "Industry item clicked - navigating to industry fragment")
+            findNavController().navigate(R.id.action_filtrationFragment_to_industryFragment)
+        }
+    }
 
-            // Переход на экран места работы
-            workplaceItem.setOnClickListener {
-                Log.d(TAG, "Workplace item clicked - navigating to workPlace fragment")
-                findNavController().navigate(R.id.action_filtrationFragment_to_workPlaceFragment)
-            }
+    private fun setupWorkplaceNavigation() {
+        binding.workplaceItem.setOnClickListener {
+            Log.d(TAG, "Workplace item clicked - navigating to workPlace fragment")
+            findNavController().navigate(R.id.action_filtrationFragment_to_workPlaceFragment)
+        }
+    }
 
-            // Чекбокс "Не показывать без зарплаты"
+    private fun setupSalaryCheckbox() {
+        with(binding) {
             hideWithoutSalaryCheckbox.setOnCheckedChangeListener { _, isChecked ->
                 Log.d(TAG, "Hide without salary checkbox changed: $isChecked")
                 viewModel.onHideWithoutSalaryChanged(isChecked)
             }
 
-            // Обработка клика на всю строку чекбокса
             hideSalaryContainer.setOnClickListener {
                 Log.d(TAG, "Hide salary container clicked")
                 val currentState = hideWithoutSalaryCheckbox.isChecked
                 hideWithoutSalaryCheckbox.isChecked = !currentState
             }
-
-            // Кнопка "Применить" - ИСПРАВЛЕНО: убираем дублирование
-            applyButton.setOnClickListener {
-                Log.d(TAG, "Apply button clicked")
-
-                // Создаем объект фильтров
-                val filters = FiltrationViewModel.Filters(
-                    salary = viewModel.salary.value,
-                    hideWithoutSalary = viewModel.hideWithoutSalary.value ?: false,
-                    industries = viewModel.selectedIndustries.value ?: emptyList(),
-                    country = viewModel.selectedCountry.value,
-                    countryId = viewModel.selectedCountryId.value,
-                    region = viewModel.selectedRegion.value,
-                    regionId = viewModel.selectedRegionId.value
-                )
-
-                // Устанавливаем флаг, что фильтры только что применены
-                viewModel.setFiltersJustApplied(true)
-
-                // Применяем фильтры
-                searchViewModel.setFilters(filters)
-                Toast.makeText(context, "Фильтры применены", Toast.LENGTH_SHORT).show()
-
-                // Возвращаемся на главный экран
-                findNavController().navigate(R.id.action_filtrationFragment_to_mainFragment)
-            }
-
-            // Кнопка "Сбросить"
-            resetButton.setOnClickListener {
-                Log.d(TAG, "Reset button clicked")
-                viewModel.resetFilters()
-                salaryInput.text?.clear()
-
-                // Устанавливаем флаг, что фильтры сброшены
-                viewModel.setFiltersJustApplied(true)
-
-                // Также сбрасываем фильтры в SearchViewModel
-                searchViewModel.setFilters(FiltrationViewModel.Filters())
-                Toast.makeText(context, "Фильтры сброшены", Toast.LENGTH_SHORT).show()
-            }
         }
     }
 
+    private fun setupActionButtons() {
+        setupApplyButton()
+        setupResetButton()
+    }
+
+    private fun setupApplyButton() {
+        binding.applyButton.setOnClickListener {
+            Log.d(TAG, "Apply button clicked")
+            applyFilters()
+        }
+    }
+
+    private fun setupResetButton() {
+        binding.resetButton.setOnClickListener {
+            Log.d(TAG, "Reset button clicked")
+            resetFilters()
+        }
+    }
+
+    private fun applyFilters() {
+        val filters = FiltrationViewModel.Filters(
+            salary = viewModel.salary.value,
+            hideWithoutSalary = viewModel.hideWithoutSalary.value ?: false,
+            industries = viewModel.selectedIndustries.value ?: emptyList(),
+            country = viewModel.selectedCountry.value,
+            countryId = viewModel.selectedCountryId.value,
+            region = viewModel.selectedRegion.value,
+            regionId = viewModel.selectedRegionId.value
+        )
+
+        viewModel.setFiltersJustApplied(true)
+        searchViewModel.setFilters(filters)
+        Toast.makeText(context, "Фильтры применены", Toast.LENGTH_SHORT).show()
+        findNavController().navigate(R.id.action_filtrationFragment_to_mainFragment)
+    }
+
+    private fun resetFilters() {
+        viewModel.resetFilters()
+        binding.salaryInput.text?.clear()
+        viewModel.setFiltersJustApplied(true)
+        searchViewModel.setFilters(FiltrationViewModel.Filters())
+        Toast.makeText(context, "Фильтры сброшены", Toast.LENGTH_SHORT).show()
+    }
+
     private fun observeViewModel() {
+        observeFilterState()
+        observeIndustries()
+        observeWorkplace()
+        observeSalaryState()
+        observeCheckboxState()
+    }
+
+    private fun observeFilterState() {
         viewModel.isAnyFilterActive.observe(viewLifecycleOwner) { isActive ->
             Log.d(TAG, "isAnyFilterActive changed: $isActive")
             binding.applyButton.visibility = if (isActive) View.VISIBLE else View.GONE
             binding.resetButton.visibility = if (isActive) View.VISIBLE else View.GONE
         }
+    }
 
+    private fun observeIndustries() {
         viewModel.selectedIndustries.observe(viewLifecycleOwner) { industries ->
             Log.d(TAG, "selectedIndustries observed: ${industries.size} items")
-            industries.forEach { Log.d(TAG, "Received industry: ${it.name} (id: ${it.id})") }
-
-            if (industries.isNotEmpty()) {
-                if (industries.size == 1) {
-                    binding.selectedIndustryText.text = industries[0].name
-                    Log.d(TAG, "Setting industry text to: ${industries[0].name}")
-                } else {
-                    binding.selectedIndustryText.text = "Выбрано: ${industries.size}"
-                    Log.d(TAG, "Setting industry text to: Выбрано: ${industries.size}")
-                }
-            } else {
-                binding.selectedIndustryText.text = "Отрасль"
-                Log.d(TAG, "Setting industry text to: Отрасль")
-            }
+            updateIndustryText(industries)
         }
+    }
 
-        // Наблюдение за местом работы
+    private fun observeWorkplace() {
         viewModel.selectedCountry.observe(viewLifecycleOwner) { country ->
             Log.d(TAG, "selectedCountry observed: $country")
             updateWorkplaceText()
@@ -182,33 +195,37 @@ class FiltrationFragment : Fragment() {
             Log.d(TAG, "selectedRegion observed: $region")
             updateWorkplaceText()
         }
+    }
 
+    private fun observeSalaryState() {
         viewModel.isSalaryInputNotEmpty.observe(viewLifecycleOwner) { isNotEmpty ->
             Log.d(TAG, "isSalaryInputNotEmpty changed: $isNotEmpty")
             binding.clearSalaryButton.visibility = if (isNotEmpty) View.VISIBLE else View.GONE
         }
 
-        // Следим за состоянием чекбокса
-        viewModel.hideWithoutSalary.observe(viewLifecycleOwner) { isChecked ->
-            Log.d(TAG, "hideWithoutSalary observed: $isChecked")
-            // Временно отключаем слушатель чтобы избежать рекурсии
-            binding.hideWithoutSalaryCheckbox.setOnCheckedChangeListener(null)
-            binding.hideWithoutSalaryCheckbox.isChecked = isChecked
-            binding.hideWithoutSalaryCheckbox.setOnCheckedChangeListener { _, checked ->
-                viewModel.onHideWithoutSalaryChanged(checked)
-            }
-        }
-
-        // Следим за зарплатой для предзаполнения поля
         viewModel.salary.observe(viewLifecycleOwner) { salary ->
             Log.d(TAG, "salary observed: '$salary'")
-            if (salary != null && binding.salaryInput.text?.toString() != salary) {
-                binding.salaryInput.setText(salary)
-            }
+            updateSalaryInput(salary)
         }
     }
 
-    // Метод для обновления текста места работы
+    private fun observeCheckboxState() {
+        viewModel.hideWithoutSalary.observe(viewLifecycleOwner) { isChecked ->
+            Log.d(TAG, "hideWithoutSalary observed: $isChecked")
+            updateCheckboxState(isChecked)
+        }
+    }
+
+    private fun updateIndustryText(industries: List<ru.practicum.android.diploma.domain.models.Industry>) {
+        val text = when {
+            industries.isEmpty() -> "Отрасль"
+            industries.size == 1 -> industries[0].name
+            else -> "Выбрано: ${industries.size}"
+        }
+        binding.selectedIndustryText.text = text
+        Log.d(TAG, "Setting industry text to: $text")
+    }
+
     private fun updateWorkplaceText() {
         val country = viewModel.selectedCountry.value
         val region = viewModel.selectedRegion.value
@@ -222,6 +239,20 @@ class FiltrationFragment : Fragment() {
 
         binding.workplaceText.text = workplaceText
         Log.d(TAG, "Workplace text updated to: $workplaceText")
+    }
+
+    private fun updateSalaryInput(salary: String?) {
+        if (salary != null && binding.salaryInput.text?.toString() != salary) {
+            binding.salaryInput.setText(salary)
+        }
+    }
+
+    private fun updateCheckboxState(isChecked: Boolean) {
+        binding.hideWithoutSalaryCheckbox.setOnCheckedChangeListener(null)
+        binding.hideWithoutSalaryCheckbox.isChecked = isChecked
+        binding.hideWithoutSalaryCheckbox.setOnCheckedChangeListener { _, checked ->
+            viewModel.onHideWithoutSalaryChanged(checked)
+        }
     }
 
     override fun onDestroyView() {
