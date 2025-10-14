@@ -35,7 +35,7 @@ class RootActivity : AppCompatActivity() {
                 R.id.vacancyDetailFragment,
                 R.id.regionFragment,
                 R.id.countryFragment,
-                R.id.workPlaceFragment -> {
+                R.id.workPlaceFragment,
                 R.id.industryFragment -> {
                     bottomNavigationView.isVisible = false
                     line.isVisible = false

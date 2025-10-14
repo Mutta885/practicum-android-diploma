@@ -67,6 +67,7 @@
         <action
             android:id="@+id/action_filtrationFragment_to_countryFragment"
             app:destination="@id/countryFragment" />
+        <action
             android:id="@+id/action_filtrationFragment_to_industryFragment"
             app:destination="@id/industryFragment" />
     </fragment>
