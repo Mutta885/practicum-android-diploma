@@ -28,7 +28,6 @@ class RegionFragment : Fragment(), RegionAdapter.RegionListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val countryId = arguments?.getInt("country_id")
-
         viewModel.getRegions(countryId)
         observeViewModel()
         binding.returnButton.setOnClickListener {
