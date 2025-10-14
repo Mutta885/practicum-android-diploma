@@ -191,13 +191,15 @@ class FiltrationViewModel(
     fun applySavedFiltersToSearch(searchViewModel: SearchViewModel) {
         viewModelScope.launch {
             delay(FILTERS_DELAY_MS)
-
-            if (shouldSkipAutoApplication()) {
-                return@launch
-            }
-
-            applyFiltersToSearch(searchViewModel)
+            handleFiltersApplication(searchViewModel)
         }
+    }
+
+    private suspend fun handleFiltersApplication(searchViewModel: SearchViewModel) {
+        if (shouldSkipAutoApplication()) {
+            return
+        }
+        applyFiltersToSearch(searchViewModel)
     }
 
     private suspend fun shouldSkipAutoApplication(): Boolean {

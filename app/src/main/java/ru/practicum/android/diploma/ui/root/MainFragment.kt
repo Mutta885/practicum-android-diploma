@@ -190,17 +190,17 @@ class MainFragment : Fragment() {
     private fun applySavedFiltersOnStart() {
         lifecycleScope.launch {
             delay(DELAY_FOR_FILTERS)
+            handleSavedFilters()
+        }
+    }
 
-            // Проверяем, не были ли фильтры только что применены из FiltrationFragment
-            val filtersJustApplied = filtrationViewModel.filtersJustApplied.value == true
+    private suspend fun handleSavedFilters() {
+        val filtersJustApplied = filtrationViewModel.filtersJustApplied.value == true
 
-            if (filtersJustApplied) {
-                // Сбрасываем флаг и НЕ применяем фильтры повторно
-                filtrationViewModel.setFiltersJustApplied(false)
-                println("$DEBUG_TAG: Filters were just applied - skipping auto-application")
-                return@launch
-            }
-
+        if (filtersJustApplied) {
+            filtrationViewModel.setFiltersJustApplied(false)
+            println("$DEBUG_TAG: Filters were just applied - skipping auto-application")
+        } else {
             applySavedFilters()
         }
     }

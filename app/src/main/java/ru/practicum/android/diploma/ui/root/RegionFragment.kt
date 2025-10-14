@@ -20,7 +20,7 @@ class RegionFragment : Fragment(), RegionAdapter.RegionListener {
     private val viewModel: AreasViewModel by viewModel()
     private var _binding: FragmentRegionBinding? = null
     private val binding get() = _binding!!
-    private lateinit var regionAdapter: RegionAdapter
+    private var regionAdapter: RegionAdapter? = null
     private var allRegions: List<FilterArea> = emptyList()
 
     companion object {
@@ -84,7 +84,7 @@ class RegionFragment : Fragment(), RegionAdapter.RegionListener {
         } else {
             allRegions.filter { it.name.contains(query, ignoreCase = true) }
         }
-        regionAdapter.updateRegions(filtered)
+        regionAdapter?.updateRegions(filtered)
     }
 
     private fun observeViewModel() {
@@ -113,7 +113,7 @@ class RegionFragment : Fragment(), RegionAdapter.RegionListener {
         }
 
         allRegions = regions
-        regionAdapter.updateRegions(regions)
+        regionAdapter?.updateRegions(regions)
         binding.regionRecyclerView.visibility = View.VISIBLE
     }
 
@@ -146,5 +146,6 @@ class RegionFragment : Fragment(), RegionAdapter.RegionListener {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+        regionAdapter = null
     }
 }
