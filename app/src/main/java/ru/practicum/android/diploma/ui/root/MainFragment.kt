@@ -1,24 +1,210 @@
 package ru.practicum.android.diploma.ui.root
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.databinding.FragmentMainBinding
+import ru.practicum.android.diploma.domain.models.Vacancy
+import ru.practicum.android.diploma.ui.search.SearchState
+import ru.practicum.android.diploma.ui.search.SearchViewModel
+import ru.practicum.android.diploma.ui.search.VacanciesAdapter
+import ru.practicum.android.diploma.util.showToast
 
 class MainFragment : Fragment() {
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        val binding = FragmentMainBinding.inflate(layoutInflater)
-        val trailingButton = binding.trailingButton
+    private var _binding: FragmentMainBinding? = null
+    private val binding get() = _binding!!
 
-        trailingButton.setOnClickListener {
+    private val viewModel: SearchViewModel by viewModel()
+    private val adapter: VacanciesAdapter by lazy {
+        VacanciesAdapter(onItemClick = { vacancy -> onVacancyClick(vacancy) })
+    }
+
+    private companion object {
+        const val LOAD_MORE_THRESHOLD = 3
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentMainBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setupRecyclerView()
+        setupSearchField()
+        setupClickListeners()
+        observeViewModel()
+    }
+
+    private fun setupRecyclerView() {
+        binding.vacanciesRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+        binding.vacanciesRecyclerView.adapter = adapter
+
+        binding.vacanciesRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+
+                if (dy > 0 && !viewModel.isLoading() && viewModel.hasMorePages()) {
+                    val layoutManager = recyclerView.layoutManager as LinearLayoutManager
+                    val totalItemCount = layoutManager.itemCount
+                    val lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition()
+
+                    if (lastVisibleItemPosition >= totalItemCount - LOAD_MORE_THRESHOLD) {
+                        println("DEBUG: Loading next page... current items: $totalItemCount")
+                        viewModel.loadNextPage()
+                    }
+                }
+            }
+        })
+    }
+
+    private fun setupSearchField() {
+        binding.searchEditText.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
+            override fun afterTextChanged(s: Editable?) {
+                viewModel.search(s.toString())
+            }
+        })
+    }
+
+    private fun setupClickListeners() {
+        binding.trailingButton.setOnClickListener {
             findNavController().navigate(R.id.action_mainFragment_to_filtrationFragment)
         }
+    }
 
-        return binding.root
+    private fun observeViewModel() {
+        viewModel.searchState.observe(viewLifecycleOwner) { state ->
+            println("DEBUG: State changed to: ${state.javaClass.simpleName}")
+
+            when (state) {
+                is SearchState.EmptyQuery -> showEmptyQueryState()
+                is SearchState.Loading -> showLoadingState()
+                is SearchState.Success -> {
+                    println(
+                        "DEBUG: Success state - vacancies: ${state.vacancies.size}, " +
+                            "isFirstPage: ${state.isFirstPage}"
+                    )
+                    showSuccessState(state)
+                    adapter.submitVacancies(state.vacancies)
+                    adapter.setLoading(false)
+                    adapter.setHasMore(viewModel.hasMorePages())
+                }
+
+                is SearchState.Error -> showErrorState(state.message)
+                is SearchState.LoadingNextPage -> {
+                    println("DEBUG: Loading next page state")
+                    adapter.setLoading(true)
+                    adapter.setHasMore(true)
+                }
+
+                is SearchState.NextPageError -> {
+                    adapter.setLoading(false)
+                    requireContext().showToast(state.message)
+                }
+            }
+        }
+    }
+
+    private fun showEmptyQueryState() {
+        binding.apply {
+            loadingProgressBar.isVisible = false
+            vacanciesRecyclerView.isVisible = false
+            errorStateContainer.isVisible = false
+            noResultsContainer.isVisible = false
+            emptyStateText.isVisible = true
+            resultsCountText.isVisible = false
+        }
+        adapter.submitVacancies(emptyList())
+        adapter.setLoading(false)
+        adapter.setHasMore(false)
+    }
+
+    private fun showLoadingState() {
+        binding.apply {
+            loadingProgressBar.isVisible = true
+            vacanciesRecyclerView.isVisible = false
+            errorStateContainer.isVisible = false
+            noResultsContainer.isVisible = false
+            emptyStateText.isVisible = false
+            resultsCountText.isVisible = false
+        }
+        adapter.setLoading(false)
+        adapter.setHasMore(false)
+    }
+
+    private fun showSuccessState(state: SearchState.Success) {
+        binding.apply {
+            loadingProgressBar.isVisible = false
+            errorStateContainer.isVisible = false
+            emptyStateText.isVisible = false
+
+            if (state.vacancies.isEmpty()) {
+                vacanciesRecyclerView.isVisible = false
+                noResultsContainer.isVisible = true
+                resultsCountText.isVisible = false
+            } else {
+                vacanciesRecyclerView.isVisible = true
+                noResultsContainer.isVisible = false
+                showResultsCount(state.found, state.vacancies.size)
+            }
+        }
+
+        adapter.submitVacancies(state.vacancies)
+        adapter.setLoading(false)
+        adapter.setHasMore(viewModel.hasMorePages())
+
+        if (state.vacancies.isNotEmpty() && state.isFirstPage) {
+            requireContext().showToast("Найдено вакансий: ${state.found}")
+        }
+    }
+
+    private fun showErrorState(message: String) {
+        binding.apply {
+            loadingProgressBar.isVisible = false
+            vacanciesRecyclerView.isVisible = false
+            emptyStateText.isVisible = false
+            noResultsContainer.isVisible = false
+            errorStateContainer.isVisible = true
+            errorStateText.text = message
+            resultsCountText.isVisible = false
+        }
+        adapter.setLoading(false)
+        adapter.setHasMore(false)
+    }
+
+    private fun showResultsCount(totalFound: Int, displayed: Int) {
+        binding.resultsCountText.isVisible = totalFound > 0
+        if (totalFound > 0) {
+            binding.resultsCountText.text = "Найдено $totalFound вакансий"
+        }
+    }
+
+    private fun onVacancyClick(vacancy: Vacancy) {
+        requireContext().showToast("Открываем вакансию: ${vacancy.title}")
+        val bundle = Bundle()
+        bundle.putString("vacancyId", vacancy.id)
+        findNavController().navigate(R.id.action_mainFragment_to_vacancyDetailFragment, bundle)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }
