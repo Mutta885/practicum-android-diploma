@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="area_job">Место работы</string>
+    <string name="sector">Отрасль</string>
+    <string name="select_sum">Введите сумму</string>
+    <string name="hint_not_salary">Не показывать без зарплаты</string>
+    <string name="filtration_settings">Настройки фильтрации</string>
+    <string name="salary_wait">Ожидаемая зарплата</string>
+    <style name="filter_text_button">
+        <item name ="android:textAppearance">@style/textAppearanceRegular16sp400w</item>>
+        <item name ="android:textColor">@color/grey</item>>
+        <item name ="android:gravity">start|center_vertical</item>>
+        <item name ="android:foreground">?attr/selectableItemBackground</item>>
+        <item name ="android:drawableEnd">@drawable/ic_arrow_right</item>>
+        <item name="android:paddingStart">16dp</item>
+    </style>
+</resources>

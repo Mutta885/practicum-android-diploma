@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="?attr/attr_black_white_color"
     android:orientation="vertical">
 
     <!-- Заголовок -->
@@ -19,8 +20,8 @@
             android:gravity="center_vertical"
             android:paddingStart="56dp"
             android:text="@string/filtration_settings"
-            android:textColor="@color/black"
-            android:textSize="@dimen/text_size"
+            android:textColor="?attr/attr_white_black_color"
+            android:textSize="22sp"
             tools:ignore="RtlSymmetry" />
 
         <ImageButton
@@ -49,7 +50,21 @@
             android:paddingTop="16dp">
 
             <!-- Место работы -->
-            <LinearLayout
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/workplace_item"
+                style="@style/filter_text_button"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:text="@string/area_job" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/industry_item"
+                style="@style/filter_text_button"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:text="@string/sector" />
+
+            <!--<LinearLayout
                 android:id="@+id/workplace_item"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -65,7 +80,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Место работы"
+                    android:text="@string/area_job"
                     android:textColor="@color/grey"
                     android:textSize="16sp" />
 
@@ -74,10 +89,10 @@
                     android:layout_height="48dp"
                     android:src="@drawable/ic_arrow_right"
                     android:layout_gravity="end" />
-            </LinearLayout>
+            </LinearLayout>-->
 
             <!-- Отрасль -->
-            <LinearLayout
+            <!--<LinearLayout
                 android:id="@+id/industry_item"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -92,7 +107,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Отрасль"
+                    android:text="@string/sector"
                     android:textColor="@color/grey"
                     android:textSize="16sp" />
 
@@ -101,15 +116,15 @@
                     android:layout_height="48dp"
                     android:src="@drawable/ic_arrow_right"
                     android:layout_gravity="end" />
-            </LinearLayout>
+            </LinearLayout>-->
 
             <!-- Блок: Ожидаемая зарплата -->
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="99dp"
                 android:orientation="vertical"
-                android:padding="12dp"
-                android:background="@color/white_day"
+                android:padding="16dp"
+                android:background="?attr/attr_black_white_color"
                 android:layout_marginTop="8dp">
 
                 <!-- Поле ввода с двумя строками -->
@@ -131,8 +146,8 @@
                             android:id="@+id/salary_label"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="Ожидаемая зарплата"
-                            android:textColor="@color/grey"
+                            android:text="@string/salary_wait"
+                            android:textColor="?attr/attr_gray_white_color"
                             android:textSize="14sp"
                             android:layout_gravity="top"
                             android:layout_marginStart="16dp"
@@ -144,10 +159,14 @@
                             android:id="@+id/salary_input"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:hint="Введите сумму"
+                            android:hint="@string/select_sum"
                             android:inputType="number"
                             android:maxLength="10"
-                            android:textSize="16sp"
+                            android:gravity="center_vertical"
+                            android:textCursorDrawable="@drawable/cursor"
+                            android:textColorHint="?attr/attr_gray_white_color"
+                            android:textColor="@color/black"
+                            android:textAppearance="@style/textAppearanceRegular16sp400w"
                             android:layout_gravity="bottom"
                             android:layout_marginEnd="48dp"
                             android:layout_marginTop="32dp"
@@ -171,8 +190,30 @@
             </LinearLayout>
 
             <!-- Блок: "Не показывать без зарплаты" -->
-            <LinearLayout
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="60dp">
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/hide_salary_container"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:gravity="start|center_vertical"
+                android:text="@string/hint_not_salary"
+                android:paddingStart="16dp"
+                android:textAppearance="@style/textAppearanceRegular16sp400w"
+                android:textColor="?attr/attr_white_black_color"/>
+                <CheckBox
+                    android:id="@+id/hide_without_salary_checkbox"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end|center_vertical"
+                    android:shadowColor="@color/blue"
+                    android:buttonTint="@color/chec_box_colored"
+                    android:clickable="false"
+                    android:focusable="false" />
+            </FrameLayout>
+           <!-- <LinearLayout
+
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
@@ -189,17 +230,20 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Не показывать без зарплаты"
-                    android:textSize="16sp" />
+                    android:textAppearance="@style/textAppearanceRegular16sp400w"
+                    android:textColor="?attr/attr_white_black_color"
+                    android:text="@string/hint_not_salary"/>
 
                 <CheckBox
-                    android:id="@+id/hide_without_salary_checkbox"
+
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:shadowColor="@color/blue"
+                    android:buttonTint="@color/chec_box_colored"
                     android:clickable="false"
                     android:focusable="false" />
 
-            </LinearLayout>
+            </LinearLayout>-->
 
         </LinearLayout>
     </ScrollView>

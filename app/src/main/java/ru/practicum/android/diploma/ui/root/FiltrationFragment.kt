@@ -222,7 +222,7 @@ class FiltrationFragment : Fragment() {
             industries.size == 1 -> industries[0].name
             else -> "Выбрано: ${industries.size}"
         }
-        binding.selectedIndustryText.text = text
+        binding.industryItem.text = text
         Log.d(TAG, "Setting industry text to: $text")
     }
 
@@ -237,7 +237,7 @@ class FiltrationFragment : Fragment() {
             else -> "Место работы"
         }
 
-        binding.workplaceText.text = workplaceText
+        binding.workplaceItem.text = workplaceText
         Log.d(TAG, "Workplace text updated to: $workplaceText")
     }
 

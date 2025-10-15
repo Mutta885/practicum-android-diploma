@@ -109,14 +109,14 @@
                 android:id="@+id/results_count_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingVertical="4dp"
-                android:paddingHorizontal="12dp"
-                android:textColor="@color/white"
-                android:textAppearance="@style/textAppearanceRegular16sp400w"
-                android:gravity="center"
+                android:layout_gravity="center_horizontal"
                 android:background="@drawable/bg_results_count"
-                android:visibility="gone"
-                android:layout_gravity="center_horizontal" />
+                android:gravity="center"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="4dp"
+                android:textAppearance="@style/textAppearanceRegular16sp400w"
+                android:textColor="@color/white"
+                android:visibility="gone" />
 
             <!-- RecyclerView для вакансий -->
             <androidx.recyclerview.widget.RecyclerView
