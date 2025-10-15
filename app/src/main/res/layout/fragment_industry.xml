@@ -46,7 +46,26 @@
         android:padding="16dp">
 
         <!-- Поиск -->
-
+        <EditText
+            android:id="@+id/editSearchText"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginHorizontal="16dp"
+            android:background="@drawable/background_search_edit_text"
+            android:drawableRight="@drawable/search_icon"
+            android:drawablePadding="8dp"
+            android:fontFamily="@font/ys_display_regular"
+            android:hint="@string/hint_edit_text"
+            android:imeOptions="actionDone"
+            android:inputType="text"
+            android:maxLines="1"
+            android:paddingHorizontal="16dp"
+            android:singleLine="true"
+            android:textAppearance="@style/textAppearanceRegular16sp400w"
+            android:textColor="@color/black"
+            android:textColorHint="?attr/hint_color_edit_text"
+            android:textCursorDrawable="@drawable/cursor" />
         <!-- Поиск -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/search_container"
