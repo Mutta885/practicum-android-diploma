@@ -69,14 +69,12 @@ class IndustryFragment : Fragment() {
 
     private fun setupSearch() {
         val editText = binding.searchEditText
-        val searchIcon = binding.searchIcon
         val clearIcon = binding.clearIcon
 
         clearIcon.setOnClickListener {
             editText.text.clear()
             adapter.submitList(adapter.getCurrentList())
             clearIcon.visibility = View.GONE
-            searchIcon.visibility = View.VISIBLE
         }
 
         editText.addTextChangedListener(object : TextWatcher {
@@ -84,11 +82,6 @@ class IndustryFragment : Fragment() {
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) = Unit
             override fun afterTextChanged(s: Editable) {
                 val text = s.toString().trim()
-                searchIcon.visibility = if (text.isNotEmpty()) {
-                    View.GONE
-                } else {
-                    View.VISIBLE
-                }
                 clearIcon.visibility = if (text.isNotEmpty()) {
                     View.VISIBLE
                 } else {
