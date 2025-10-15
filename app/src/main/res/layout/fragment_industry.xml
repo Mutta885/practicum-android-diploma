@@ -20,8 +20,8 @@
             android:layout_height="match_parent"
             android:gravity="center_vertical"
             android:paddingStart="56dp"
-            android:text="Выбор отрасли"
-            android:textColor="@color/black"
+            android:text="@string/select_industry"
+            android:textColor="?attr/attr_white_black_color"
             android:textSize="@dimen/text_size"
             tools:ignore="RtlSymmetry" />
 

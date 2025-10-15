@@ -57,7 +57,7 @@
             style="@style/filter_text_button"
             android:layout_width="match_parent"
             android:layout_height="60dp"
-            android:text="@string/sector" />
+            android:text="@string/industry" />
 
         <!-- Блок: Ожидаемая зарплата -->
         <LinearLayout

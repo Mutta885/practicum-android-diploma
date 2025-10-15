@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="area_job">Место работы</string>
-    <string name="sector">Отрасль</string>
     <string name="select_sum">Введите сумму</string>
     <string name="hint_not_salary">Не показывать без зарплаты</string>
     <string name="filtration_settings">Настройки фильтрации</string>
