@@ -18,5 +18,7 @@
         <item name="hint_color_edit_text">@color/white</item>
         <item name="attr_white_black_color">@color/white</item>
         <item name="attr_black_white_color">@color/black</item>
+        <item name="attr_gray_light_gray_color">@color/grey</item>
+        <item name="attr_gray_white_color">@color/white</item>
     </style>
 </resources>

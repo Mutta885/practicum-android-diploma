@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="?attr/attr_black_white_color"
     android:fitsSystemWindows="true">
 
     <!-- Заголовок -->
@@ -62,6 +63,10 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:hint="@string/search_hint"
+                    android:textColorHint="?attr/attr_gray_white_color"
+                    android:textColor="@color/black"
+                    android:textCursorDrawable="@drawable/cursor"
+                    android:textAppearance="@style/textAppearanceRegular16sp400w"
                     android:background="@android:color/transparent"
                     android:imeOptions="actionSearch"
                     android:inputType="text"
@@ -104,9 +109,10 @@
                 android:id="@+id/results_count_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="12dp"
+                android:paddingVertical="4dp"
+                android:paddingHorizontal="12dp"
                 android:textColor="@color/white"
-                android:textSize="@dimen/text_size_medium"
+                android:textAppearance="@style/textAppearanceRegular16sp400w"
                 android:gravity="center"
                 android:background="@drawable/bg_results_count"
                 android:visibility="gone"
