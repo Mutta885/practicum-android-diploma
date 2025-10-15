@@ -29,257 +29,160 @@
             android:layout_width="@dimen/button_size"
             android:layout_height="@dimen/button_size"
             android:layout_alignParentLeft="true"
-            android:layout_marginStart="4dp"
             android:layout_centerVertical="true"
+            android:layout_marginStart="4dp"
             android:layout_marginEnd="@dimen/merge_size"
             android:background="@null"
+            android:contentDescription="@string/contentDescription"
             android:src="@drawable/arrow_back_icon"
             app:layout_constraintBottom_toBottomOf="parent" />
     </RelativeLayout>
 
-    <ScrollView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:fillViewport="true">
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingTop="16dp">
 
+        <!-- Место работы -->
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/workplace_item"
+            style="@style/filter_text_button"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:text="@string/area_job" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/industry_item"
+            style="@style/filter_text_button"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:text="@string/sector" />
+
+        <!-- Блок: Ожидаемая зарплата -->
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="99dp"
+            android:layout_marginTop="8dp"
+            android:background="?attr/attr_black_white_color"
             android:orientation="vertical"
-            android:paddingTop="16dp">
+            android:padding="16dp">
 
-            <!-- Место работы -->
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/workplace_item"
-                style="@style/filter_text_button"
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:text="@string/area_job" />
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/industry_item"
-                style="@style/filter_text_button"
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:text="@string/sector" />
-
-            <!--<LinearLayout
-                android:id="@+id/workplace_item"
+            <!-- Поле ввода с двумя строками -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/salary_input_layout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingVertical="20.5dp"
-                android:layout_marginTop="8dp"
-                android:gravity="center_vertical"
-                android:layout_marginStart="16dp"
-                android:layout_marginBottom="4dp">
+                android:background="@drawable/item_background"
+                app:hintTextColor="@color/grey">
 
-                <TextView
-                    android:id="@+id/workplace_text"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/area_job"
-                    android:textColor="@color/grey"
-                    android:textSize="16sp" />
-
-                <ImageView
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:src="@drawable/ic_arrow_right"
-                    android:layout_gravity="end" />
-            </LinearLayout>-->
-
-            <!-- Отрасль -->
-            <!--<LinearLayout
-                android:id="@+id/industry_item"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingVertical="20.5dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginBottom="4dp"
-                android:gravity="center_vertical">
-
-                <TextView
-                    android:id="@+id/selected_industry_text"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/sector"
-                    android:textColor="@color/grey"
-                    android:textSize="16sp" />
-
-                <ImageView
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:src="@drawable/ic_arrow_right"
-                    android:layout_gravity="end" />
-            </LinearLayout>-->
-
-            <!-- Блок: Ожидаемая зарплата -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="99dp"
-                android:orientation="vertical"
-                android:padding="16dp"
-                android:background="?attr/attr_black_white_color"
-                android:layout_marginTop="8dp">
-
-                <!-- Поле ввода с двумя строками -->
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/salary_input_layout"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                <FrameLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/item_background"
-                    app:hintTextColor="@color/grey">
+                    android:minHeight="80dp">
 
-                    <FrameLayout
+                    <!-- Статичная надпись "Ожидаемая зарплата" -->
+                    <TextView
+                        android:id="@+id/salary_label"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:minHeight="80dp">
+                        android:layout_gravity="top"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="48dp"
+                        android:text="@string/salary_wait"
+                        android:textColor="?attr/attr_gray_white_color"
+                        android:textSize="14sp" />
 
-                        <!-- Статичная надпись "Ожидаемая зарплата" -->
-                        <TextView
-                            android:id="@+id/salary_label"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="@string/salary_wait"
-                            android:textColor="?attr/attr_gray_white_color"
-                            android:textSize="14sp"
-                            android:layout_gravity="top"
-                            android:layout_marginStart="16dp"
-                            android:layout_marginTop="8dp"
-                            android:layout_marginEnd="48dp" />
+                    <!-- Поле ввода с подсказкой "Введите сумму" -->
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/salary_input"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="bottom"
+                        android:layout_marginTop="32dp"
+                        android:layout_marginEnd="48dp"
+                        android:gravity="center_vertical"
+                        android:hint="@string/select_sum"
+                        android:inputType="number"
+                        android:maxLength="10"
+                        android:paddingTop="1dp"
+                        android:textAppearance="@style/textAppearanceRegular16sp400w"
+                        android:textColor="@color/black"
+                        android:textColorHint="?attr/attr_gray_white_color"
+                        android:textCursorDrawable="@drawable/cursor" />
 
-                        <!-- Поле ввода с подсказкой "Введите сумму" -->
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/salary_input"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="@string/select_sum"
-                            android:inputType="number"
-                            android:maxLength="10"
-                            android:gravity="center_vertical"
-                            android:textCursorDrawable="@drawable/cursor"
-                            android:textColorHint="?attr/attr_gray_white_color"
-                            android:textColor="@color/black"
-                            android:textAppearance="@style/textAppearanceRegular16sp400w"
-                            android:layout_gravity="bottom"
-                            android:layout_marginEnd="48dp"
-                            android:layout_marginTop="32dp"
-                            android:paddingTop="1dp" />
+                    <!-- Кнопка очистки -->
+                    <ImageButton
+                        android:id="@+id/clear_salary_button"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_gravity="center_vertical|end"
+                        android:layout_marginEnd="16dp"
+                        android:background="@null"
+                        android:src="@drawable/close_edit_text_search"
+                        android:visibility="gone" />
+                </FrameLayout>
+            </com.google.android.material.textfield.TextInputLayout>
+        </LinearLayout>
 
-                        <!-- Кнопка очистки -->
-                        <ImageButton
-                            android:id="@+id/clear_salary_button"
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:src="@drawable/close_edit_text_search"
-                            android:background="@null"
-                            android:layout_gravity="center_vertical|end"
-                            android:layout_marginEnd="16dp"
-                            android:visibility="gone" />
+        <!-- Блок: "Не показывать без зарплаты" -->
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="60dp">
 
-                    </FrameLayout>
-
-                </com.google.android.material.textfield.TextInputLayout>
-
-            </LinearLayout>
-
-            <!-- Блок: "Не показывать без зарплаты" -->
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="60dp">
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/hide_salary_container"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
                 android:gravity="start|center_vertical"
-                android:text="@string/hint_not_salary"
                 android:paddingStart="16dp"
+                android:text="@string/hint_not_salary"
                 android:textAppearance="@style/textAppearanceRegular16sp400w"
-                android:textColor="?attr/attr_white_black_color"/>
-                <CheckBox
-                    android:id="@+id/hide_without_salary_checkbox"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="end|center_vertical"
-                    android:shadowColor="@color/blue"
-                    android:buttonTint="@color/chec_box_colored"
-                    android:clickable="false"
-                    android:focusable="false" />
-            </FrameLayout>
-           <!-- <LinearLayout
+                android:textColor="?attr/attr_white_black_color" />
 
-                android:layout_width="match_parent"
+            <CheckBox
+                android:id="@+id/hide_without_salary_checkbox"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginStart="16dp"
-                android:layout_marginBottom="4dp"
-                android:paddingVertical="20.5dp"
-                android:layout_marginTop="8dp"
-                android:gravity="center_vertical"
-                android:clickable="true"
-                android:focusable="true"
-                android:background="?attr/selectableItemBackground">
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:textAppearance="@style/textAppearanceRegular16sp400w"
-                    android:textColor="?attr/attr_white_black_color"
-                    android:text="@string/hint_not_salary"/>
-
-                <CheckBox
-
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:shadowColor="@color/blue"
-                    android:buttonTint="@color/chec_box_colored"
-                    android:clickable="false"
-                    android:focusable="false" />
-
-            </LinearLayout>-->
-
-        </LinearLayout>
-    </ScrollView>
-
+                android:layout_gravity="end|center_vertical"
+                android:buttonTint="@color/chec_box_colored"
+                android:clickable="false"
+                android:focusable="false"
+                android:shadowColor="@color/blue" />
+        </FrameLayout>
+    </LinearLayout>
     <!-- Кнопки Применить / Сбросить -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="end"
         android:orientation="vertical"
-        android:paddingHorizontal="17dp"
-        android:gravity="end">
+        android:paddingHorizontal="17dp">
 
         <Button
             android:id="@+id/apply_button"
             android:layout_width="match_parent"
             android:layout_height="59dp"
-            android:text="Применить"
-            android:visibility="gone"
+            android:layout_marginBottom="8dp"
             android:background="@drawable/rounded_button_background"
             android:backgroundTint="@color/blue"
+            android:text="@string/apply_filter"
             android:textColor="@color/white"
-            android:layout_marginBottom="8dp" />
+            android:visibility="gone" />
 
         <TextView
             android:id="@+id/reset_button"
             android:layout_width="match_parent"
             android:layout_height="59dp"
-            android:text="Сбросить"
-            android:visibility="gone"
-            android:textColor="@color/red"
-            android:gravity="center"
-            android:clickable="true"
+            android:layout_marginBottom="48dp"
             android:background="@drawable/rounded_reset_background"
+            android:clickable="true"
             android:focusable="true"
-            android:layout_marginBottom="48dp" />
-
+            android:gravity="center"
+            android:text="@string/cancel_filter"
+            android:textColor="@color/red"
+            android:visibility="gone" />
     </LinearLayout>
-
 </LinearLayout>

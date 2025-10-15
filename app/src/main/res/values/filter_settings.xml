@@ -6,6 +6,8 @@
     <string name="hint_not_salary">Не показывать без зарплаты</string>
     <string name="filtration_settings">Настройки фильтрации</string>
     <string name="salary_wait">Ожидаемая зарплата</string>
+    <string name="cancel_filter">Сбросить</string>
+    <string name="apply_filter">Применить</string>
     <style name="filter_text_button">
         <item name ="android:textAppearance">@style/textAppearanceRegular16sp400w</item>>
         <item name ="android:textColor">@color/grey</item>>
