@@ -109,7 +109,7 @@ class IndustryFragment : Fragment() {
         viewModel.industries.observe(viewLifecycleOwner) { industries ->
             adapter.submitList(industries)
             binding.loadingIndicator.visibility = View.GONE
-            binding.errorText.visibility = View.GONE
+            binding.groupImageText.visibility = View.GONE
             binding.selectButton.visibility =
                 if (adapter.getSelectedIndustry() != null) {
                     View.VISIBLE
@@ -127,7 +127,7 @@ class IndustryFragment : Fragment() {
         }
 
         viewModel.error.observe(viewLifecycleOwner) { error ->
-            binding.errorText.visibility = if (error != null) {
+            binding.groupImageText.visibility = if (error != null) {
                 View.VISIBLE
             } else {
                 View.GONE
