@@ -3,12 +3,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
+    android:background="?attr/attr_black_white_color"
     android:orientation="vertical">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="@dimen/title_height"
+        android:layout_marginBottom="16dp"
         android:orientation="horizontal">
 
         <TextView
@@ -18,7 +20,7 @@
             android:gravity="center_vertical"
             android:paddingStart="56dp"
             android:text="@string/country_choose_text"
-            android:textColor="@color/black"
+            android:textColor="?attr/attr_white_black_color"
             android:textSize="@dimen/text_size"
             tools:ignore="RtlSymmetry,SpUsage" />
 
@@ -30,6 +32,7 @@
             android:layout_centerVertical="true"
             android:layout_marginEnd="@dimen/merge_size"
             android:background="@null"
+            android:contentDescription="@string/contentDescription"
             android:src="@drawable/arrow_back_icon"
             app:layout_constraintBottom_toBottomOf="parent"
             tools:ignore="RtlHardcoded" />
@@ -43,7 +46,5 @@
             android:id="@+id/countries_recycler_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
-
     </LinearLayout>
-
 </LinearLayout>
