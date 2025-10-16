@@ -42,6 +42,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
+        android:layout_weight="1"
         android:paddingTop="16dp">
 
         <!-- Место работы -->
@@ -166,6 +167,7 @@
             android:layout_width="match_parent"
             android:layout_height="59dp"
             android:layout_marginBottom="8dp"
+            android:textAppearance="@style/textAppearanceMedium16sp500w"
             android:background="@drawable/rounded_button_background"
             android:backgroundTint="@color/blue"
             android:text="@string/apply_filter"
@@ -176,8 +178,9 @@
             android:id="@+id/reset_button"
             android:layout_width="match_parent"
             android:layout_height="59dp"
-            android:layout_marginBottom="48dp"
+            android:layout_marginBottom="24dp"
             android:background="@drawable/rounded_reset_background"
+            android:textAppearance="@style/textAppearanceMedium16sp500w"
             android:clickable="true"
             android:focusable="true"
             android:gravity="center"

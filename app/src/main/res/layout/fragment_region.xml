@@ -18,7 +18,7 @@
             android:gravity="center_vertical"
             android:paddingStart="56dp"
             android:text="@string/region_choose_text"
-            android:textColor="@color/black"
+            android:textColor="?attr/attr_white_black_color"
             android:textSize="@dimen/text_size"
             tools:ignore="RtlSymmetry,SpUsage" />
 
@@ -142,15 +142,16 @@
             android:layout_width="328dp"
             android:layout_height="223dp"
             android:layout_marginBottom="16dp"
-            android:contentDescription="Ничего не найдено"
+            android:contentDescription="@string/contentDescription"
             android:src="@drawable/ic_no_results" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Такого региона нет"
+            android:textAppearance="@style/textAppearanceMedium22sp500w"
+            android:text="@string/not_region"
             android:textAlignment="center"
-            android:textColor="@color/black2"
+            android:textColor="?attr/attr_white_black_color"
             android:textSize="22sp" />
 
     </LinearLayout>

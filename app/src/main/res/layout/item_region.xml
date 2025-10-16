@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:background="?attr/attr_black_white_color"
     android:layout_height="wrap_content">
 
     <LinearLayout
@@ -17,8 +18,8 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:gravity="center_vertical"
+            android:textColor="?attr/attr_white_black_color"
             tools:text="region"
-            android:textColor="@color/black"
             android:textSize="@dimen/text_size_medium" />
 
         <LinearLayout
