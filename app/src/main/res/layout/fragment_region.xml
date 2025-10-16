@@ -35,56 +35,48 @@
             tools:ignore="RtlHardcoded" />
     </RelativeLayout>
 
-    <!-- Поиск -->
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/search_container"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:layout_margin="8dp"
-        android:background="@drawable/rounded_search_background"
-        android:padding="8dp">
+        android:layout_height="72dp"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginBottom="8dp">
 
         <EditText
             android:id="@+id/search_edit_text"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:hint="Поиск региона"
-            android:background="@android:color/transparent"
-            android:imeOptions="actionSearch"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_gravity="center_vertical"
+            android:background="@drawable/background_search_edit_text"
+            android:drawableRight="@drawable/search_icon"
+            android:drawablePadding="8dp"
+            android:fontFamily="@font/ys_display_regular"
+            android:hint="@string/input_region"
+            android:imeOptions="actionDone"
             android:inputType="text"
-            android:paddingStart="12dp"
-            android:paddingEnd="40dp"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/search_icon" />
-
-        <ImageView
-            android:id="@+id/search_icon"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_marginEnd="8dp"
-            android:clickable="true"
-            android:focusable="true"
-            android:src="@drawable/search_icon"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            android:maxLines="1"
+            android:paddingHorizontal="16dp"
+            android:singleLine="true"
+            android:textAppearance="@style/textAppearanceRegular16sp400w"
+            android:textColor="@color/black"
+            android:textColorHint="?attr/hint_color_edit_text"
+            android:textCursorDrawable="@drawable/cursor" />
 
         <ImageView
             android:id="@+id/clear_icon"
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:layout_marginEnd="8dp"
+            android:layout_gravity="end|center_vertical"
+            android:layout_marginEnd="14dp"
+            android:background="?attr/attr_gray_light_gray_color"
             android:clickable="true"
+            android:contentDescription="@string/contentDescription"
             android:focusable="true"
             android:src="@drawable/close_edit_text_search"
             android:visibility="gone"
-            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </FrameLayout>
 
     <!-- Состояние загрузки -->
     <LinearLayout
@@ -122,17 +114,17 @@
             android:layout_width="328dp"
             android:layout_height="223dp"
             android:layout_marginBottom="16dp"
-            android:src="@drawable/ic_no_internet"
-            android:contentDescription="Ошибка загрузки" />
+            android:contentDescription="Ошибка загрузки"
+            android:src="@drawable/ic_no_internet" />
 
         <TextView
             android:id="@+id/error_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Не удалось получить список регионов"
-            android:textSize="22sp"
+            android:textAlignment="center"
             android:textColor="@color/black2"
-            android:textAlignment="center" />
+            android:textSize="22sp" />
 
     </LinearLayout>
 
@@ -150,16 +142,16 @@
             android:layout_width="328dp"
             android:layout_height="223dp"
             android:layout_marginBottom="16dp"
-            android:src="@drawable/ic_no_results"
-            android:contentDescription="Ничего не найдено" />
+            android:contentDescription="Ничего не найдено"
+            android:src="@drawable/ic_no_results" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Такого региона нет"
-            android:textSize="22sp"
+            android:textAlignment="center"
             android:textColor="@color/black2"
-            android:textAlignment="center" />
+            android:textSize="22sp" />
 
     </LinearLayout>
 

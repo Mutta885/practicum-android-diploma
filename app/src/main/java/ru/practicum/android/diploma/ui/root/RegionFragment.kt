@@ -63,7 +63,6 @@ class RegionFragment : Fragment(), RegionAdapter.RegionListener {
 
     private fun setupSearchField() {
         val editText = binding.searchEditText
-        val searchIcon = binding.searchIcon
         val clearIcon = binding.clearIcon
 
         editText.addTextChangedListener(object : TextWatcher {
@@ -75,10 +74,8 @@ class RegionFragment : Fragment(), RegionAdapter.RegionListener {
                 val text = s.toString().trim()
 
                 if (text.isNotEmpty()) {
-                    searchIcon.visibility = View.GONE
                     clearIcon.visibility = View.VISIBLE
                 } else {
-                    searchIcon.visibility = View.VISIBLE
                     clearIcon.visibility = View.GONE
                 }
 
@@ -86,16 +83,10 @@ class RegionFragment : Fragment(), RegionAdapter.RegionListener {
             }
         })
 
-        searchIcon.setOnClickListener {
-            val query = editText.text.toString().trim()
-            filterRegions(query)
-        }
-
         clearIcon.setOnClickListener {
             editText.text.clear()
             filterRegions("")
             clearIcon.visibility = View.GONE
-            searchIcon.visibility = View.VISIBLE
         }
 
         editText.setOnEditorActionListener { _, actionId, _ ->
