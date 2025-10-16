@@ -91,18 +91,8 @@ class WorkPlaceFragment : Fragment() {
             findNavController().navigate(R.id.action_workPlaceFragment_to_countryFragment)
         }
 
-        binding.countryButton.setOnClickListener {
-            println("$DEBUG_TAG: COUNTRY BUTTON CLICKED")
-            findNavController().navigate(R.id.action_workPlaceFragment_to_countryFragment)
-        }
-
         binding.regionContainer.setOnClickListener {
             println("$DEBUG_TAG: REGION CONTAINER CLICKED")
-            navigateToRegionFragment()
-        }
-
-        binding.regionButton.setOnClickListener {
-            println("$DEBUG_TAG: REGION BUTTON CLICKED")
             navigateToRegionFragment()
         }
 
@@ -176,8 +166,8 @@ class WorkPlaceFragment : Fragment() {
     private fun updateUI() {
         println("$DEBUG_TAG: updateUI - countryName: $countryName, regionName: $regionName")
 
-        binding.countryText.text = countryName ?: getString(R.string.country_text)
-        binding.regionText.text = regionName ?: getString(R.string.region_text)
+        binding.countryContainer.text = countryName ?: getString(R.string.country_text)
+        binding.regionContainer.text = regionName ?: getString(R.string.region_text)
 
         updateChooseButtonVisibility()
     }
