@@ -41,12 +41,17 @@ class IndustryFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentIndustryBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         setupRecyclerView()
         setupButtons()
         setupSearch()
         setupErrorHandling()
         observeViewModel()
-        return binding.root
+        viewModel.loadIndustries()
     }
 
     private fun setupRecyclerView() {
