@@ -44,6 +44,11 @@ class FavoritesFragment : Fragment() {
         setupObservers()
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
     private fun setupObservers() {
         viewModel.favoritesState.observe(viewLifecycleOwner) { state ->
             renderUi(state = state)
