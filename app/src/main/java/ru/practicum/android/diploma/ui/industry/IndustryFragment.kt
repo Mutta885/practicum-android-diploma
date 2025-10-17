@@ -7,10 +7,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import org.koin.androidx.viewmodel.ext.android.activityViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.databinding.FragmentIndustryBinding
 import ru.practicum.android.diploma.presentation.industry.IndustryAdapter
 import ru.practicum.android.diploma.presentation.industry.IndustryViewModel
@@ -92,7 +94,10 @@ class IndustryFragment : Fragment() {
                 } else {
                     View.GONE
                 }
-                adapter.filter(text)
+                val presence = adapter.filter(text)
+                if (!presence) {
+                    renderGroupImageText(true, getString(R.string.this_not_industry))
+                }
             }
         })
 
@@ -112,18 +117,26 @@ class IndustryFragment : Fragment() {
 
     private fun observeViewModel() {
         viewModel.industries.observe(viewLifecycleOwner) { industries ->
-            adapter.submitList(industries)
-            binding.loadingIndicator.visibility = View.GONE
-            binding.groupImageText.visibility = View.GONE
-            binding.selectButton.visibility =
-                if (adapter.getSelectedIndustry() != null) {
-                    View.VISIBLE
-                } else {
-                    View.GONE
-                }
+            if (industries.isNotEmpty()) {
+                adapter.submitList(industries)
+                binding.loadingIndicator.visibility = View.GONE
+                binding.groupImageText.visibility = View.GONE
+                binding.selectButton.visibility =
+                    if (adapter.getSelectedIndustry() != null) {
+                        View.VISIBLE
+                    } else {
+                        View.GONE
+                    }
+                binding.searchEditText.isEnabled = true
+            } else {
+                binding.searchEditText.isEnabled = false
+                renderGroupImageText(value = true, string = getString(R.string.no_results))
+            }
         }
 
         viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
+            binding.searchEditText.isEnabled = false
+            renderGroupImageText(false)
             binding.loadingIndicator.visibility = if (isLoading) {
                 View.VISIBLE
             } else {
@@ -132,14 +145,33 @@ class IndustryFragment : Fragment() {
         }
 
         viewModel.error.observe(viewLifecycleOwner) { error ->
-            binding.groupImageText.visibility = if (error != null) {
-                View.VISIBLE
-            } else {
-                View.GONE
-            }
-            binding.errorText.text = error ?: ""
+            binding.searchEditText.isEnabled = false
             if (error != null) {
-                binding.loadingIndicator.visibility = View.GONE
+                renderGroupImageText(value = true, string = error)
+            }
+        }
+    }
+
+    private fun renderGroupImageText(value: Boolean, string: String? = null) {
+        binding.groupImageText.isVisible = value
+        if (value) {
+            binding.errorText.text = string ?: getString(R.string.error_unknown)
+            when (string) {
+                getString(R.string.not_internet) -> {
+                    binding.imageError.setImageResource(R.drawable.image_yorik)
+                }
+
+                getString(R.string.error_server) -> {
+                    binding.imageError.setImageResource(R.drawable.error_server)
+                }
+
+                getString(R.string.no_results) -> {
+                    binding.imageError.setImageResource(R.drawable.cover_samolet)
+                }
+
+                getString(R.string.this_not_industry) -> {
+                    binding.imageError.setImageResource(R.drawable.cat_with_the_plate)
+                }
             }
         }
     }

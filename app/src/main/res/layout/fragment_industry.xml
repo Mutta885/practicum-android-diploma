@@ -62,6 +62,7 @@
                 android:imeOptions="actionDone"
                 android:inputType="text"
                 android:maxLines="1"
+                android:enabled="false"
                 android:paddingHorizontal="16dp"
                 android:singleLine="true"
                 android:textAppearance="@style/textAppearanceRegular16sp400w"
@@ -106,6 +107,7 @@
                 android:visibility="gone">
 
                 <ImageView
+                    android:id="@+id/imageError"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal|top"

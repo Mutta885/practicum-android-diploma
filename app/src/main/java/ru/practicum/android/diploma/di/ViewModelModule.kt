@@ -11,7 +11,7 @@ import ru.practicum.android.diploma.presentation.vmodels.filter.FiltrationViewMo
 import ru.practicum.android.diploma.ui.search.SearchViewModel
 
 val viewModelModule = module {
-    viewModel { IndustryViewModel(getIndustriesUseCase = get(),get()) }
+    viewModel { IndustryViewModel(getIndustriesUseCase = get()) }
     viewModel { SearchViewModel(searchVacanciesUseCase = get()) }
     viewModel {
         VacancyDetailViewModel(

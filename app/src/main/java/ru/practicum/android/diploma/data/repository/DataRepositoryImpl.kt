@@ -1,6 +1,9 @@
 package ru.practicum.android.diploma.data.repository
 
+import android.content.Context
 import android.util.Log
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import ru.practicum.android.diploma.data.dto.AreaDto
 import ru.practicum.android.diploma.data.dto.ContactDto
 import ru.practicum.android.diploma.data.dto.EmployerDto
@@ -14,6 +17,7 @@ import ru.practicum.android.diploma.data.dto.VacancyDetailSearchResponse
 import ru.practicum.android.diploma.data.dto.VacancyDto
 import ru.practicum.android.diploma.data.dto.VacancySearchResponse
 import ru.practicum.android.diploma.data.network.HhApi
+import ru.practicum.android.diploma.data.network.NetworkClient
 import ru.practicum.android.diploma.domain.models.FilterArea
 import ru.practicum.android.diploma.domain.models.Area
 import ru.practicum.android.diploma.domain.models.Contact
@@ -36,7 +40,8 @@ import java.net.UnknownHostException
 import javax.net.ssl.SSLHandshakeException
 
 class DataRepositoryImpl(
-    private val api: HhApi
+    private val api: HhApi,
+    private val networkClient: NetworkClient
 ) : DataRepository {
 
     companion object {
@@ -98,24 +103,24 @@ class DataRepositoryImpl(
     }
 
     // Остальные методы остаются без изменений...
-    override suspend fun getIndustries(): List<Industry> {
-        println("DEBUG: Repository getIndustries called")
-        return try {
-            val response = api.getIndustries()
-            println("DEBUG: Industries loaded: ${response.size} items")
-            response.map { dto -> Industry(id = dto.id, name = dto.name) }
-        } catch (e: UnknownHostException) {
-            Log.w(TAG, "Network connection error loading industries", e)
-            println("DEBUG: Network error loading industries: ${e.message}")
-            emptyList()
-        } catch (e: SocketTimeoutException) {
-            Log.w(TAG, "Timeout loading industries", e)
-            println("DEBUG: Timeout loading industries: ${e.message}")
-            emptyList()
-        } catch (e: IOException) {
-            Log.w(TAG, "IO error loading industries", e)
-            println("DEBUG: IO error loading industries: ${e.message}")
-            emptyList()
+    override fun getIndustries(): Flow<Result<List<Industry>?>> {
+        return flow {
+            networkClient.doIndustry().collect { result ->
+                if (result.isSuccess) {
+                    emit(
+                        Result.success(result.getOrNull()?.map {
+                            with(it) {
+                                Industry(
+                                    id = id,
+                                    name = name
+                                )
+                            }
+                        })
+                    )
+                } else {
+                    emit(Result.failure(result.exceptionOrNull()!!))
+                }
+            }
         }
     }
 
@@ -186,6 +191,7 @@ class DataRepositoryImpl(
                 println("DEBUG: Found ${countries.size} countries")
                 Resource.Success(countries)
             }
+
             is Resource.Error -> areasResult
             Resource.Loading -> TODO()
         }
@@ -217,6 +223,7 @@ class DataRepositoryImpl(
                     Resource.Error("Страна не найдена")
                 }
             }
+
             is Resource.Error -> areasResult
             else -> Resource.Error("Неизвестная ошибка")
         }
@@ -232,6 +239,7 @@ class DataRepositoryImpl(
                 println("DEBUG: Found ${allRegions.size} total regions")
                 Resource.Success(allRegions)
             }
+
             is Resource.Error -> areasResult
             Resource.Loading -> TODO()
         }
@@ -244,6 +252,7 @@ class DataRepositoryImpl(
                 val country = areasResult.data.find { it.id == countryId }
                 Resource.Success(country)
             }
+
             is Resource.Error -> areasResult
             Resource.Loading -> TODO()
         }
