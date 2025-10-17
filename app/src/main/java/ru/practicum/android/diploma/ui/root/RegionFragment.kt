@@ -3,6 +3,7 @@ package ru.practicum.android.diploma.ui.root
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -128,6 +129,7 @@ class RegionFragment : Fragment(), RegionAdapter.RegionListener {
 
     private fun observeViewModel() {
         viewModel.filterAreaState.observe(viewLifecycleOwner) { state ->
+            Log.v("my", "RegionFragment state = $state")
             when (state) {
                 is FilterAreaState.RegionsStateByCountry -> {
                     if (state.regions.isNotEmpty()) {

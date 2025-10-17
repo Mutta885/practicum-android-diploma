@@ -11,6 +11,7 @@ import ru.practicum.android.diploma.data.dto.EmploymentDto
 import ru.practicum.android.diploma.data.dto.ExperienceDto
 import ru.practicum.android.diploma.data.dto.toDomain
 import ru.practicum.android.diploma.data.dto.FilterIndustryDto
+import ru.practicum.android.diploma.data.dto.IndustryDto
 import ru.practicum.android.diploma.data.dto.SalaryDto
 import ru.practicum.android.diploma.data.dto.ScheduleDto
 import ru.practicum.android.diploma.data.dto.VacancyDetailSearchResponse
@@ -108,17 +109,16 @@ class DataRepositoryImpl(
             networkClient.doIndustry().collect { result ->
                 if (result.isSuccess) {
                     emit(
-                        Result.success(result.getOrNull()?.map {
-                            with(it) {
-                                Industry(
-                                    id = id,
-                                    name = name
-                                )
+                        Result.success(
+                            result.getOrNull()?.map {
+                                mapIndustry(it)
                             }
-                        })
+                        )
                     )
                 } else {
-                    emit(Result.failure(result.exceptionOrNull()!!))
+                    result.exceptionOrNull()?.let {
+                        emit(Result.failure(it))
+                    }
                 }
             }
         }
@@ -315,11 +315,20 @@ class DataRepositoryImpl(
         )
     }
 
-    private fun mapIndustry(industryDto: FilterIndustryDto?) = industryDto?.let { dto ->
+    private fun mapFilterIndustry(industryDto: FilterIndustryDto?) = industryDto?.let { dto ->
         FilterIndustry(
             id = dto.id,
             name = dto.name
         )
+    }
+
+    private fun mapIndustry(industryDto: IndustryDto): Industry {
+        return with(industryDto) {
+            Industry(
+                id = id,
+                name = name
+            )
+        }
     }
 
     private fun mapExperience(experienceDto: ExperienceDto?) = experienceDto?.let { dto ->
@@ -375,7 +384,7 @@ class DataRepositoryImpl(
                 description = body.description,
                 salary = mapSalary(body.salary),
                 employer = mapEmployer(body.employer),
-                industry = mapIndustry(body.industry),
+                industry = mapFilterIndustry(body.industry),
                 area = mapArea(body.area),
                 experience = mapExperience(body.experience),
                 schedule = mapSchedule(body.schedule),

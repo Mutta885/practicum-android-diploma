@@ -29,6 +29,7 @@ class AreasViewModel(private val getAreasUseCase: GetAreasUseCase) : ViewModel()
                         _filterAreaState.postValue(FilterAreaState.Error("Список стран пуст"))
                     }
                 }
+
                 is Resource.Error -> {
                     _filterAreaState.postValue(FilterAreaState.Error(result.message ?: "Ошибка загрузки стран"))
                 }
@@ -57,6 +58,7 @@ class AreasViewModel(private val getAreasUseCase: GetAreasUseCase) : ViewModel()
                         _filterAreaState.postValue(FilterAreaState.Error("Список регионов пуст"))
                     }
                 }
+
                 is Resource.Error -> {
                     _filterAreaState.postValue(FilterAreaState.Error(result.message ?: "Ошибка загрузки регионов"))
                 }
@@ -80,6 +82,7 @@ class AreasViewModel(private val getAreasUseCase: GetAreasUseCase) : ViewModel()
                             _filterAreaState.postValue(FilterAreaState.Error("Страна не найдена"))
                         }
                     }
+
                     is Resource.Error -> {
                         _filterAreaState.postValue(FilterAreaState.Error(result.message ?: "Ошибка загрузки страны"))
                     }

@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.data.dto.IndustryDto
+import ru.practicum.android.diploma.data.dto.IndustryResponse
 import ru.practicum.android.diploma.data.dto.Response
 
 class RetrofitNetworkClient(
@@ -18,12 +19,18 @@ class RetrofitNetworkClient(
     private val connectivityManager: ConnectivityManager,
     private val appContext: Context
 ) : NetworkClient {
-    override suspend fun doRequest(dto: Any): Response {
-        return withContext(Dispatchers.IO) {
-            if (!isConnected()) {
-                Response().apply { resultCode = -1 }
-            } else {
-                Response().apply { resultCode = -1 }
+    override suspend fun doRequest(dto: Any): Response = withContext(Dispatchers.IO) {
+        if (!isConnected()) {
+            Response().apply { resultCode = -1 }
+        } else {
+            try {
+                if (dto is IndustryResponse) {
+                    val result = api.getIndustriesResponse()
+                    Response().apply { resultCode = 200 }
+                }
+                Response().apply { resultCode = 400 }
+            } catch (e: Throwable) {
+                Response().apply { resultCode = 500 }
             }
         }
     }
