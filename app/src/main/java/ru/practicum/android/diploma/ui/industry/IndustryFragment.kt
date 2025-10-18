@@ -73,7 +73,7 @@ class IndustryFragment : Fragment() {
 
         clearIcon.setOnClickListener {
             editText.text.clear()
-            adapter.submitList(adapter.getCurrentList())
+            adapter.filter("") // Применяем фильтр с пустым запросом
             clearIcon.visibility = View.GONE
         }
 

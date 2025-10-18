@@ -24,6 +24,10 @@ class RegionFragment : Fragment(), RegionAdapter.RegionListener {
     private val binding get() = _binding!!
     private var regionAdapter: RegionAdapter? = null
     private var allRegions: List<FilterArea> = emptyList()
+    // Карта для хранения стран по ID
+    private var countryMap: Map<Int, FilterArea> = emptyMap()
+    // Флаг, указывающий, что список стран загружен
+    private var countriesLoaded = false
 
     companion object {
         private const val DEBUG_TAG = "RegionFragment"
@@ -31,6 +35,8 @@ class RegionFragment : Fragment(), RegionAdapter.RegionListener {
         private const val REGION_NAME_KEY = "region_name"
         private const val REGION_ID_KEY = "region_id"
         private const val REGION_PARENT_ID_KEY = "region_parentId"
+        private const val COUNTRY_NAME_KEY = "country_name"
+        private const val ARG_INVALID_ID = -1 // Добавляем константу для обработки недопустимых ID
     }
 
     override fun onCreateView(
@@ -50,9 +56,18 @@ class RegionFragment : Fragment(), RegionAdapter.RegionListener {
         setupClickListeners()
         observeViewModel()
 
-        val countryId = arguments?.getInt(COUNTRY_ID_KEY)
-        println("$DEBUG_TAG: received countryId: $countryId")
-        viewModel.getRegions(countryId)
+        // ОБНОВЛЕНИЕ: обрабатываем ARG_INVALID_ID как null
+        val countryId = arguments?.getInt(COUNTRY_ID_KEY, ARG_INVALID_ID)
+        val actualCountryId = if (countryId == ARG_INVALID_ID) null else countryId
+
+        println("$DEBUG_TAG: received countryId: $countryId, actualCountryId: $actualCountryId")
+
+        // Если страна не передана или передан недопустимый ID - загружаем список всех стран
+        if (actualCountryId == null) {
+            viewModel.getCountries()
+        } else {
+            viewModel.getRegions(actualCountryId)
+        }
     }
 
     private fun setupRecyclerView() {
@@ -136,13 +151,24 @@ class RegionFragment : Fragment(), RegionAdapter.RegionListener {
                         showNoResultsState()
                     }
                 }
+                is FilterAreaState.CountriesState -> {
+                    // Сохраняем страны в карту для быстрого поиска
+                    countryMap = state.countries.associateBy { it.id }
+                    countriesLoaded = true
+
+                    // Если мы загружали страны для отображения всех регионов, загружаем регионы
+                    val countryId = arguments?.getInt(COUNTRY_ID_KEY, ARG_INVALID_ID)
+                    val actualCountryId = if (countryId == ARG_INVALID_ID) null else countryId
+                    if (actualCountryId == null) {
+                        viewModel.getRegions(actualCountryId)
+                    }
+                }
                 is FilterAreaState.Loading -> {
                     showLoadingState()
                 }
                 is FilterAreaState.Error -> {
                     showErrorState(state.message)
                 }
-                is FilterAreaState.CountriesState,
                 is FilterAreaState.GetCountryNameState -> {
                     // Не используется в этом фрагменте
                 }
@@ -190,7 +216,51 @@ class RegionFragment : Fragment(), RegionAdapter.RegionListener {
     }
 
     override fun onRegionClick(region: FilterArea) {
-        val countryIdFromArgs = arguments?.getInt(COUNTRY_ID_KEY)
+        println("$DEBUG_TAG: Region clicked: ${region.name}, id: ${region.id}, parentId: ${region.parentId}")
+
+        // ОБНОВЛЕНИЕ: обрабатываем случай, когда countryIdFromArgs равен ARG_INVALID_ID
+        val countryIdFromArgs = arguments?.getInt(COUNTRY_ID_KEY, ARG_INVALID_ID)
+        val actualCountryIdFromArgs = if (countryIdFromArgs == ARG_INVALID_ID) null else countryIdFromArgs
+        println("$DEBUG_TAG: countryIdFromArgs: $countryIdFromArgs, actualCountryIdFromArgs: $actualCountryIdFromArgs")
+
+        // Если страна была выбрана, используем ее ID
+        var countryIdToPass = actualCountryIdFromArgs ?: region.parentId
+        println("$DEBUG_TAG: countryIdToPass (initial): $countryIdToPass")
+
+        var countryName: String? = null
+
+        // Если countryIdToPass все еще null, пытаемся определить страну
+        if (countryIdToPass == null) {
+            println("$DEBUG_TAG: Trying to determine country from countryMap")
+            // Попробуем найти страну, которая содержит этот регион
+            for (country in countryMap.values) {
+                if (country.areas.any { it.id == region.id }) {
+                    countryIdToPass = country.id
+                    countryName = country.name
+                    println("$DEBUG_TAG: Found country: $countryName (id: $countryIdToPass)")
+                    break
+                }
+            }
+
+            // Если не удалось найти страну по региону, используем родительский регион (если есть)
+            if (countryIdToPass == null && region.parentId != null) {
+                countryIdToPass = region.parentId
+                countryName = countryMap[countryIdToPass]?.name
+                println("$DEBUG_TAG: Using region.parentId: $countryIdToPass, countryName: $countryName")
+            }
+        } else {
+            // Получаем название страны из карты
+            countryName = countryMap[countryIdToPass]?.name
+            println("$DEBUG_TAG: countryName from countryMap: $countryName")
+        }
+
+        // Если все еще не удалось определить страну, выходим
+        if (countryIdToPass == null) {
+            println("$DEBUG_TAG: Cannot determine country for region: ${region.name}")
+            return
+        }
+
+        println("$DEBUG_TAG: Final countryIdToPass: $countryIdToPass, countryName: $countryName")
 
         val bundle = Bundle().apply {
             putString(REGION_NAME_KEY, region.name)
@@ -198,13 +268,15 @@ class RegionFragment : Fragment(), RegionAdapter.RegionListener {
             if (region.parentId != null) {
                 putInt(REGION_PARENT_ID_KEY, region.parentId)
             }
-            if (countryIdFromArgs != null) {
-                putInt(COUNTRY_ID_KEY, countryIdFromArgs)
-                println("$DEBUG_TAG: Passing back countryId to WorkPlaceFragment: $countryIdFromArgs")
+            putInt(COUNTRY_ID_KEY, countryIdToPass)
+            // Передаем название страны, если оно известно
+            if (countryName != null) {
+                putString(COUNTRY_NAME_KEY, countryName)
             }
         }
 
         findNavController().navigate(R.id.action_regionFragment_to_workPlaceFragment, bundle)
+        println("$DEBUG_TAG: Navigated to WorkPlaceFragment")
     }
 
     override fun onDestroyView() {

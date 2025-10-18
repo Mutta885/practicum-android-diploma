@@ -57,9 +57,7 @@
         tools:layout="@layout/fragment_industry">
         <action
             android:id="@+id/action_industryFragment_to_filtrationFragment"
-            app:destination="@id/filtrationFragment"
-            app:popUpTo="@id/filtrationFragment"
-            app:popUpToInclusive="false" />
+            app:destination="@id/filtrationFragment" />
     </fragment>
 
     <fragment
@@ -68,9 +66,7 @@
         android:label="FiltrationFragment">
         <action
             android:id="@+id/action_filtrationFragment_to_mainFragment"
-            app:destination="@id/mainFragment"
-            app:popUpTo="@id/mainFragment"
-            app:popUpToInclusive="true" />
+            app:destination="@id/mainFragment" />
         <action
             android:id="@+id/action_filtrationFragment_to_workPlaceFragment"
             app:destination="@id/workPlaceFragment" />
@@ -105,9 +101,8 @@
             android:id="@+id/action_workPlaceFragment_to_filtrationFragment"
             app:destination="@id/filtrationFragment"
             app:popUpTo="@id/filtrationFragment"
-            app:popUpToInclusive="false" />
+            app:popUpToInclusive="true" />
 
-        <!-- Аргументы для WorkPlaceFragment -->
         <argument
             android:name="country_id"
             android:defaultValue="-1"
@@ -149,7 +144,6 @@
             app:popUpTo="@id/workPlaceFragment"
             app:popUpToInclusive="false" />
 
-        <!-- Аргументы для RegionFragment -->
         <argument
             android:name="country_id"
             android:defaultValue="-1"

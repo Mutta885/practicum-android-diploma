@@ -46,19 +46,80 @@
         android:paddingTop="16dp">
 
         <!-- Место работы -->
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/workplace_item"
-            style="@style/filter_text_button"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:text="@string/area_job" />
+            android:layout_height="60dp">
 
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/industry_item"
-            style="@style/filter_text_button"
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/workplace_item"
+                style="@style/filter_text_button"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:paddingStart="16dp"
+                android:paddingEnd="48dp"
+                android:text="@string/area_job" />
+
+            <!-- Стрелка (показывается когда ничего не выбрано) -->
+            <ImageView
+                android:id="@+id/workplace_arrow"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="16dp"
+                android:src="@drawable/arrow_forward_24px"
+                android:visibility="visible" />
+
+            <!-- Крестик (показывается когда что-то выбрано) -->
+            <ImageButton
+                android:id="@+id/clear_workplace_button"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="16dp"
+                android:background="@null"
+                android:src="@drawable/close_edit_text_search"
+                android:visibility="gone" />
+        </RelativeLayout>
+
+        <!-- Отрасль -->
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:text="@string/industry" />
+            android:layout_height="60dp">
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/industry_item"
+                style="@style/filter_text_button"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:paddingStart="16dp"
+                android:paddingEnd="48dp"
+                android:text="@string/industry" />
+
+            <!-- Стрелка (показывается когда ничего не выбрано) -->
+            <ImageView
+                android:id="@+id/industry_arrow"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="16dp"
+                android:src="@drawable/arrow_forward_24px"
+                android:visibility="visible" />
+
+            <!-- Крестик (показывается когда что-то выбрано) -->
+            <ImageButton
+                android:id="@+id/clear_industry_button"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="16dp"
+                android:background="@null"
+                android:src="@drawable/close_edit_text_search"
+                android:visibility="gone" />
+        </RelativeLayout>
 
         <!-- Блок: Ожидаемая зарплата -->
         <LinearLayout
