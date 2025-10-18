@@ -79,27 +79,18 @@
     </FrameLayout>
 
     <!-- Состояние загрузки -->
-    <LinearLayout
-        android:id="@+id/loading_container"
+    <FrameLayout
+        android:id="@+id/loadingContainer"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:visibility="gone">
+        android:layout_height="match_parent">
 
         <ProgressBar
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="16sp" />
-
-    </LinearLayout>
-
+            android:layout_gravity="center"
+            android:layout_marginBottom="16dp"
+            android:indeterminateTint="@color/blue" />
+    </FrameLayout>
     <!-- Состояние ошибки -->
     <LinearLayout
         android:id="@+id/error_container"
@@ -148,9 +139,9 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="@style/textAppearanceMedium22sp500w"
             android:text="@string/not_region"
             android:textAlignment="center"
+            android:textAppearance="@style/textAppearanceMedium22sp500w"
             android:textColor="?attr/attr_white_black_color"
             android:textSize="22sp" />
 
