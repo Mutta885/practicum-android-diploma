@@ -41,30 +41,90 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:layout_weight="1"
+        android:orientation="vertical"
         android:paddingTop="16dp">
 
         <!-- Место работы -->
         <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/workplace_item"
+            android:id="@+id/workplace_item_1"
             style="@style/filter_text_button"
             android:layout_width="match_parent"
-            android:layout_height="60dp"
+            android:layout_height="@dimen/filter_height"
+            android:layout_gravity="center"
             android:text="@string/area_job" />
 
+        <FrameLayout
+            android:id="@+id/group_workplace_item_2"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/filter_height"
+            android:visibility="gone">
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/workplace_item_2"
+                style="@style/filter_text_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:text="@string/area_job" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="12.5dp"
+                android:text="@string/area_job"
+                android:textAppearance="@style/textAppearanceRegular12sp400w"
+                android:textColor="?attr/attr_white_black_color" />
+
+            <ImageView
+                android:id="@+id/close_workplace"
+                style="@style/filter_close_image"
+                android:layout_width="@dimen/filter_close_height"
+                android:layout_height="@dimen/filter_close_height" />
+        </FrameLayout>
+
         <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/industry_item"
+            android:id="@+id/industry_item_1"
             style="@style/filter_text_button"
             android:layout_width="match_parent"
-            android:layout_height="60dp"
+            android:layout_height="@dimen/filter_height"
             android:text="@string/industry" />
+
+        <FrameLayout
+            android:id="@+id/group_industry_item_2"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/filter_height"
+            android:visibility="gone">
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/industry_item_2"
+                style="@style/filter_text_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:text="@string/industry" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="12.5dp"
+                android:text="@string/industry"
+                android:textAppearance="@style/textAppearanceRegular12sp400w"
+                android:textColor="?attr/attr_white_black_color" />
+
+            <ImageView
+                android:id="@+id/close_industry"
+                style="@style/filter_close_image"
+                android:layout_width="@dimen/filter_close_height"
+                android:layout_height="@dimen/filter_close_height" />
+        </FrameLayout>
 
         <!-- Блок: Ожидаемая зарплата -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="99dp"
-            android:layout_marginTop="8dp"
             android:background="?attr/attr_black_white_color"
             android:orientation="vertical"
             android:padding="16dp">
@@ -122,7 +182,7 @@
                         android:layout_gravity="center_vertical|end"
                         android:layout_marginEnd="16dp"
                         android:background="@null"
-                        android:src="@drawable/close_edit_text_search"
+                        android:src="@drawable/close_edit_text_search_24"
                         android:visibility="gone" />
                 </FrameLayout>
             </com.google.android.material.textfield.TextInputLayout>
@@ -136,7 +196,7 @@
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/hide_salary_container"
                 android:layout_width="match_parent"
-                android:layout_height="60dp"
+                android:layout_height="@dimen/filter_height"
                 android:gravity="start|center_vertical"
                 android:paddingStart="16dp"
                 android:text="@string/hint_not_salary"
@@ -167,10 +227,10 @@
             android:layout_width="match_parent"
             android:layout_height="59dp"
             android:layout_marginBottom="8dp"
-            android:textAppearance="@style/textAppearanceMedium16sp500w"
             android:background="@drawable/rounded_button_background"
             android:backgroundTint="@color/blue"
             android:text="@string/apply_filter"
+            android:textAppearance="@style/textAppearanceMedium16sp500w"
             android:textColor="@color/white"
             android:visibility="gone" />
 
@@ -180,11 +240,11 @@
             android:layout_height="59dp"
             android:layout_marginBottom="24dp"
             android:background="@drawable/rounded_reset_background"
-            android:textAppearance="@style/textAppearanceMedium16sp500w"
             android:clickable="true"
             android:focusable="true"
             android:gravity="center"
             android:text="@string/cancel_filter"
+            android:textAppearance="@style/textAppearanceMedium16sp500w"
             android:textColor="@color/red"
             android:visibility="gone" />
     </LinearLayout>
