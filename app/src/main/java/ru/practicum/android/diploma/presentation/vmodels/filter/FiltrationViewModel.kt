@@ -95,19 +95,29 @@ class FiltrationViewModel(
         _salary.value = filteredValue.ifEmpty { null }
         updateFilterState()
         updateSalaryInputState()
-        saveFilters()
     }
 
     fun onHideWithoutSalaryChanged(value: Boolean) {
         _hideWithoutSalary.value = value
         updateFilterState()
-        saveFilters()
     }
 
     fun onIndustriesSelected(industries: List<Industry>) {
         _selectedIndustries.value = industries
         updateFilterState()
-        saveFilters()
+    }
+
+    fun clearIndustries() {
+        _selectedIndustries.value = emptyList()
+        updateFilterState()
+    }
+
+    fun clearWorkplace() {
+        _selectedCountry.value = null
+        _selectedCountryId.value = null
+        _selectedRegion.value = null
+        _selectedRegionId.value = null
+        updateFilterState()
     }
 
     fun onWorkplaceSelected(
@@ -121,12 +131,23 @@ class FiltrationViewModel(
         _selectedRegion.value = regionName
         _selectedRegionId.value = regionId?.toString()
         updateFilterState()
-        saveFilters()
-        println(
-            "$DEBUG_TAG: Workplace selected - " +
-                "country: $countryName (id: $countryId), " +
-                "region: $regionName (id: $regionId)"
-        )
+    }
+
+    // Сохраняем фильтры в StorageManager (только при явном действии)
+    fun saveFiltersToStorage() {
+        viewModelScope.launch {
+            val filter = FilterParameters(
+                onlyWithSalary = _hideWithoutSalary.value ?: false,
+                salary = _salary.value ?: "",
+                industries = _selectedIndustries.value ?: emptyList(),
+                country = _selectedCountry.value,
+                countryId = _selectedCountryId.value,
+                region = _selectedRegion.value,
+                regionId = _selectedRegionId.value
+            )
+            storageManager.setFilterSetting(filter)
+            println("$DEBUG_TAG: Filters saved to storage")
+        }
     }
 
     fun resetFilters() {
@@ -139,27 +160,11 @@ class FiltrationViewModel(
         _selectedRegionId.value = null
         updateFilterState()
         updateSalaryInputState()
-        saveFilters()
     }
 
     fun setFiltersJustApplied(applied: Boolean) {
         _filtersJustApplied.value = applied
         println("$DEBUG_TAG: setFiltersJustApplied called with: $applied")
-    }
-
-    private fun saveFilters() {
-        viewModelScope.launch {
-            val filter = FilterParameters(
-                onlyWithSalary = _hideWithoutSalary.value ?: false,
-                salary = _salary.value ?: "",
-                industries = _selectedIndustries.value ?: emptyList(),
-                country = _selectedCountry.value,
-                countryId = _selectedCountryId.value,
-                region = _selectedRegion.value,
-                regionId = _selectedRegionId.value
-            )
-            storageManager.setFilterSetting(filter)
-        }
     }
 
     private fun updateFilterState() {
@@ -195,13 +200,6 @@ class FiltrationViewModel(
         }
     }
 
-    private suspend fun handleFiltersApplication(searchViewModel: SearchViewModel) {
-        if (shouldSkipAutoApplication()) {
-            return
-        }
-        applyFiltersToSearch(searchViewModel)
-    }
-
     private suspend fun shouldSkipAutoApplication(): Boolean {
         val filtersJustApplied = _filtersJustApplied.value == true
         if (filtersJustApplied) {
@@ -212,7 +210,14 @@ class FiltrationViewModel(
         return false
     }
 
-    private fun applyFiltersToSearch(searchViewModel: SearchViewModel) {
+    private suspend fun handleFiltersApplication(searchViewModel: SearchViewModel) {
+        if (shouldSkipAutoApplication()) {
+            return
+        }
+        applyFiltersToSearchOnAppStart(searchViewModel)
+    }
+
+    private fun applyFiltersToSearchOnAppStart(searchViewModel: SearchViewModel) {
         val currentFilters = getCurrentFilters()
         val hasActiveFilters = currentFilters.salary != null ||
             currentFilters.hideWithoutSalary ||
@@ -222,12 +227,12 @@ class FiltrationViewModel(
 
         if (hasActiveFilters) {
             println(
-                "$DEBUG_TAG: Applying saved filters to search: " +
+                "$DEBUG_TAG: Applying saved filters on app start: " +
                     "$currentFilters"
             )
-            searchViewModel.setFilters(currentFilters)
+            searchViewModel.setFiltersWithoutSearch(currentFilters)
         } else {
-            println("$DEBUG_TAG: No active filters to apply")
+            println("$DEBUG_TAG: No active filters to apply on app start")
         }
     }
 

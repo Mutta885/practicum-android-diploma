@@ -29,40 +29,73 @@ class SearchViewModel(
     private var isLoading = false
     private var isLoadingNextPage = false
     private var searchJob: Job? = null
-
-    // Хранение текущих фильтров - ИСПРАВЛЕНО: инициализируем пустыми фильтрами
     private var currentFilters: FiltrationViewModel.Filters = FiltrationViewModel.Filters()
-
     private val debouncePeriod = DEBOUNCE_PERIOD
-
     private val _allVacancies = mutableListOf<Vacancy>()
     val allVacancies: List<Vacancy> get() = _allVacancies
 
-    // В SearchViewModel
+    fun setFiltersWithoutSearch(filters: FiltrationViewModel.Filters) {
+        println("DEBUG: setFiltersWithoutSearch() called with: $filters")
+        println("DEBUG: Current query: '$currentQuery'")
+        val filtersChanged = currentFilters != filters
+        currentFilters = filters
+        println("DEBUG: Filters updated without search: $currentFilters, changed: $filtersChanged")
+        if (filtersChanged) {
+            _searchState.value = SearchState.FiltersApplied(filters)
+        }
+    }
+
     fun setFilters(filters: FiltrationViewModel.Filters) {
         println("DEBUG: setFilters() called with: $filters")
         println("DEBUG: Current query: '$currentQuery'")
-
         val filtersChanged = currentFilters != filters
         currentFilters = filters
         println("DEBUG: Filters updated: $currentFilters, changed: $filtersChanged")
 
+        // Автоматически выполняем поиск только если есть активный запрос
         if (currentQuery.isNotEmpty() && filtersChanged) {
-            println("DEBUG: Restarting search with new filters")
+            println("DEBUG: Auto-searching with new filters and query: '$currentQuery'")
             _allVacancies.clear()
             currentPage = 0
             totalPages = 1
             _searchState.value = SearchState.Loading
-
             searchJob?.cancel()
             searchJob = viewModelScope.launch {
                 performSearch(query = currentQuery, page = 0, isNewSearch = true)
             }
-        } else if (currentQuery.isEmpty() && filtersChanged) {
-            println("DEBUG: Filters saved for future searches")
-            _searchState.value = SearchState.FiltersApplied(filters)
         } else {
-            println("DEBUG: Filters not changed or no active query")
+            println("DEBUG: No auto-search - no active query or filters not changed")
+            // Просто обновляем состояние фильтров без поиска
+            if (filtersChanged) {
+                _searchState.value = SearchState.FiltersApplied(filters)
+            }
+        }
+    }
+
+    // НОВЫЙ МЕТОД: Применяем фильтры и ВСЕГДА выполняем поиск (для кнопки "Применить")
+    fun applyFiltersWithSearch(filters: FiltrationViewModel.Filters) {
+        println("DEBUG: applyFiltersWithSearch() called with: $filters")
+        println("DEBUG: Current query: '$currentQuery'")
+        val filtersChanged = currentFilters != filters
+        currentFilters = filters
+        println("DEBUG: Filters updated with search: $currentFilters, changed: $filtersChanged")
+
+        // Всегда выполняем поиск при явном применении фильтров
+        if (currentQuery.isNotEmpty()) {
+            println("DEBUG: Performing search with applied filters and query: '$currentQuery'")
+            _allVacancies.clear()
+            currentPage = 0
+            totalPages = 1
+            _searchState.value = SearchState.Loading
+            searchJob?.cancel()
+            searchJob = viewModelScope.launch {
+                performSearch(query = currentQuery, page = 0, isNewSearch = true)
+            }
+        } else {
+            println("DEBUG: No search - query is empty, but filters saved")
+            if (filtersChanged) {
+                _searchState.value = SearchState.FiltersApplied(filters)
+            }
         }
     }
 
@@ -77,14 +110,12 @@ class SearchViewModel(
             return
         }
 
-        if (trimmedQuery != currentQuery) {
-            _allVacancies.clear()
-            currentPage = 0
-            totalPages = 1
-            currentQuery = trimmedQuery
-            _searchState.value = SearchState.Loading
-            println("DEBUG: New search query: '$currentQuery', cleared vacancies")
-        }
+        _allVacancies.clear()
+        currentPage = 0
+        totalPages = 1
+        currentQuery = trimmedQuery
+        _searchState.value = SearchState.Loading
+        println("DEBUG: New search query: '$currentQuery', cleared vacancies")
 
         searchJob?.cancel()
         searchJob = viewModelScope.launch {
@@ -105,11 +136,7 @@ class SearchViewModel(
                 "DEBUG: Loading next page: current=$currentPage, " +
                     "next=$nextPage, allVacancies size=${_allVacancies.size}"
             )
-            performSearch(
-                query = currentQuery,
-                page = nextPage,
-                isNewSearch = false
-            )
+            performSearch(query = currentQuery, page = nextPage, isNewSearch = false)
         } else {
             println(
                 "DEBUG: Cannot load next page - isLoading=$isLoading, " +
@@ -123,17 +150,9 @@ class SearchViewModel(
     fun retry() {
         if (currentQuery.isNotEmpty()) {
             if (currentPage == 0) {
-                performSearch(
-                    query = currentQuery,
-                    page = 0,
-                    isNewSearch = true
-                )
+                performSearch(query = currentQuery, page = 0, isNewSearch = true)
             } else {
-                performSearch(
-                    query = currentQuery,
-                    page = currentPage,
-                    isNewSearch = false
-                )
+                performSearch(query = currentQuery, page = currentPage, isNewSearch = false)
             }
         }
     }
@@ -147,7 +166,6 @@ class SearchViewModel(
         println("DEBUG: Search cleared")
     }
 
-    // Метод для получения текущих фильтров
     fun getCurrentFilters(): FiltrationViewModel.Filters {
         return currentFilters
     }
@@ -170,9 +188,7 @@ class SearchViewModel(
         }
 
         setLoadingStates(isNewSearch)
-
         viewModelScope.launch {
-            // Передаем фильтры в use case
             println("DEBUG: Performing search with filters: $currentFilters")
             when (val result = searchVacanciesUseCase.execute(query, page, currentFilters)) {
                 is Resource.Success -> handleSearchSuccess(result, isNewSearch)
@@ -211,10 +227,6 @@ class SearchViewModel(
                 "vacancies=${searchResult.vacancies.size}, totalPages=$totalPages, " +
                 "found=${searchResult.found}, filters=$currentFilters"
         )
-        println(
-            "DEBUG: Before processing - allVacancies size: ${_allVacancies.size}, " +
-                "new vacancies: ${searchResult.vacancies.size}"
-        )
 
         if (isNewSearch) {
             handleNewSearchResults(searchResult)
@@ -234,7 +246,6 @@ class SearchViewModel(
         _allVacancies.clear()
         _allVacancies.addAll(searchResult.vacancies)
         println("DEBUG: New search completed - allVacancies size: ${_allVacancies.size}")
-
         _searchState.value = SearchState.Success(
             vacancies = _allVacancies.toList(),
             found = searchResult.found,
@@ -247,11 +258,9 @@ class SearchViewModel(
         searchResult: ru.practicum.android.diploma.domain.models.SearchResult
     ) {
         val newVacancies = searchResult.vacancies
-        println("DEBUG: Using all new vacancies: ${newVacancies.size} (duplicate filtering disabled)")
-
+        println("DEBUG: Using all new vacancies: ${newVacancies.size}")
         _allVacancies.addAll(newVacancies)
         println("DEBUG: After adding - allVacancies size: ${_allVacancies.size}")
-
         _searchState.value = SearchState.Success(
             vacancies = _allVacancies.toList(),
             found = searchResult.found,
@@ -273,7 +282,6 @@ class SearchViewModel(
 
     private fun handleSearchLoading() {
         println("DEBUG: Search loading - page=$currentPage")
-        /* handled by state */
     }
 
     fun hasMorePages(): Boolean {
@@ -283,13 +291,6 @@ class SearchViewModel(
                 "totalPages=$totalPages, result=$hasMore"
         )
         return hasMore
-    }
-
-    // Метод для отладки текущего состояния
-    fun debugState(): String {
-        return "SearchViewModelState(query='$currentQuery', page=$currentPage, totalPages=$totalPages, " +
-            "allVacancies=${_allVacancies.size}, isLoading=$isLoading, isLoadingNextPage=$isLoadingNextPage, " +
-            "filters=$currentFilters)"
     }
 }
 

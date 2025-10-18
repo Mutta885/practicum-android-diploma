@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?attr/attr_black_white_color"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:paddingBottom="?attr/actionBarSize">
 
     <!-- Заголовок -->
     <RelativeLayout
@@ -38,37 +39,37 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:orientation="vertical"
-        android:paddingTop="16dp">
+        android:layout_height="0dp"
+    android:layout_weight="1"
+    android:orientation="vertical"
+    android:paddingTop="16dp">
 
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/country_container"
-            style="@style/filter_text_button"
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:text="@string/country_text" />
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/country_container"
+        style="@style/filter_text_button"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:text="@string/country_text" />
 
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/region_container"
-            style="@style/filter_text_button"
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:text="@string/region_text" />
-    </LinearLayout>
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/region_container"
+        style="@style/filter_text_button"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:text="@string/region_text" />
+</LinearLayout>
 
     <!-- Кнопка Выбрать -->
-    <Button
-        android:id="@+id/choose_button"
-        android:layout_width="match_parent"
-        android:layout_height="59dp"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginBottom="24dp"
-        android:background="@drawable/rounded_image_button"
-        android:text="@string/choose"
-        android:textAppearance="@style/textAppearanceMedium16sp500w"
-        android:textColor="@color/white"
-        android:visibility="gone" />
-</LinearLayout>
+<Button
+android:id="@+id/choose_button"
+android:layout_width="match_parent"
+android:layout_height="59dp"
+android:layout_gravity="center_horizontal"
+android:layout_marginHorizontal="16dp"
+android:layout_marginBottom="16dp"
+    android:background="@drawable/rounded_image_button"
+    android:text="@string/choose"
+    android:textAppearance="@style/textAppearanceMedium16sp500w"
+    android:textColor="@color/white"
+    android:visibility="gone" />
+    </LinearLayout>

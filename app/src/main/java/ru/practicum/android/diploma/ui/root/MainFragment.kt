@@ -3,6 +3,7 @@ package ru.practicum.android.diploma.ui.root
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -27,16 +28,18 @@ import ru.practicum.android.diploma.ui.search.VacanciesAdapter
 import ru.practicum.android.diploma.util.showToast
 
 class MainFragment : Fragment() {
-
     private var _binding: FragmentMainBinding? = null
     private val binding get() = _binding!!
-
     private val searchViewModel: SearchViewModel by sharedViewModel()
     private val filtrationViewModel: FiltrationViewModel by activityViewModel()
-
     private val adapter: VacanciesAdapter by lazy {
         VacanciesAdapter(onItemClick = { vacancy -> onVacancyClick(vacancy) })
     }
+
+    // Флаг для блокировки автоматического поиска при программном изменении текста
+    private var isProgrammaticTextChange = false
+    // Флаг для блокировки поиска при возврате из фильтров
+    private var isReturningFromFilters = false
 
     private companion object {
         const val LOAD_MORE_THRESHOLD = 3
@@ -55,28 +58,43 @@ class MainFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         setupRecyclerView()
         setupSearchField()
         setupClickListeners()
         observeViewModel()
         observeFilterState()
         applySavedFiltersOnStart()
+
+        // Обработка системной кнопки назад
+        view.isFocusableInTouchMode = true
+        view.requestFocus()
+        view.setOnKeyListener { _, keyCode, event ->
+            if (keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_UP) {
+                findNavController().popBackStack()
+                return@setOnKeyListener true
+            }
+            return@setOnKeyListener false
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Обновляем состояние иконок при возобновлении фрагмента
+        val currentText = binding.searchEditText.text.toString()
+        updateSearchFieldIcons(currentText)
+        isReturningFromFilters = false
     }
 
     private fun setupRecyclerView() {
         binding.vacanciesRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.vacanciesRecyclerView.adapter = adapter
-
         binding.vacanciesRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
-
                 if (dy > 0 && !searchViewModel.isLoading() && searchViewModel.hasMorePages()) {
                     val layoutManager = recyclerView.layoutManager as LinearLayoutManager
                     val totalItemCount = layoutManager.itemCount
                     val lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition()
-
                     if (lastVisibleItemPosition >= totalItemCount - LOAD_MORE_THRESHOLD) {
                         searchViewModel.loadNextPage()
                     }
@@ -90,42 +108,45 @@ class MainFragment : Fragment() {
         val searchIcon = binding.searchIcon
         val clearIcon = binding.clearIcon
 
+        // Инициализируем иконки при создании
+        updateSearchFieldIcons(editText.text.toString())
+
         editText.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
-
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
-
             override fun afterTextChanged(s: Editable?) {
-                val text = s.toString().trim()
-
-                if (text.isNotEmpty()) {
-                    searchIcon.visibility = View.GONE
-                    clearIcon.visibility = View.VISIBLE
-                } else {
-                    searchIcon.visibility = View.VISIBLE
-                    clearIcon.visibility = View.GONE
+                // Если изменение текста программное - не запускаем поиск
+                if (isProgrammaticTextChange) {
+                    return
                 }
 
+                // Если возвращаемся из фильтров - не запускаем поиск
+                if (isReturningFromFilters) {
+                    isReturningFromFilters = false
+                    return
+                }
+
+                val text = s.toString().trim()
+                updateSearchFieldIcons(text)
                 searchViewModel.search(text)
             }
         })
 
         searchIcon.setOnClickListener {
-            val query = editText.text.toString().trim()
-            searchViewModel.search(query)
+            searchViewModel.search(editText.text.toString().trim())
         }
 
         clearIcon.setOnClickListener {
+            isProgrammaticTextChange = true
             editText.text.clear()
+            isProgrammaticTextChange = false
             searchViewModel.search("")
-            clearIcon.visibility = View.GONE
-            searchIcon.visibility = View.VISIBLE
+            updateSearchFieldIcons("")
         }
 
         editText.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                val query = editText.text.toString().trim()
-                searchViewModel.search(query)
+                searchViewModel.search(editText.text.toString().trim())
                 true
             } else {
                 false
@@ -133,8 +154,23 @@ class MainFragment : Fragment() {
         }
     }
 
+    private fun updateSearchFieldIcons(text: String) {
+        val searchIcon = binding.searchIcon
+        val clearIcon = binding.clearIcon
+
+        if (text.isNotEmpty()) {
+            searchIcon.visibility = View.GONE
+            clearIcon.visibility = View.VISIBLE
+        } else {
+            searchIcon.visibility = View.VISIBLE
+            clearIcon.visibility = View.GONE
+        }
+    }
+
     private fun setupClickListeners() {
         binding.trailingButton.setOnClickListener {
+            // Устанавливаем флаг, что переходим в фильтры
+            isReturningFromFilters = true
             findNavController().navigate(R.id.action_mainFragment_to_filtrationFragment)
         }
     }
@@ -144,46 +180,22 @@ class MainFragment : Fragment() {
             when (state) {
                 is SearchState.EmptyQuery -> showEmptyQueryState()
                 is SearchState.Loading -> showLoadingState()
-                is SearchState.Success -> {
-                    showSuccessState(state)
-                    adapter.submitVacancies(state.vacancies)
-                    adapter.setLoading(false)
-                    adapter.setHasMore(searchViewModel.hasMorePages())
-                }
-
+                is SearchState.Success -> showSuccessState(state)
                 is SearchState.Error -> state.message?.let { showErrorState(it) }
-                is SearchState.LoadingNextPage -> {
-                    adapter.setLoading(true)
-                    adapter.setHasMore(true)
-                }
-
-                is SearchState.NextPageError -> {
-                    adapter.setLoading(false)
-                    state.message?.let { requireContext().showToast(it) }
-                }
-
+                is SearchState.LoadingNextPage -> adapter.setLoading(true)
+                is SearchState.NextPageError -> state.message?.let { requireContext().showToast(it) }
                 is SearchState.FiltersApplied -> {
-                    val hasActiveFilters = state.filters.salary != null ||
-                        state.filters.hideWithoutSalary ||
-                        state.filters.industries.isNotEmpty()
-
-                    if (hasActiveFilters) {
-                        requireContext().showToast("Фильтры восстановлены")
-                    }
+                    // Просто обновляем состояние без дополнительных действий
                 }
-
-                else -> {}
             }
         }
     }
 
     private fun observeFilterState() {
         filtrationViewModel.isAnyFilterActive.observe(viewLifecycleOwner) { isActive ->
-            if (isActive) {
-                binding.trailingButton.setImageResource(R.drawable.trailing_icon_2)
-            } else {
-                binding.trailingButton.setImageResource(R.drawable.trailing_icon)
-            }
+            binding.trailingButton.setImageResource(
+                if (isActive) R.drawable.trailing_icon_2 else R.drawable.trailing_icon
+            )
         }
     }
 
@@ -196,37 +208,47 @@ class MainFragment : Fragment() {
 
     private suspend fun handleSavedFilters() {
         val filtersJustApplied = filtrationViewModel.filtersJustApplied.value == true
-
-        if (filtersJustApplied) {
-            filtrationViewModel.setFiltersJustApplied(false)
-            println("$DEBUG_TAG: Filters were just applied - skipping auto-application")
+        if (!filtersJustApplied) {
+            applySavedFiltersOnAppStart()
         } else {
-            applySavedFilters()
+            filtrationViewModel.setFiltersJustApplied(false)
         }
     }
 
-    private fun applySavedFilters() {
+    private fun applySavedFiltersOnAppStart() {
         val currentQuery = searchViewModel.getCurrentQuery()
         val currentFilters = filtrationViewModel.getCurrentFilters()
-
         val hasActiveFilters = currentFilters.salary != null ||
             currentFilters.hideWithoutSalary ||
             currentFilters.industries.isNotEmpty() ||
             currentFilters.country != null ||
             currentFilters.region != null
 
-        if (hasActiveFilters) {
-            println("$DEBUG_TAG: Applying saved filters on start")
-            searchViewModel.setFilters(currentFilters)
+        println("DEBUG_MAIN: applySavedFiltersOnAppStart - query: '$currentQuery', hasActiveFilters: $hasActiveFilters")
 
-            if (currentQuery.isNotEmpty()) {
-                binding.searchEditText.setText(currentQuery)
-            }
+        // Применяем фильтры только если есть активный запрос
+        if (hasActiveFilters && currentQuery.isNotEmpty()) {
+            println("DEBUG_MAIN: Calling setFiltersWithoutSearch with active query")
+            // Используем setFiltersWithoutSearch чтобы не вызывать лишний поиск
+            searchViewModel.setFiltersWithoutSearch(currentFilters)
+
+            // Устанавливаем текст БЕЗ вызова поиска
+            isProgrammaticTextChange = true
+            binding.searchEditText.setText(currentQuery)
+            // Обновляем состояние иконок после установки текста
+            updateSearchFieldIcons(currentQuery)
+            isProgrammaticTextChange = false
+        } else if (hasActiveFilters) {
+            println("DEBUG_MAIN: Calling setFiltersWithoutSearch without query")
+            // Если есть фильтры, но нет запроса - просто сохраняем их состояние
+            searchViewModel.setFiltersWithoutSearch(currentFilters)
+        } else {
+            println("DEBUG_MAIN: No filters to apply")
         }
     }
 
     private fun showEmptyQueryState() {
-        binding.apply {
+        with(binding) {
             loadingProgressBar.isVisible = false
             vacanciesRecyclerView.isVisible = false
             errorStateContainer.isVisible = false
@@ -235,12 +257,10 @@ class MainFragment : Fragment() {
             emptyStateContainer.isVisible = true
         }
         adapter.submitVacancies(emptyList())
-        adapter.setLoading(false)
-        adapter.setHasMore(false)
     }
 
     private fun showLoadingState() {
-        binding.apply {
+        with(binding) {
             loadingProgressBar.isVisible = true
             vacanciesRecyclerView.isVisible = false
             errorStateContainer.isVisible = false
@@ -248,12 +268,10 @@ class MainFragment : Fragment() {
             emptyStateContainer.isVisible = false
             resultsCountText.isVisible = false
         }
-        adapter.setLoading(false)
-        adapter.setHasMore(false)
     }
 
     private fun showSuccessState(state: SearchState.Success) {
-        binding.apply {
+        with(binding) {
             loadingProgressBar.isVisible = false
             errorStateContainer.isVisible = false
             emptyStateContainer.isVisible = false
@@ -261,48 +279,38 @@ class MainFragment : Fragment() {
             if (state.vacancies.isEmpty()) {
                 vacanciesRecyclerView.isVisible = false
                 noResultsContainer.isVisible = true
-                resultsCountText.isVisible = false
             } else {
                 vacanciesRecyclerView.isVisible = true
                 noResultsContainer.isVisible = false
                 showResultsCount(state.found, state.vacancies.size)
             }
         }
-
         adapter.submitVacancies(state.vacancies)
-        adapter.setLoading(false)
         adapter.setHasMore(searchViewModel.hasMorePages())
-
-        if (state.vacancies.isNotEmpty() && state.isFirstPage) {
-            requireContext().showToast("Найдено вакансий: ${state.found}")
-        }
     }
 
     private fun showErrorState(message: String) {
-        binding.apply {
+        with(binding) {
             loadingProgressBar.isVisible = false
             vacanciesRecyclerView.isVisible = false
             emptyStateContainer.isVisible = false
             noResultsContainer.isVisible = false
             errorStateContainer.isVisible = true
-            errorStateText.text = "Нет интернета"
+            errorStateText.text = message
             resultsCountText.isVisible = false
         }
-        adapter.setLoading(false)
-        adapter.setHasMore(false)
     }
 
     private fun showResultsCount(totalFound: Int, displayed: Int) {
-        binding.resultsCountText.isVisible = totalFound > 0
-        if (totalFound > 0) {
-            binding.resultsCountText.text = "Найдено $totalFound вакансий"
+        with(binding.resultsCountText) {
+            isVisible = totalFound > 0
+            text = "Найдено $totalFound вакансий"
         }
     }
 
     private fun onVacancyClick(vacancy: Vacancy) {
         requireContext().showToast("Открываем вакансию: ${vacancy.title}")
-        val bundle = Bundle()
-        bundle.putString("vacancyId", vacancy.id)
+        val bundle = Bundle().apply { putString("vacancyId", vacancy.id) }
         findNavController().navigate(R.id.action_mainFragment_to_vacancyDetailFragment, bundle)
     }
 

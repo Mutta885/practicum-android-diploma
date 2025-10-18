@@ -18,19 +18,22 @@ class IndustryAdapter(
 
     private val originalList = mutableListOf<Industry>()
     private var items = listOf<Item>()
+    private var selectedId: String? = null // Хранение ID выбранного элемента
     private var selectedPosition: Int = -1
 
     fun submitList(newIndustries: List<Industry>) {
         originalList.clear()
         originalList.addAll(newIndustries)
-        items = originalList.map { Item(it, false) }
+        items = originalList.map { industry ->
+            Item(industry, industry.id == selectedId)
+        }
         selectedPosition = items.indexOfFirst { it.isSelected }
         notifyDataSetChanged()
         onSelectionChanged?.invoke()
     }
 
     fun getSelectedIndustry(): Industry? {
-        return items.getOrNull(selectedPosition)?.industry
+        return items.find { it.industry.id == selectedId }?.industry
     }
 
     fun getCurrentList(): List<Industry> {
@@ -44,10 +47,8 @@ class IndustryAdapter(
             originalList.filter { it.name.contains(query, ignoreCase = true) }
         }
 
-        // Восстанавливаем выбранный элемент, если он есть в фильтре
         items = filtered.map { industry ->
-            val isSelected = items.find { it.industry.id == industry.id }?.isSelected ?: false
-            Item(industry, isSelected)
+            Item(industry, industry.id == selectedId)
         }
         selectedPosition = items.indexOfFirst { it.isSelected }
         notifyDataSetChanged()
@@ -79,25 +80,19 @@ class IndustryAdapter(
             binding.radioButton.isChecked = position == selectedPosition
 
             binding.root.setOnClickListener {
-                if (selectedPosition != position) {
-                    val previousSelected = selectedPosition
-                    selectedPosition = position
+                val previousId = selectedId
+                selectedId = item.industry.id
 
-                    // Создаём новый список с обновлённым выбранным элементом
-                    items = items.mapIndexed { index, currentItem ->
-                        when (index) {
-                            previousSelected -> currentItem.copy(isSelected = false)
-                            position -> currentItem.copy(isSelected = true)
-                            else -> currentItem
-                        }
+                if (previousId != null) {
+                    val previousIndex = items.indexOfFirst { it.industry.id == previousId }
+                    if (previousIndex != -1) {
+                        notifyItemChanged(previousIndex)
                     }
-
-                    if (previousSelected != -1) {
-                        notifyItemChanged(previousSelected)
-                    }
-                    notifyItemChanged(position)
-                    onSelectionChanged?.invoke()
                 }
+
+                selectedPosition = position
+                notifyItemChanged(position)
+                onSelectionChanged?.invoke()
             }
         }
     }
