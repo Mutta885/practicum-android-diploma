@@ -1,4 +1,4 @@
-package ru.practicum.android.diploma.ui.fragments
+package ru.practicum.android.diploma.ui.root
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -11,6 +11,7 @@ import com.bumptech.glide.Glide
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.databinding.FragmentVacancyBinding
+import ru.practicum.android.diploma.domain.models.Phones
 import ru.practicum.android.diploma.domain.models.SalaryFormatter
 import ru.practicum.android.diploma.domain.models.VacancyDetail
 import ru.practicum.android.diploma.presentation.vmodels.VacancyDetailViewModel
@@ -93,41 +94,49 @@ class VacancyDetailFragment : Fragment() {
         vacancyDetail.contact?.let {
             if (it.phones != null || it.email != "") {
                 binding.contactGroup.isVisible = true
-                it.email?.let { email ->
-                    if (email != "") {
-                        binding.emailGroup.isVisible = true
-                        binding.contactEmail.text = email
-                        binding.contactEmail.setOnClickListener {
-                            viewModel.sharedEmail(email)
+                renderEmail(it.email)
+                renderPhone(it.phones)
+            }
+        }
+    }
+
+    private fun renderEmail(value: String?) {
+        value?.let { email ->
+            if (email != "") {
+                binding.emailGroup.isVisible = true
+                binding.contactEmail.text = email
+                binding.contactEmail.setOnClickListener {
+                    viewModel.sharedEmail(email)
+                }
+            }
+        }
+    }
+
+    private fun renderPhone(value: List<Phones>?) {
+        value?.let { phone ->
+            binding.phonesGroup.isVisible = true
+            phone.forEachIndexed { i, tel ->
+                when (i) {
+                    0 -> {
+                        binding.contactPhone1.text = tel.formatted
+                        binding.contactPhone1.setOnClickListener {
+                            viewModel.sharedPhone(tel.formatted.toString())
                         }
                     }
-                }
-                it.phones?.let { phone ->
-                    binding.phonesGroup.isVisible = true
-                    phone.forEachIndexed { i, tel ->
-                        when (i) {
-                            0 -> {
-                                binding.contactPhone1.text = tel.formatted
-                                binding.contactPhone1.setOnClickListener {
-                                    viewModel.sharedPhone(tel.formatted.toString())
-                                }
-                            }
 
-                            1 -> {
-                                binding.contactPhone2.isVisible = true
-                                binding.contactPhone2.text = tel.formatted
-                                binding.contactPhone2.setOnClickListener {
-                                    viewModel.sharedPhone(tel.formatted.toString())
-                                }
-                            }
+                    1 -> {
+                        binding.contactPhone2.isVisible = true
+                        binding.contactPhone2.text = tel.formatted
+                        binding.contactPhone2.setOnClickListener {
+                            viewModel.sharedPhone(tel.formatted.toString())
+                        }
+                    }
 
-                            2 -> {
-                                binding.contactPhone3.isVisible = true
-                                binding.contactPhone3.text = tel.formatted
-                                binding.contactPhone3.setOnClickListener {
-                                    viewModel.sharedPhone(tel.formatted.toString())
-                                }
-                            }
+                    2 -> {
+                        binding.contactPhone3.isVisible = true
+                        binding.contactPhone3.text = tel.formatted
+                        binding.contactPhone3.setOnClickListener {
+                            viewModel.sharedPhone(tel.formatted.toString())
                         }
                     }
                 }
