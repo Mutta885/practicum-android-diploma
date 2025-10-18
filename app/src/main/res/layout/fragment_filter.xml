@@ -49,6 +49,7 @@
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/workplace_item_1"
             style="@style/filter_text_button"
+            android:textColor="@color/grey"
             android:layout_width="match_parent"
             android:layout_height="@dimen/filter_height"
             android:layout_gravity="center"
@@ -87,6 +88,7 @@
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/industry_item_1"
             style="@style/filter_text_button"
+            android:textColor="@color/grey"
             android:layout_width="match_parent"
             android:layout_height="@dimen/filter_height"
             android:text="@string/industry" />

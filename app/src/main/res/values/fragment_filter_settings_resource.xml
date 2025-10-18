@@ -13,6 +13,7 @@
         <item name ="android:textAppearance">@style/textAppearanceRegular16sp400w</item>>
         <item name ="android:textColor">?attr/attr_white_black_color</item>>
         <item name ="android:gravity">start|center_vertical</item>>
+        <item name ="android:drawableEnd">@drawable/ic_arrow_right</item>>
         <item name ="android:foreground">?attr/selectableItemBackground</item>>
         <item name="android:paddingStart">16dp</item>
     </style>
