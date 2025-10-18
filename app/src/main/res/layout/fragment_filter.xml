@@ -96,16 +96,10 @@
         <FrameLayout
             android:id="@+id/group_industry_item_2"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/filter_height"
-            android:visibility="gone">
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/industry_item_2"
-                style="@style/filter_text_button"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
-                android:text="@string/industry" />
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:minHeight="@dimen/filter_height"
+            android:visibility="visible">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -115,10 +109,23 @@
                 android:text="@string/industry"
                 android:textAppearance="@style/textAppearanceRegular12sp400w"
                 android:textColor="?attr/attr_white_black_color" />
+            <TextView
+                android:id="@+id/industry_item_2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="26.5dp"
+                android:paddingEnd="50dp"
+                android:textColor="?attr/attr_white_black_color"
+                android:textAppearance="@style/textAppearanceRegular16sp400w"
+                android:layout_marginStart="16dp"
+                android:layout_marginBottom="12.5dp"
+                tools:text="kassssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss"
+                android:text="@string/industry" />
 
             <ImageView
                 android:id="@+id/close_industry"
                 style="@style/filter_close_image"
+                android:layout_gravity="center|end"
                 android:layout_width="@dimen/filter_close_height"
                 android:layout_height="@dimen/filter_close_height" />
         </FrameLayout>
