@@ -27,10 +27,6 @@ class FiltrationFragment : Fragment() {
     private val viewModel: FiltrationViewModel by activityViewModel()
     private val searchViewModel: SearchViewModel by sharedViewModel()
 
-    companion object {
-        private const val TAG = "FiltrationFragment"
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -109,11 +105,11 @@ class FiltrationFragment : Fragment() {
     }
 
     private fun setupIndustryNavigation() {
-        listOf(binding.industryItem, binding.industryArrow).forEach {
+        /*listOf(binding.industryItem, binding.industryArrow).forEach {
             it.setOnClickListener {
                 Log.d(TAG, "Industry item clicked - navigating to industry fragment")
                 findNavController().navigate(R.id.action_filtrationFragment_to_industryFragment)
-            }
+            }*/
         binding.industryItem1.setOnClickListener {
             findNavController().navigate(R.id.action_filtrationFragment_to_industryFragment)
         }
@@ -124,15 +120,15 @@ class FiltrationFragment : Fragment() {
             binding.groupIndustryItem2.isVisible = false
             binding.industryItem1.isVisible = true
         }
-    }
+    //}
     }
 
     private fun setupWorkplaceNavigation() {
-        listOf(binding.workplaceItem, binding.workplaceArrow).forEach {
+        /*listOf(binding.workplaceItem, binding.workplaceArrow).forEach {
             it.setOnClickListener {
                 Log.d(TAG, "Workplace item clicked - navigating to workPlace fragment")
                 findNavController().navigate(R.id.action_filtrationFragment_to_workPlaceFragment)
-            }
+            }*/
             binding.workplaceItem1.setOnClickListener {
                 findNavController().navigate(R.id.action_filtrationFragment_to_workPlaceFragment)
             }
@@ -143,7 +139,7 @@ class FiltrationFragment : Fragment() {
                 binding.groupWorkplaceItem2.isVisible = false
                 binding.workplaceItem1.isVisible = true
             }
-        }
+        //}
     }
 
     private fun setupSalaryCheckbox() {
@@ -166,12 +162,12 @@ class FiltrationFragment : Fragment() {
     }
 
     private fun setupClearButtons() {
-        binding.clearIndustryButton.setOnClickListener {
+        binding.closeIndustry.setOnClickListener {
             Log.d(TAG, "Clear industry button clicked")
             viewModel.clearIndustries()
         }
 
-        binding.clearWorkplaceButton.setOnClickListener {
+        binding.closeWorkplace.setOnClickListener {
             Log.d(TAG, "Clear workplace button clicked")
             viewModel.clearWorkplace()
         }
@@ -322,19 +318,19 @@ class FiltrationFragment : Fragment() {
     }
 
     private fun updateClearIndustryButtonVisibility(industries: List<ru.practicum.android.diploma.domain.models.Industry>) {
-        val hasSelection = industries.isNotEmpty()
+        /*val hasSelection = industries.isNotEmpty()
         binding.clearIndustryButton.visibility = if (hasSelection) View.VISIBLE else View.GONE
         binding.industryArrow.visibility = if (hasSelection) View.GONE else View.VISIBLE
-        Log.d(TAG, "Industry visibility - hasSelection: $hasSelection, clearButton: ${binding.clearIndustryButton.visibility}, arrow: ${binding.industryArrow.visibility}")
+        Log.d(TAG, "Industry visibility - hasSelection: $hasSelection, clearButton: ${binding.clearIndustryButton.visibility}, arrow: ${binding.industryArrow.visibility}")*/
     }
 
     private fun updateClearWorkplaceButtonVisibility() {
         val country = viewModel.selectedCountry.value
         val region = viewModel.selectedRegion.value
-        val hasSelection = country != null || region != null
+        /*val hasSelection = country != null || region != null
         binding.clearWorkplaceButton.visibility = if (hasSelection) View.VISIBLE else View.GONE
         binding.workplaceArrow.visibility = if (hasSelection) View.GONE else View.VISIBLE
-        Log.d(TAG, "Workplace visibility - hasSelection: $hasSelection, clearButton: ${binding.clearWorkplaceButton.visibility}, arrow: ${binding.workplaceArrow.visibility}")
+        Log.d(TAG, "Workplace visibility - hasSelection: $hasSelection, clearButton: ${binding.clearWorkplaceButton.visibility}, arrow: ${binding.workplaceArrow.visibility}")*/
     }
 
     private fun updateClearSalaryButtonVisibility(salaryText: String) {
@@ -345,5 +341,9 @@ class FiltrationFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    companion object {
+        private const val TAG = "FiltrationFragment"
     }
 }

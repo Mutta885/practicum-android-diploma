@@ -30,16 +30,6 @@ class RegionFragment : Fragment(), RegionAdapter.RegionListener {
     // Флаг, указывающий, что список стран загружен
     private var countriesLoaded = false
 
-    companion object {
-        private const val DEBUG_TAG = "RegionFragment"
-        private const val COUNTRY_ID_KEY = "country_id"
-        private const val REGION_NAME_KEY = "region_name"
-        private const val REGION_ID_KEY = "region_id"
-        private const val REGION_PARENT_ID_KEY = "region_parentId"
-        private const val COUNTRY_NAME_KEY = "country_name"
-        private const val ARG_INVALID_ID = -1 // Добавляем константу для обработки недопустимых ID
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -293,5 +283,7 @@ class RegionFragment : Fragment(), RegionAdapter.RegionListener {
         private const val REGION_NAME_KEY = "region_name"
         private const val REGION_ID_KEY = "region_id"
         private const val REGION_PARENT_ID_KEY = "region_parentId"
+        private const val COUNTRY_NAME_KEY = "country_name"
+        private const val ARG_INVALID_ID = -1 // Добавляем константу для обработки недопустимых ID
     }
 }
