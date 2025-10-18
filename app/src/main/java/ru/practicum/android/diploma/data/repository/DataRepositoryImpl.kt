@@ -1,19 +1,29 @@
 package ru.practicum.android.diploma.data.repository
 
 import android.util.Log
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import ru.practicum.android.diploma.data.dto.AreaDto
 import ru.practicum.android.diploma.data.dto.ContactDto
 import ru.practicum.android.diploma.data.dto.EmployerDto
 import ru.practicum.android.diploma.data.dto.EmploymentDto
 import ru.practicum.android.diploma.data.dto.ExperienceDto
+import ru.practicum.android.diploma.data.dto.FilterAreasRequest
+import ru.practicum.android.diploma.data.dto.FilterAreasResponse
 import ru.practicum.android.diploma.data.dto.toDomain
 import ru.practicum.android.diploma.data.dto.FilterIndustryDto
+import ru.practicum.android.diploma.data.dto.IndustryDto
+import ru.practicum.android.diploma.data.dto.IndustryRequest
+import ru.practicum.android.diploma.data.dto.IndustryResponse
+import ru.practicum.android.diploma.data.dto.Response
 import ru.practicum.android.diploma.data.dto.SalaryDto
 import ru.practicum.android.diploma.data.dto.ScheduleDto
 import ru.practicum.android.diploma.data.dto.VacancyDetailSearchResponse
 import ru.practicum.android.diploma.data.dto.VacancyDto
 import ru.practicum.android.diploma.data.dto.VacancySearchResponse
 import ru.practicum.android.diploma.data.network.HhApi
+import ru.practicum.android.diploma.data.network.NetworkClient
+import ru.practicum.android.diploma.data.network.converters.ConvertersDto
 import ru.practicum.android.diploma.domain.models.FilterArea
 import ru.practicum.android.diploma.domain.models.Area
 import ru.practicum.android.diploma.domain.models.Contact
@@ -22,6 +32,7 @@ import ru.practicum.android.diploma.domain.models.Employment
 import ru.practicum.android.diploma.domain.models.Experience
 import ru.practicum.android.diploma.domain.models.FilterIndustry
 import ru.practicum.android.diploma.domain.models.Industry
+import ru.practicum.android.diploma.domain.models.Phones
 import ru.practicum.android.diploma.domain.models.Salary
 import ru.practicum.android.diploma.domain.models.Schedule
 import ru.practicum.android.diploma.domain.models.SearchResult
@@ -36,7 +47,9 @@ import java.net.UnknownHostException
 import javax.net.ssl.SSLHandshakeException
 
 class DataRepositoryImpl(
-    private val api: HhApi
+    private val api: HhApi,
+    private val networkClient: NetworkClient,
+    private val converters: ConvertersDto
 ) : DataRepository {
 
     companion object {
@@ -98,24 +111,21 @@ class DataRepositoryImpl(
     }
 
     // Остальные методы остаются без изменений...
-    override suspend fun getIndustries(): List<Industry> {
-        println("DEBUG: Repository getIndustries called")
-        return try {
-            val response = api.getIndustries()
-            println("DEBUG: Industries loaded: ${response.size} items")
-            response.map { dto -> Industry(id = dto.id, name = dto.name) }
-        } catch (e: UnknownHostException) {
-            Log.w(TAG, "Network connection error loading industries", e)
-            println("DEBUG: Network error loading industries: ${e.message}")
-            emptyList()
-        } catch (e: SocketTimeoutException) {
-            Log.w(TAG, "Timeout loading industries", e)
-            println("DEBUG: Timeout loading industries: ${e.message}")
-            emptyList()
-        } catch (e: IOException) {
-            Log.w(TAG, "IO error loading industries", e)
-            println("DEBUG: IO error loading industries: ${e.message}")
-            emptyList()
+    override fun getIndustries(): Flow<Result<List<Industry>?>> {
+        return flow {
+            networkClient.doRequest(IndustryRequest()).collect { result ->
+                if (result.resultCode == 200) {
+                    emit(
+                        Result.success(
+                            (result as IndustryResponse).result.map {
+                                mapIndustry(it)
+                            }
+                        )
+                    )
+                } else {
+                    emit(Result.failure(Throwable(result.resultCode.toString())))
+                }
+            }
         }
     }
 
@@ -186,6 +196,7 @@ class DataRepositoryImpl(
                 println("DEBUG: Found ${countries.size} countries")
                 Resource.Success(countries)
             }
+
             is Resource.Error -> areasResult
             Resource.Loading -> TODO()
         }
@@ -217,6 +228,7 @@ class DataRepositoryImpl(
                     Resource.Error("Страна не найдена")
                 }
             }
+
             is Resource.Error -> areasResult
             else -> Resource.Error("Неизвестная ошибка")
         }
@@ -232,11 +244,26 @@ class DataRepositoryImpl(
                 println("DEBUG: Found ${allRegions.size} total regions")
                 Resource.Success(allRegions)
             }
+
+            is Resource.Error -> areasResult
+            Resource.Loading -> TODO()
+        }
+    }/*Resource<List<FilterArea>> {
+        println("DEBUG: Repository getAllRegions called")
+        return when (val areasResult = getAreas()) {
+            is Resource.Success -> {
+                val allRegions = areasResult.data.flatMap { country ->
+                    country.areas.filter { it.areas.isEmpty() }
+                }
+                println("DEBUG: Found ${allRegions.size} total regions")
+                Resource.Success(allRegions)
+            }
+
             is Resource.Error -> areasResult
             Resource.Loading -> TODO()
         }
     }
-
+*/
     override suspend fun getCountryById(countryId: Int): Resource<FilterArea?> {
         println("DEBUG: Repository getCountryById called for: $countryId")
         return when (val areasResult = getAreas()) {
@@ -244,6 +271,7 @@ class DataRepositoryImpl(
                 val country = areasResult.data.find { it.id == countryId }
                 Resource.Success(country)
             }
+
             is Resource.Error -> areasResult
             Resource.Loading -> TODO()
         }
@@ -306,11 +334,20 @@ class DataRepositoryImpl(
         )
     }
 
-    private fun mapIndustry(industryDto: FilterIndustryDto?) = industryDto?.let { dto ->
+    private fun mapFilterIndustry(industryDto: FilterIndustryDto?) = industryDto?.let { dto ->
         FilterIndustry(
             id = dto.id,
             name = dto.name
         )
+    }
+
+    private fun mapIndustry(industryDto: IndustryDto): Industry {
+        return with(industryDto) {
+            Industry(
+                id = id,
+                name = name
+            )
+        }
     }
 
     private fun mapExperience(experienceDto: ExperienceDto?) = experienceDto?.let { dto ->
@@ -339,7 +376,12 @@ class DataRepositoryImpl(
             id = dto.id,
             name = dto.name,
             email = dto.email,
-            phone = dto.phone
+            phones = dto.phones?.map {
+                Phones(
+                    comment = it.comment,
+                    formatted = it.formatted
+                )
+            }
         )
     }
 
@@ -366,7 +408,7 @@ class DataRepositoryImpl(
                 description = body.description,
                 salary = mapSalary(body.salary),
                 employer = mapEmployer(body.employer),
-                industry = mapIndustry(body.industry),
+                industry = mapFilterIndustry(body.industry),
                 area = mapArea(body.area),
                 experience = mapExperience(body.experience),
                 schedule = mapSchedule(body.schedule),

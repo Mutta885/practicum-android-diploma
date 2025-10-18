@@ -22,7 +22,7 @@ interface HhApi {
     ): Response<VacancySearchResponse>
 
     @GET("industries")
-    suspend fun getIndustries(): List<IndustryDto>
+    suspend fun getIndustriesResponse(): List<IndustryDto>
 
     @GET("vacancies/{id}")
     suspend fun searchVacancyDetail(
@@ -31,4 +31,10 @@ interface HhApi {
 
     @GET("areas")
     suspend fun searchAreas(): List<FilterAreaDto>
+
+    @GET("industries")
+    suspend fun getIndustries(): Response<List<IndustryDto>>
+
+    @GET("areas")
+    suspend fun getAreas(): Response<List<FilterAreaDto>>
 }

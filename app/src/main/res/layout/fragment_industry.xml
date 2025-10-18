@@ -5,7 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?attr/attr_black_white_color"
-    android:fitsSystemWindows="true"
     android:orientation="vertical"
     android:paddingBottom="16dp">
     <!-- Заголовок -->
@@ -62,6 +61,7 @@
                 android:imeOptions="actionDone"
                 android:inputType="text"
                 android:maxLines="1"
+                android:enabled="false"
                 android:paddingHorizontal="16dp"
                 android:singleLine="true"
                 android:textAppearance="@style/textAppearanceRegular16sp400w"
@@ -79,7 +79,7 @@
                 android:clickable="true"
                 android:contentDescription="@string/contentDescription"
                 android:focusable="true"
-                android:src="@drawable/close_edit_text_search"
+                android:src="@drawable/close_edit_text_search_24"
                 android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -106,6 +106,7 @@
                 android:visibility="gone">
 
                 <ImageView
+                    android:id="@+id/imageError"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal|top"

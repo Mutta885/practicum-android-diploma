@@ -40,7 +40,7 @@ class IndustryAdapter(
         return items.map { it.industry }
     }
 
-    fun filter(query: String) {
+    fun filter(query: String): Boolean {
         val filtered = if (query.isEmpty()) {
             originalList
         } else {
@@ -53,6 +53,11 @@ class IndustryAdapter(
         selectedPosition = items.indexOfFirst { it.isSelected }
         notifyDataSetChanged()
         onSelectionChanged?.invoke()
+        return if (items.isEmpty()) {
+            false
+        } else {
+            true
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): IndustryViewHolder {

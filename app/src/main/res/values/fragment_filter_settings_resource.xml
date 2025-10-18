@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <dimen name="filter_height">60dp</dimen>
+    <dimen name="filter_close_height">48dp</dimen>
     <string name="area_job">Место работы</string>
     <string name="select_sum">Введите сумму</string>
     <string name="hint_not_salary">Не показывать без зарплаты</string>
@@ -9,9 +11,16 @@
     <string name="apply_filter">Применить</string>
     <style name="filter_text_button">
         <item name ="android:textAppearance">@style/textAppearanceRegular16sp400w</item>>
-        <item name ="android:textColor">@color/grey</item>>
+        <item name ="android:textColor">?attr/attr_white_black_color</item>>
         <item name ="android:gravity">start|center_vertical</item>>
         <item name ="android:foreground">?attr/selectableItemBackground</item>>
         <item name="android:paddingStart">16dp</item>
+    </style>
+    <style name="filter_close_image">
+        <item name="android:scaleType">centerInside</item>
+        <item name="android:background">?attr/attr_black_white_color</item>
+        <item name="android:src">@drawable/close_filter_black_white_24</item>
+        <item name="android:layout_gravity">center_vertical|end</item>
+        <item name="android:contentDescription">@string/contentDescription</item>
     </style>
 </resources>

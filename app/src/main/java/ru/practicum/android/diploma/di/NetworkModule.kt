@@ -1,13 +1,19 @@
 package ru.practicum.android.diploma.di
 
+import android.content.Context
+import android.net.ConnectivityManager
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import ru.practicum.android.diploma.BuildConfig
 import ru.practicum.android.diploma.data.network.HhApi
+import ru.practicum.android.diploma.data.network.NetworkClient
+import ru.practicum.android.diploma.data.network.RetrofitNetworkClient
+import ru.practicum.android.diploma.data.network.converters.ConvertersDto
 import java.util.concurrent.TimeUnit
 
 private const val TIMEOUT_SECONDS = 30L
@@ -45,4 +51,18 @@ val networkModule = module {
     }
 
     single { get<Retrofit>().create(HhApi::class.java) }
+
+    factory<ConnectivityManager> {
+        androidContext().getSystemService(
+            Context.CONNECTIVITY_SERVICE
+        ) as ConnectivityManager
+    }
+
+    factory<NetworkClient> {
+        RetrofitNetworkClient(get(), get())
+    }
+
+    single<ConvertersDto> {
+        ConvertersDto()
+    }
 }

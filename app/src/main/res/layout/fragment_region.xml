@@ -71,7 +71,7 @@
             android:clickable="true"
             android:contentDescription="@string/contentDescription"
             android:focusable="true"
-            android:src="@drawable/close_edit_text_search"
+            android:src="@drawable/close_edit_text_search_24"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -114,7 +114,7 @@
             android:layout_width="328dp"
             android:layout_height="223dp"
             android:layout_marginBottom="16dp"
-            android:contentDescription="Ошибка загрузки"
+            android:contentDescription="@string/contentDescription"
             android:src="@drawable/ic_no_internet" />
 
         <TextView

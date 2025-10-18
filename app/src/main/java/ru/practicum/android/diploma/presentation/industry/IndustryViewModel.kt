@@ -5,8 +5,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
+import ru.practicum.android.diploma.domain.api.GetIndustriesUseCase
 import ru.practicum.android.diploma.domain.models.Industry
-import ru.practicum.android.diploma.domain.usecase.GetIndustriesUseCase
 
 class IndustryViewModel(
     private val getIndustriesUseCase: GetIndustriesUseCase
@@ -18,30 +18,35 @@ class IndustryViewModel(
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
 
-    private val _error = MutableLiveData<String?>()
+    private val _error = MutableLiveData<String?>(null)
     val error: LiveData<String?> = _error
 
     fun refresh() {
         loadIndustries()
     }
 
-    init {
-        loadIndustries()
-    }
-
-    private fun loadIndustries() {
+    fun loadIndustries() {
+        _isLoading.value = true
         viewModelScope.launch {
-            _isLoading.value = true
-            _error.value = null
-
-            val result = getIndustriesUseCase()
-            if (result.isSuccess) {
-                _industries.value = result.getOrNull() ?: emptyList()
-            } else {
-                _error.value = result.exceptionOrNull()?.message ?: "Ошибка загрузки отраслей"
+            val result = getIndustriesUseCase.execute()
+            result.collect { response ->
+                _isLoading.value = false
+                with(response) {
+                    when{
+                         isSuccess-> {
+                            getOrNull()?.let {
+                                _industries.postValue(it)
+                            } ?: _industries.postValue(emptyList())
+                        }
+                        isFailure -> {
+                            response.exceptionOrNull()
+                            exceptionOrNull().let {
+                                _error.postValue(it?.message)
+                            }
+                        }
+                    }
+                }
             }
-
-            _isLoading.value = false
         }
     }
 

@@ -10,8 +10,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import org.koin.android.ext.android.get
 import org.koin.androidx.viewmodel.ext.android.activityViewModel
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import ru.practicum.android.diploma.R
@@ -112,7 +114,17 @@ class FiltrationFragment : Fragment() {
                 Log.d(TAG, "Industry item clicked - navigating to industry fragment")
                 findNavController().navigate(R.id.action_filtrationFragment_to_industryFragment)
             }
+        binding.industryItem1.setOnClickListener {
+            findNavController().navigate(R.id.action_filtrationFragment_to_industryFragment)
         }
+        binding.groupIndustryItem2.setOnClickListener {
+            findNavController().navigate(R.id.action_filtrationFragment_to_industryFragment)
+        }
+        binding.closeIndustry.setOnClickListener {
+            binding.groupIndustryItem2.isVisible = false
+            binding.industryItem1.isVisible = true
+        }
+    }
     }
 
     private fun setupWorkplaceNavigation() {
@@ -120,6 +132,16 @@ class FiltrationFragment : Fragment() {
             it.setOnClickListener {
                 Log.d(TAG, "Workplace item clicked - navigating to workPlace fragment")
                 findNavController().navigate(R.id.action_filtrationFragment_to_workPlaceFragment)
+            }
+            binding.workplaceItem1.setOnClickListener {
+                findNavController().navigate(R.id.action_filtrationFragment_to_workPlaceFragment)
+            }
+            binding.groupWorkplaceItem2.setOnClickListener {
+                findNavController().navigate(R.id.action_filtrationFragment_to_workPlaceFragment)
+            }
+            binding.closeWorkplace.setOnClickListener {
+                binding.groupWorkplaceItem2.isVisible = false
+                binding.workplaceItem1.isVisible = true
             }
         }
     }
@@ -247,12 +269,19 @@ class FiltrationFragment : Fragment() {
 
     private fun updateIndustryText(industries: List<ru.practicum.android.diploma.domain.models.Industry>) {
         val text = when {
-            industries.isEmpty() -> "Отрасль"
+            industries.isEmpty() -> getString(R.string.industry)
             industries.size == 1 -> industries[0].name
-            else -> "Выбрано: ${industries.size}"
+            else -> "${getString(R.string.this_select)}: ${industries.size}"
         }
-        binding.industryItem.text = text
-        Log.d(TAG, "Setting industry text to: $text")
+        binding.industryItem2.text = text
+
+        if (text != getString(R.string.industry)) {
+            binding.industryItem1.isVisible = false
+            binding.groupIndustryItem2.isVisible = true
+        } else {
+            binding.industryItem1.isVisible = true
+            binding.groupIndustryItem2.isVisible = false
+        }
     }
 
     private fun updateWorkplaceText() {
@@ -262,10 +291,20 @@ class FiltrationFragment : Fragment() {
             country != null && region != null -> "$country, $region"
             country != null -> country
             region != null -> region
-            else -> "Место работы"
+            else -> {
+                getString(R.string.area_job)
+            }
         }
-        binding.workplaceItem.text = workplaceText
-        Log.d(TAG, "Workplace text updated to: $workplaceText")
+
+        binding.workplaceItem2.text = workplaceText
+
+        if (workplaceText != getString(R.string.area_job)) {
+            binding.workplaceItem1.isVisible = false
+            binding.groupWorkplaceItem2.isVisible = true
+        } else {
+            binding.workplaceItem1.isVisible = true
+            binding.groupWorkplaceItem2.isVisible = false
+        }
     }
 
     private fun updateSalaryInput(salary: String?) {
