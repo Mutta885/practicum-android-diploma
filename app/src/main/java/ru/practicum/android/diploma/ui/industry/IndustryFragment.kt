@@ -155,22 +155,29 @@ class IndustryFragment : Fragment() {
     private fun renderGroupImageText(value: Boolean, string: String? = null) {
         binding.groupImageText.isVisible = value
         if (value) {
-            binding.errorText.text = string ?: getString(R.string.error_unknown)
             when (string) {
-                getString(R.string.not_internet) -> {
+                HTTP_NOT_INTERNET -> {
+                    binding.errorText.text = getString(R.string.not_internet)
                     binding.imageError.setImageResource(R.drawable.image_yorik)
                 }
 
-                getString(R.string.error_server) -> {
+                HTTP_SERVER_ERROR -> {
+                    binding.errorText.text = getString(R.string.error_server)
                     binding.imageError.setImageResource(R.drawable.error_server)
                 }
 
-                getString(R.string.no_results) -> {
+                HTTP_UNAUTHORIZED, HTTP_FORBIDDEN, HTTP_NOT_FOUND -> {
+                    binding.errorText.text = getString(R.string.no_results)
                     binding.imageError.setImageResource(R.drawable.cover_samolet)
                 }
 
                 getString(R.string.this_not_industry) -> {
+                    binding.errorText.text = string
                     binding.imageError.setImageResource(R.drawable.cat_with_the_plate)
+                }
+                else -> {
+                    binding.errorText.text = string ?: getString(R.string.error_unknown)
+                    binding.imageError.setImageResource(R.drawable.image_yorik)
                 }
             }
         }
@@ -179,5 +186,13 @@ class IndustryFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    companion object {
+        private const val HTTP_NOT_INTERNET = "-1"
+        private const val HTTP_UNAUTHORIZED = "401"
+        private const val HTTP_FORBIDDEN = "403"
+        private const val HTTP_NOT_FOUND = "404"
+        private const val HTTP_SERVER_ERROR = "500"
     }
 }

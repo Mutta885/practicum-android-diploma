@@ -1,6 +1,5 @@
 package ru.practicum.android.diploma.data.repository
 
-import android.content.Context
 import android.util.Log
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -9,9 +8,14 @@ import ru.practicum.android.diploma.data.dto.ContactDto
 import ru.practicum.android.diploma.data.dto.EmployerDto
 import ru.practicum.android.diploma.data.dto.EmploymentDto
 import ru.practicum.android.diploma.data.dto.ExperienceDto
+import ru.practicum.android.diploma.data.dto.FilterAreasRequest
+import ru.practicum.android.diploma.data.dto.FilterAreasResponse
 import ru.practicum.android.diploma.data.dto.toDomain
 import ru.practicum.android.diploma.data.dto.FilterIndustryDto
 import ru.practicum.android.diploma.data.dto.IndustryDto
+import ru.practicum.android.diploma.data.dto.IndustryRequest
+import ru.practicum.android.diploma.data.dto.IndustryResponse
+import ru.practicum.android.diploma.data.dto.Response
 import ru.practicum.android.diploma.data.dto.SalaryDto
 import ru.practicum.android.diploma.data.dto.ScheduleDto
 import ru.practicum.android.diploma.data.dto.VacancyDetailSearchResponse
@@ -19,6 +23,7 @@ import ru.practicum.android.diploma.data.dto.VacancyDto
 import ru.practicum.android.diploma.data.dto.VacancySearchResponse
 import ru.practicum.android.diploma.data.network.HhApi
 import ru.practicum.android.diploma.data.network.NetworkClient
+import ru.practicum.android.diploma.data.network.converters.ConvertersDto
 import ru.practicum.android.diploma.domain.models.FilterArea
 import ru.practicum.android.diploma.domain.models.Area
 import ru.practicum.android.diploma.domain.models.Contact
@@ -42,7 +47,8 @@ import javax.net.ssl.SSLHandshakeException
 
 class DataRepositoryImpl(
     private val api: HhApi,
-    private val networkClient: NetworkClient
+    private val networkClient: NetworkClient,
+    private val converters: ConvertersDto
 ) : DataRepository {
 
     companion object {
@@ -106,19 +112,17 @@ class DataRepositoryImpl(
     // Остальные методы остаются без изменений...
     override fun getIndustries(): Flow<Result<List<Industry>?>> {
         return flow {
-            networkClient.doIndustry().collect { result ->
-                if (result.isSuccess) {
+            networkClient.doRequest(IndustryRequest()).collect { result ->
+                if (result.resultCode == 200) {
                     emit(
                         Result.success(
-                            result.getOrNull()?.map {
+                            (result as IndustryResponse).result.map {
                                 mapIndustry(it)
                             }
                         )
                     )
                 } else {
-                    result.exceptionOrNull()?.let {
-                        emit(Result.failure(it))
-                    }
+                    emit(Result.failure(Throwable(result.resultCode.toString())))
                 }
             }
         }
@@ -183,6 +187,26 @@ class DataRepositoryImpl(
         }
     }
 
+    override fun getAreasRequest(): Flow<Response> {//Flow<Result<List<FilterArea>>> {
+        return flow {
+            /*networkClient.doIndustry().collect { result ->
+                if (result.isSuccess) {
+                    emit(
+                        Result.success(
+                            result.getOrNull()?.map {
+                                FilterArea
+                            }
+                        )
+                    )
+                } else {
+                    result.exceptionOrNull()?.let {
+                        emit(Result.failure(it))
+                    }
+                }
+            }*/
+        }
+    }
+
     override suspend fun getCountries(): Resource<List<FilterArea>> {
         println("DEBUG: Repository getCountries called")
         return when (val areasResult = getAreas()) {
@@ -229,7 +253,25 @@ class DataRepositoryImpl(
         }
     }
 
-    override suspend fun getAllRegions(): Resource<List<FilterArea>> {
+    override fun getAllRegions(): Flow<Result<List<FilterArea>>>{
+        return flow {
+            networkClient.doRequest(FilterAreasRequest()).collect{ result ->
+                if(result.resultCode == 200) {
+                    val response = (result as FilterAreasResponse)
+                    emit(
+                        Result.success(
+                            response.list.map {
+                                converters.map(it)
+                            }
+                        )
+
+                    )
+                } else {
+                    emit(Result.failure(Throwable(result.resultCode.toString())))
+                }
+            }
+        }
+    }/*Resource<List<FilterArea>> {
         println("DEBUG: Repository getAllRegions called")
         return when (val areasResult = getAreas()) {
             is Resource.Success -> {
@@ -244,7 +286,7 @@ class DataRepositoryImpl(
             Resource.Loading -> TODO()
         }
     }
-
+*/
     override suspend fun getCountryById(countryId: Int): Resource<FilterArea?> {
         println("DEBUG: Repository getCountryById called for: $countryId")
         return when (val areasResult = getAreas()) {

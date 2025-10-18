@@ -1,29 +1,31 @@
 package ru.practicum.android.diploma.domain.usecase
 
+import kotlinx.coroutines.flow.Flow
+import ru.practicum.android.diploma.domain.api.GetRegionUseCase
 import ru.practicum.android.diploma.domain.models.FilterArea
 import ru.practicum.android.diploma.domain.repository.DataRepository
 import ru.practicum.android.diploma.util.Resource
 
-class GetAreasUseCase(
+class GetRegionUseCaseImpl(
     private val repository: DataRepository
-) {
-    suspend fun execute(): Resource<List<FilterArea>> {
+):GetRegionUseCase {
+    override suspend fun execute(): Resource<List<FilterArea>> {
         return repository.getAreas()
     }
 
-    suspend fun getCountries(): Resource<List<FilterArea>> {
+    override suspend fun getCountries(): Resource<List<FilterArea>> {
         return repository.getCountries()
     }
 
-    suspend fun getRegionsByCountry(countryId: Int): Resource<List<FilterArea>> {
+    override suspend fun getRegionsByCountry(countryId: Int): Resource<List<FilterArea>> {
         return repository.getRegionsByCountry(countryId)
     }
 
-    suspend fun getAllRegions(): Resource<List<FilterArea>> {
+    override fun getAllRegions(): Flow<Result<List<FilterArea>>> {
         return repository.getAllRegions()
     }
 
-    suspend fun getCountryById(countryId: Int): Resource<FilterArea?> {
+    override suspend fun getCountryById(countryId: Int): Resource<FilterArea?> {
         return repository.getCountryById(countryId)
     }
 }

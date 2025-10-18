@@ -11,12 +11,12 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.databinding.FragmentCountryBinding
 import ru.practicum.android.diploma.domain.models.FilterArea
-import ru.practicum.android.diploma.presentation.vmodels.AreasViewModel
+import ru.practicum.android.diploma.presentation.vmodels.RegionViewModel
 import ru.practicum.android.diploma.ui.models.FilterAreaState
 
 class CountryFragment : Fragment(), CountryAdapter.CountryListener {
 
-    private val viewModel: AreasViewModel by viewModel()
+    private val viewModel: RegionViewModel by viewModel()
     private var _binding: FragmentCountryBinding? = null
     private val binding get() = _binding!!
     private var countryAdapter: CountryAdapter? = null

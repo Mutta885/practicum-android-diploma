@@ -13,6 +13,7 @@ import ru.practicum.android.diploma.BuildConfig
 import ru.practicum.android.diploma.data.network.HhApi
 import ru.practicum.android.diploma.data.network.NetworkClient
 import ru.practicum.android.diploma.data.network.RetrofitNetworkClient
+import ru.practicum.android.diploma.data.network.converters.ConvertersDto
 import java.util.concurrent.TimeUnit
 
 private const val TIMEOUT_SECONDS = 30L
@@ -57,7 +58,11 @@ val networkModule = module {
         ) as ConnectivityManager
     }
 
-    factory <NetworkClient> {
-        RetrofitNetworkClient(get(), get(), get())
+    factory<NetworkClient> {
+        RetrofitNetworkClient(get(), get())
+    }
+
+    single<ConvertersDto> {
+        ConvertersDto()
     }
 }

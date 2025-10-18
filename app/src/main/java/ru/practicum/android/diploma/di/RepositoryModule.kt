@@ -6,6 +6,6 @@ import ru.practicum.android.diploma.domain.repository.DataRepository
 
 val repositoryModule = module {
     single<DataRepository> {
-        DataRepositoryImpl(api = get(), networkClient = get())
+        DataRepositoryImpl(api = get(), networkClient = get(), converters = get())
     }
 }

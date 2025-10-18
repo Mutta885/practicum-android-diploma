@@ -1,16 +1,17 @@
 package ru.practicum.android.diploma.presentation.vmodels
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import ru.practicum.android.diploma.domain.usecase.GetAreasUseCase
+import ru.practicum.android.diploma.domain.api.GetRegionUseCase
 import ru.practicum.android.diploma.ui.models.FilterAreaState
 import ru.practicum.android.diploma.util.Resource
 
-class AreasViewModel(private val getAreasUseCase: GetAreasUseCase) : ViewModel() {
+class RegionViewModel(private val getRegionUseCase: GetRegionUseCase) : ViewModel() {
 
     private var searchJob: Job? = null
     private val _filterAreaState = MutableLiveData<FilterAreaState>()
@@ -20,7 +21,7 @@ class AreasViewModel(private val getAreasUseCase: GetAreasUseCase) : ViewModel()
         searchJob?.cancel()
         searchJob = viewModelScope.launch {
             _filterAreaState.postValue(FilterAreaState.Loading)
-            when (val result = getAreasUseCase.getCountries()) {
+            when (val result = getRegionUseCase.getCountries()) {
                 is Resource.Success -> {
                     val countries = result.data
                     if (countries.isNotEmpty()) {
@@ -44,13 +45,21 @@ class AreasViewModel(private val getAreasUseCase: GetAreasUseCase) : ViewModel()
         searchJob = viewModelScope.launch {
             _filterAreaState.postValue(FilterAreaState.Loading)
             val result = if (countryId != null) {
-                getAreasUseCase.getRegionsByCountry(countryId)
+                getRegionUseCase.getRegionsByCountry(countryId)
             } else {
-                getAreasUseCase.getAllRegions()
+              //  getRegionUseCase.getAllRegions()
+            }
+            val result2 = getRegionUseCase.getAllRegions()
+            result2.collect{ response ->
+                if(response.isSuccess) {
+                    Log.v("my", response.getOrNull()?.size.toString() + "  responseSuc")
+                } else {
+                    Log.v("my", response.exceptionOrNull()?.message + "  responseFail")
+                }
             }
 
             when (result) {
-                is Resource.Success -> {
+                /*is Resource.Success -> {
                     val regions = result.data
                     if (regions.isNotEmpty()) {
                         _filterAreaState.postValue(FilterAreaState.RegionsStateByCountry(regions))
@@ -63,7 +72,7 @@ class AreasViewModel(private val getAreasUseCase: GetAreasUseCase) : ViewModel()
                     _filterAreaState.postValue(FilterAreaState.Error(result.message ?: "Ошибка загрузки регионов"))
                 }
 
-                else -> {}
+                else -> {}*/
             }
         }
     }
@@ -73,7 +82,7 @@ class AreasViewModel(private val getAreasUseCase: GetAreasUseCase) : ViewModel()
         searchJob = viewModelScope.launch {
             _filterAreaState.postValue(FilterAreaState.Loading)
             if (parentId != null) {
-                when (val result = getAreasUseCase.getCountryById(parentId)) {
+                when (val result = getRegionUseCase.getCountryById(parentId)) {
                     is Resource.Success -> {
                         val country = result.data
                         if (country != null) {

@@ -1,0 +1,13 @@
+package ru.practicum.android.diploma.domain.api
+
+import kotlinx.coroutines.flow.Flow
+import ru.practicum.android.diploma.domain.models.FilterArea
+import ru.practicum.android.diploma.util.Resource
+
+interface GetRegionUseCase {
+    suspend fun execute(): Resource<List<FilterArea>>
+    suspend fun getCountries(): Resource<List<FilterArea>>
+    suspend fun getRegionsByCountry(countryId: Int): Resource<List<FilterArea>>
+    fun getAllRegions(): Flow<Result<List<FilterArea>>>
+    suspend fun getCountryById(countryId: Int): Resource<FilterArea?>
+}

@@ -15,24 +15,16 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.databinding.FragmentRegionBinding
 import ru.practicum.android.diploma.domain.models.FilterArea
-import ru.practicum.android.diploma.presentation.vmodels.AreasViewModel
+import ru.practicum.android.diploma.presentation.vmodels.RegionViewModel
 import ru.practicum.android.diploma.ui.models.FilterAreaState
 
 class RegionFragment : Fragment(), RegionAdapter.RegionListener {
 
-    private val viewModel: AreasViewModel by viewModel()
+    private val viewModel: RegionViewModel by viewModel()
     private var _binding: FragmentRegionBinding? = null
     private val binding get() = _binding!!
     private var regionAdapter: RegionAdapter? = null
     private var allRegions: List<FilterArea> = emptyList()
-
-    companion object {
-        private const val DEBUG_TAG = "RegionFragment"
-        private const val COUNTRY_ID_KEY = "country_id"
-        private const val REGION_NAME_KEY = "region_name"
-        private const val REGION_ID_KEY = "region_id"
-        private const val REGION_PARENT_ID_KEY = "region_parentId"
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -213,5 +205,13 @@ class RegionFragment : Fragment(), RegionAdapter.RegionListener {
         super.onDestroyView()
         _binding = null
         regionAdapter = null
+    }
+
+    companion object {
+        private const val DEBUG_TAG = "RegionFragment"
+        private const val COUNTRY_ID_KEY = "country_id"
+        private const val REGION_NAME_KEY = "region_name"
+        private const val REGION_ID_KEY = "region_id"
+        private const val REGION_PARENT_ID_KEY = "region_parentId"
     }
 }
