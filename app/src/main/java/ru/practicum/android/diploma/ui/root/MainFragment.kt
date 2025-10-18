@@ -79,7 +79,9 @@ class MainFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        // Сбрасываем флаг при каждом возобновлении фрагмента
+        // Обновляем состояние иконок при возобновлении фрагмента
+        val currentText = binding.searchEditText.text.toString()
+        updateSearchFieldIcons(currentText)
         isReturningFromFilters = false
     }
 
@@ -106,6 +108,9 @@ class MainFragment : Fragment() {
         val searchIcon = binding.searchIcon
         val clearIcon = binding.clearIcon
 
+        // Инициализируем иконки при создании
+        updateSearchFieldIcons(editText.text.toString())
+
         editText.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
@@ -122,8 +127,7 @@ class MainFragment : Fragment() {
                 }
 
                 val text = s.toString().trim()
-                searchIcon.visibility = if (text.isNotEmpty()) View.GONE else View.VISIBLE
-                clearIcon.visibility = if (text.isNotEmpty()) View.VISIBLE else View.GONE
+                updateSearchFieldIcons(text)
                 searchViewModel.search(text)
             }
         })
@@ -137,8 +141,7 @@ class MainFragment : Fragment() {
             editText.text.clear()
             isProgrammaticTextChange = false
             searchViewModel.search("")
-            clearIcon.visibility = View.GONE
-            searchIcon.visibility = View.VISIBLE
+            updateSearchFieldIcons("")
         }
 
         editText.setOnEditorActionListener { _, actionId, _ ->
@@ -148,6 +151,19 @@ class MainFragment : Fragment() {
             } else {
                 false
             }
+        }
+    }
+
+    private fun updateSearchFieldIcons(text: String) {
+        val searchIcon = binding.searchIcon
+        val clearIcon = binding.clearIcon
+
+        if (text.isNotEmpty()) {
+            searchIcon.visibility = View.GONE
+            clearIcon.visibility = View.VISIBLE
+        } else {
+            searchIcon.visibility = View.VISIBLE
+            clearIcon.visibility = View.GONE
         }
     }
 
@@ -219,6 +235,8 @@ class MainFragment : Fragment() {
             // Устанавливаем текст БЕЗ вызова поиска
             isProgrammaticTextChange = true
             binding.searchEditText.setText(currentQuery)
+            // Обновляем состояние иконок после установки текста
+            updateSearchFieldIcons(currentQuery)
             isProgrammaticTextChange = false
         } else if (hasActiveFilters) {
             println("DEBUG_MAIN: Calling setFiltersWithoutSearch without query")
