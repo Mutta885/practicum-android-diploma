@@ -32,6 +32,7 @@ import ru.practicum.android.diploma.domain.models.Employment
 import ru.practicum.android.diploma.domain.models.Experience
 import ru.practicum.android.diploma.domain.models.FilterIndustry
 import ru.practicum.android.diploma.domain.models.Industry
+import ru.practicum.android.diploma.domain.models.Phones
 import ru.practicum.android.diploma.domain.models.Salary
 import ru.practicum.android.diploma.domain.models.Schedule
 import ru.practicum.android.diploma.domain.models.SearchResult
@@ -375,7 +376,12 @@ class DataRepositoryImpl(
             id = dto.id,
             name = dto.name,
             email = dto.email,
-            phone = dto.phone
+            phones = dto.phones?.map {
+                Phones(
+                    comment = it.comment,
+                    formatted = it.formatted
+                )
+            }
         )
     }
 

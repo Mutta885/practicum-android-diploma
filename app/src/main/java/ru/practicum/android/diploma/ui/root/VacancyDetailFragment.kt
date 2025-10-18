@@ -91,22 +91,44 @@ class VacancyDetailFragment : Fragment() {
         binding.employment.text = vacancyDetail.employment?.name
         binding.description.text = vacancyDetail.description
         vacancyDetail.contact?.let {
-            if (it.phone != null || it.email != "") {
+            if (it.phones != null || it.email != "") {
                 binding.contactGroup.isVisible = true
                 it.email?.let { email ->
-                    binding.contactEmail.text = email
-                    binding.contactEmail.setOnClickListener {
-                        viewModel.sharedEmail(email)
+                    if (email != "") {
+                        binding.emailGroup.isVisible = true
+                        binding.contactEmail.text = email
+                        binding.contactEmail.setOnClickListener {
+                            viewModel.sharedEmail(email)
+                        }
                     }
                 }
-                it.phone?.let { phone ->
-                    var str = ""
-                    phone.forEach { tel ->
-                        str += tel + "\n"
-                    }
-                    binding.contactPhone.text = str
-                    binding.contactPhone.setOnClickListener {
-                        viewModel.sharedPhone(str)
+                it.phones?.let { phone ->
+                    binding.phonesGroup.isVisible = true
+                    phone.forEachIndexed { i, tel ->
+                        when (i) {
+                            0 -> {
+                                binding.contactPhone1.text = tel.formatted
+                                binding.contactPhone1.setOnClickListener {
+                                    viewModel.sharedPhone(tel.formatted.toString())
+                                }
+                            }
+
+                            1 -> {
+                                binding.contactPhone2.isVisible = true
+                                binding.contactPhone2.text = tel.formatted
+                                binding.contactPhone2.setOnClickListener {
+                                    viewModel.sharedPhone(tel.formatted.toString())
+                                }
+                            }
+
+                            2 -> {
+                                binding.contactPhone3.isVisible = true
+                                binding.contactPhone3.text = tel.formatted
+                                binding.contactPhone3.setOnClickListener {
+                                    viewModel.sharedPhone(tel.formatted.toString())
+                                }
+                            }
+                        }
                     }
                 }
             }
