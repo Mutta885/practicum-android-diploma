@@ -96,7 +96,7 @@ class FiltrationFragment : Fragment() {
             findNavController().navigate(R.id.action_filtrationFragment_to_industryFragment)
         }
         binding.groupIndustryItem2.setOnClickListener {
-            findNavController().navigate(R.id.action_filtrationFragment_to_workPlaceFragment)
+            findNavController().navigate(R.id.action_filtrationFragment_to_industryFragment)
         }
         binding.closeIndustry.setOnClickListener {
             binding.groupIndustryItem2.isVisible = false
