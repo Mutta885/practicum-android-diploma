@@ -26,6 +26,7 @@
     <string name="country_choose_text">Выбор страны</string>
     <string name="region_choose_text">Выбор региона</string>
     <string name="choose">Выбрать</string>
+    <string name="this_select">Выбрано</string>
 
     <!-- Для состояния "нет результатов" -->
     <string name="no_results_title">Ничего не найдено</string>
