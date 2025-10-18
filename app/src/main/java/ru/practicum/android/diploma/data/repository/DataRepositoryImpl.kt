@@ -8,14 +8,11 @@ import ru.practicum.android.diploma.data.dto.ContactDto
 import ru.practicum.android.diploma.data.dto.EmployerDto
 import ru.practicum.android.diploma.data.dto.EmploymentDto
 import ru.practicum.android.diploma.data.dto.ExperienceDto
-import ru.practicum.android.diploma.data.dto.FilterAreasRequest
-import ru.practicum.android.diploma.data.dto.FilterAreasResponse
 import ru.practicum.android.diploma.data.dto.toDomain
 import ru.practicum.android.diploma.data.dto.FilterIndustryDto
 import ru.practicum.android.diploma.data.dto.IndustryDto
 import ru.practicum.android.diploma.data.dto.IndustryRequest
 import ru.practicum.android.diploma.data.dto.IndustryResponse
-import ru.practicum.android.diploma.data.dto.Response
 import ru.practicum.android.diploma.data.dto.SalaryDto
 import ru.practicum.android.diploma.data.dto.ScheduleDto
 import ru.practicum.android.diploma.data.dto.VacancyDetailSearchResponse
@@ -39,7 +36,7 @@ import ru.practicum.android.diploma.domain.models.SearchResult
 import ru.practicum.android.diploma.domain.models.SearchResultVacancyDetail
 import ru.practicum.android.diploma.domain.models.Vacancy
 import ru.practicum.android.diploma.domain.models.isCountry
-import ru.practicum.android.diploma.domain.repository.DataRepository
+import ru.practicum.android.diploma.domain.api.DataRepository
 import ru.practicum.android.diploma.util.Resource
 import java.io.IOException
 import java.net.SocketTimeoutException
@@ -118,7 +115,7 @@ class DataRepositoryImpl(
                     emit(
                         Result.success(
                             (result as IndustryResponse).result.map {
-                                mapIndustry(it)
+                                converters.map(it)
                             }
                         )
                     )
@@ -248,22 +245,8 @@ class DataRepositoryImpl(
             is Resource.Error -> areasResult
             Resource.Loading -> TODO()
         }
-    }/*Resource<List<FilterArea>> {
-        println("DEBUG: Repository getAllRegions called")
-        return when (val areasResult = getAreas()) {
-            is Resource.Success -> {
-                val allRegions = areasResult.data.flatMap { country ->
-                    country.areas.filter { it.areas.isEmpty() }
-                }
-                println("DEBUG: Found ${allRegions.size} total regions")
-                Resource.Success(allRegions)
-            }
-
-            is Resource.Error -> areasResult
-            Resource.Loading -> TODO()
-        }
     }
-*/
+
     override suspend fun getCountryById(countryId: Int): Resource<FilterArea?> {
         println("DEBUG: Repository getCountryById called for: $countryId")
         return when (val areasResult = getAreas()) {

@@ -9,8 +9,8 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import ru.practicum.android.diploma.domain.api.FavoritesInteractor
 import ru.practicum.android.diploma.domain.models.VacancyDetail
-import ru.practicum.android.diploma.domain.usecase.SearchVacancyDetailUseCase
-import ru.practicum.android.diploma.ui.root.search.VacancyDetailState
+import ru.practicum.android.diploma.domain.usecaseimpl.SearchVacancyDetailUseCase
+import ru.practicum.android.diploma.presentation.models.VacancyDetailState
 import ru.practicum.android.diploma.util.Resource
 
 class VacancyDetailViewModel(

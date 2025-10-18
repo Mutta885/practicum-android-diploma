@@ -1,6 +1,5 @@
 package ru.practicum.android.diploma.presentation.vmodels
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -8,7 +7,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import ru.practicum.android.diploma.domain.api.GetRegionUseCase
-import ru.practicum.android.diploma.ui.models.FilterAreaState
+import ru.practicum.android.diploma.presentation.models.FilterAreaState
 import ru.practicum.android.diploma.util.Resource
 
 class RegionViewModel(private val getRegionUseCase: GetRegionUseCase) : ViewModel() {
