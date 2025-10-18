@@ -187,26 +187,6 @@ class DataRepositoryImpl(
         }
     }
 
-    override fun getAreasRequest(): Flow<Response> {//Flow<Result<List<FilterArea>>> {
-        return flow {
-            /*networkClient.doIndustry().collect { result ->
-                if (result.isSuccess) {
-                    emit(
-                        Result.success(
-                            result.getOrNull()?.map {
-                                FilterArea
-                            }
-                        )
-                    )
-                } else {
-                    result.exceptionOrNull()?.let {
-                        emit(Result.failure(it))
-                    }
-                }
-            }*/
-        }
-    }
-
     override suspend fun getCountries(): Resource<List<FilterArea>> {
         println("DEBUG: Repository getCountries called")
         return when (val areasResult = getAreas()) {
@@ -253,23 +233,19 @@ class DataRepositoryImpl(
         }
     }
 
-    override fun getAllRegions(): Flow<Result<List<FilterArea>>>{
-        return flow {
-            networkClient.doRequest(FilterAreasRequest()).collect{ result ->
-                if(result.resultCode == 200) {
-                    val response = (result as FilterAreasResponse)
-                    emit(
-                        Result.success(
-                            response.list.map {
-                                converters.map(it)
-                            }
-                        )
-
-                    )
-                } else {
-                    emit(Result.failure(Throwable(result.resultCode.toString())))
+    override suspend fun getAllRegions(): Resource<List<FilterArea>> {
+        println("DEBUG: Repository getAllRegions called")
+        return when (val areasResult = getAreas()) {
+            is Resource.Success -> {
+                val allRegions = areasResult.data.flatMap { country ->
+                    country.areas.filter { it.areas.isEmpty() }
                 }
+                println("DEBUG: Found ${allRegions.size} total regions")
+                Resource.Success(allRegions)
             }
+
+            is Resource.Error -> areasResult
+            Resource.Loading -> TODO()
         }
     }/*Resource<List<FilterArea>> {
         println("DEBUG: Repository getAllRegions called")

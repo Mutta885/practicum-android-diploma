@@ -21,7 +21,7 @@ class GetRegionUseCaseImpl(
         return repository.getRegionsByCountry(countryId)
     }
 
-    override fun getAllRegions(): Flow<Result<List<FilterArea>>> {
+    override suspend fun getAllRegions(): Resource<List<FilterArea>> {
         return repository.getAllRegions()
     }
 

@@ -21,9 +21,8 @@ interface DataRepository {
     fun getIndustries(): Flow<Result<List<Industry>?>>
     suspend fun searchVacancyDetail(query: String): Resource<SearchResultVacancyDetail>
     suspend fun getAreas(): Resource<List<FilterArea>>
-    fun getAreasRequest(): Flow<Response>
     suspend fun getCountries(): Resource<List<FilterArea>>
     suspend fun getRegionsByCountry(countryId: Int): Resource<List<FilterArea>>
-    fun getAllRegions(): Flow<Result<List<FilterArea>>>
+    suspend fun getAllRegions(): Resource<List<FilterArea>>
     suspend fun getCountryById(countryId: Int): Resource<FilterArea?>
 }

@@ -47,19 +47,11 @@ class RegionViewModel(private val getRegionUseCase: GetRegionUseCase) : ViewMode
             val result = if (countryId != null) {
                 getRegionUseCase.getRegionsByCountry(countryId)
             } else {
-              //  getRegionUseCase.getAllRegions()
-            }
-            val result2 = getRegionUseCase.getAllRegions()
-            result2.collect{ response ->
-                if(response.isSuccess) {
-                    Log.v("my", response.getOrNull()?.size.toString() + "  responseSuc")
-                } else {
-                    Log.v("my", response.exceptionOrNull()?.message + "  responseFail")
-                }
+                getRegionUseCase.getAllRegions()
             }
 
             when (result) {
-                /*is Resource.Success -> {
+                is Resource.Success -> {
                     val regions = result.data
                     if (regions.isNotEmpty()) {
                         _filterAreaState.postValue(FilterAreaState.RegionsStateByCountry(regions))
@@ -72,7 +64,7 @@ class RegionViewModel(private val getRegionUseCase: GetRegionUseCase) : ViewMode
                     _filterAreaState.postValue(FilterAreaState.Error(result.message ?: "Ошибка загрузки регионов"))
                 }
 
-                else -> {}*/
+                else -> {}
             }
         }
     }
