@@ -3,7 +3,6 @@ package ru.practicum.android.diploma.ui.fragments
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,9 +14,9 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.databinding.FragmentRegionBinding
 import ru.practicum.android.diploma.domain.models.FilterArea
-import ru.practicum.android.diploma.presentation.vmodels.RegionViewModel
-import ru.practicum.android.diploma.presentation.models.FilterAreaState
 import ru.practicum.android.diploma.presentation.adapters.RegionAdapter
+import ru.practicum.android.diploma.presentation.models.FilterAreaState
+import ru.practicum.android.diploma.presentation.vmodels.RegionViewModel
 
 class RegionFragment : Fragment(), RegionAdapter.RegionListener {
 
@@ -26,11 +25,7 @@ class RegionFragment : Fragment(), RegionAdapter.RegionListener {
     private val binding get() = _binding!!
     private var regionAdapter: RegionAdapter? = null
     private var allRegions: List<FilterArea> = emptyList()
-
-    // Карта для хранения стран по ID
     private var countryMap: Map<Int, FilterArea> = emptyMap()
-
-    // Флаг, указывающий, что список стран загружен
     private var countriesLoaded = false
 
     override fun onCreateView(
@@ -49,16 +44,7 @@ class RegionFragment : Fragment(), RegionAdapter.RegionListener {
         setupSearchField()
         setupClickListeners()
         observeViewModel()
-
-        // ОБНОВЛЕНИЕ: обрабатываем ARG_INVALID_ID как null
-        val countryId = arguments?.getInt(COUNTRY_ID_KEY, ARG_INVALID_ID)
-        val actualCountryId = if (countryId == ARG_INVALID_ID) null else countryId
-        // Если страна не передана или передан недопустимый ID - загружаем список всех стран
-        if (actualCountryId == null) {
-            viewModel.getCountries()
-        } else {
-            viewModel.getRegions(actualCountryId)
-        }
+        loadInitialData()
     }
 
     private fun setupRecyclerView() {
@@ -71,23 +57,7 @@ class RegionFragment : Fragment(), RegionAdapter.RegionListener {
         val editText = binding.searchEditText
         val clearIcon = binding.clearIcon
 
-        editText.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
-
-            override fun afterTextChanged(s: Editable?) {
-                val text = s.toString().trim()
-
-                if (text.isNotEmpty()) {
-                    clearIcon.visibility = View.VISIBLE
-                } else {
-                    clearIcon.visibility = View.GONE
-                }
-
-                filterRegions(text)
-            }
-        })
+        editText.addTextChangedListener(createTextWatcher(clearIcon))
 
         clearIcon.setOnClickListener {
             editText.text.clear()
@@ -106,6 +76,24 @@ class RegionFragment : Fragment(), RegionAdapter.RegionListener {
         }
     }
 
+    private fun createTextWatcher(clearIcon: View): TextWatcher {
+        return object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
+
+            override fun afterTextChanged(s: Editable?) {
+                val text = s.toString().trim()
+                updateClearIconVisibility(clearIcon, text)
+                filterRegions(text)
+            }
+        }
+    }
+
+    private fun updateClearIconVisibility(clearIcon: View, text: String) {
+        clearIcon.visibility = if (text.isNotEmpty()) View.VISIBLE else View.GONE
+    }
+
     private fun setupClickListeners() {
         binding.returnButton.setOnClickListener {
             findNavController().navigateUp()
@@ -120,145 +108,154 @@ class RegionFragment : Fragment(), RegionAdapter.RegionListener {
         }
 
         regionAdapter?.updateRegions(filtered)
+        updateResultsState(filtered, query)
+    }
 
-        // Показываем состояние "ничего не найдено" если после фильтрации список пуст
-        if (filtered.isEmpty() && query.isNotEmpty()) {
-            showNoResultsState()
-        } else if (filtered.isEmpty()) {
-            // Если изначально список пуст (нет регионов для этой страны)
-            showNoResultsState()
-        } else {
-            showSuccessState()
+    private fun updateResultsState(filteredRegions: List<FilterArea>, query: String) {
+        when {
+            filteredRegions.isEmpty() && query.isNotEmpty() -> showNoResultsState()
+            filteredRegions.isEmpty() -> showNoResultsState()
+            else -> showSuccessState()
         }
     }
 
     private fun observeViewModel() {
         viewModel.filterAreaState.observe(viewLifecycleOwner) { state ->
-            when (state) {
-                is FilterAreaState.RegionsStateByCountry -> {
-                    if (state.regions.isNotEmpty()) {
-                        showRegions(state.regions)
-                    } else {
-                        showNoResultsState()
-                    }
-                }
-
-                is FilterAreaState.CountriesState -> {
-                    // Сохраняем страны в карту для быстрого поиска
-                    countryMap = state.countries.associateBy { it.id }
-                    countriesLoaded = true
-
-                    // Если мы загружали страны для отображения всех регионов, загружаем регионы
-                    val countryId = arguments?.getInt(COUNTRY_ID_KEY, ARG_INVALID_ID)
-                    val actualCountryId = if (countryId == ARG_INVALID_ID) null else countryId
-                    if (actualCountryId == null) {
-                        viewModel.getRegions(actualCountryId)
-                    }
-                }
-
-                is FilterAreaState.Loading -> {
-                    showLoadingState()
-                }
-
-                is FilterAreaState.Error -> {
-                    showErrorState(state.message)
-                }
-
-                is FilterAreaState.GetCountryNameState -> {
-                    // Не используется в этом фрагменте
-                }
-            }
+            handleFilterAreaState(state)
         }
     }
 
-    private fun showRegions(regions: List<FilterArea>) {
-        regions.forEach { region ->
-            println("$DEBUG_TAG: Region: ${region.name}, parentId: ${region.parentId}")
+    private fun handleFilterAreaState(state: FilterAreaState) {
+        when (state) {
+            is FilterAreaState.RegionsStateByCountry -> handleRegionsState(state)
+            is FilterAreaState.CountriesState -> handleCountriesState(state)
+            is FilterAreaState.Loading -> showLoadingState()
+            is FilterAreaState.Error -> showErrorState(state.message)
+            is FilterAreaState.GetCountryNameState -> Unit // Не используется в этом фрагменте
         }
+    }
 
+    private fun handleRegionsState(state: FilterAreaState.RegionsStateByCountry) {
+        if (state.regions.isNotEmpty()) {
+            showRegions(state.regions)
+        } else {
+            showNoResultsState()
+        }
+    }
+
+    private fun handleCountriesState(state: FilterAreaState.CountriesState) {
+        countryMap = state.countries.associateBy { it.id }
+        countriesLoaded = true
+
+        val countryId = getCountryIdFromArguments()
+        if (countryId == null) {
+            viewModel.getRegions(countryId)
+        }
+    }
+
+    private fun loadInitialData() {
+        val countryId = getCountryIdFromArguments()
+        if (countryId == null) {
+            viewModel.getCountries()
+        } else {
+            viewModel.getRegions(countryId)
+        }
+    }
+
+    private fun getCountryIdFromArguments(): Int? {
+        val countryId = arguments?.getInt(COUNTRY_ID_KEY, ARG_INVALID_ID)
+        return if (countryId == ARG_INVALID_ID) null else countryId
+    }
+
+    private fun showRegions(regions: List<FilterArea>) {
         allRegions = regions
         regionAdapter?.updateRegions(regions)
         showSuccessState()
     }
 
     private fun showLoadingState() {
-        binding.loadingContainer.visibility = View.VISIBLE
-        binding.errorContainer.visibility = View.GONE
-        binding.noResultsContainer.visibility = View.GONE
-        binding.successContainer.visibility = View.GONE
+        with(binding) {
+            loadingContainer.visibility = View.VISIBLE
+            errorContainer.visibility = View.GONE
+            noResultsContainer.visibility = View.GONE
+            successContainer.visibility = View.GONE
+        }
     }
 
     private fun showErrorState(message: String) {
-        binding.errorText.text = message
-        binding.loadingContainer.visibility = View.GONE
-        binding.errorContainer.visibility = View.VISIBLE
-        binding.noResultsContainer.visibility = View.GONE
-        binding.successContainer.visibility = View.GONE
+        with(binding) {
+            errorText.text = message
+            loadingContainer.visibility = View.GONE
+            errorContainer.visibility = View.VISIBLE
+            noResultsContainer.visibility = View.GONE
+            successContainer.visibility = View.GONE
+        }
     }
 
     private fun showNoResultsState() {
-        binding.loadingContainer.visibility = View.GONE
-        binding.errorContainer.visibility = View.GONE
-        binding.noResultsContainer.visibility = View.VISIBLE
-        binding.successContainer.visibility = View.GONE
+        with(binding) {
+            loadingContainer.visibility = View.GONE
+            errorContainer.visibility = View.GONE
+            noResultsContainer.visibility = View.VISIBLE
+            successContainer.visibility = View.GONE
+        }
     }
 
     private fun showSuccessState() {
-        binding.loadingContainer.visibility = View.GONE
-        binding.errorContainer.visibility = View.GONE
-        binding.noResultsContainer.visibility = View.GONE
-        binding.successContainer.visibility = View.VISIBLE
+        with(binding) {
+            loadingContainer.visibility = View.GONE
+            errorContainer.visibility = View.GONE
+            noResultsContainer.visibility = View.GONE
+            successContainer.visibility = View.VISIBLE
+        }
     }
 
     override fun onRegionClick(region: FilterArea) {
-        // ОБНОВЛЕНИЕ: обрабатываем случай, когда countryIdFromArgs равен ARG_INVALID_ID
-        val countryIdFromArgs = arguments?.getInt(COUNTRY_ID_KEY, ARG_INVALID_ID)
-        val actualCountryIdFromArgs = if (countryIdFromArgs == ARG_INVALID_ID) null else countryIdFromArgs
+        val countryInfo = prepareCountryInfoForRegion(region)
+        navigateToWorkPlaceFragment(region, countryInfo)
+    }
 
-        // Если страна была выбрана, используем ее ID
-        var countryIdToPass = actualCountryIdFromArgs ?: region.parentId
+    private fun prepareCountryInfoForRegion(region: FilterArea): CountryInfo {
+        val countryIdFromArgs = getCountryIdFromArguments()
 
+        var countryIdToPass = countryIdFromArgs ?: region.parentId
         var countryName: String? = null
 
-        // Если countryIdToPass все еще null, пытаемся определить страну
         if (countryIdToPass == null) {
-            // Попробуем найти страну, которая содержит этот регион
-            for (country in countryMap.values) {
-                if (country.areas.any { it.id == region.id }) {
-                    countryIdToPass = country.id
-                    countryName = country.name
-                    break
-                }
-            }
-
-            // Если не удалось найти страну по региону, используем родительский регион (если есть)
-            if (countryIdToPass == null && region.parentId != null) {
-                countryIdToPass = region.parentId
-                countryName = countryMap[countryIdToPass]?.name
-            }
+            val foundCountry = findCountryForRegion(region)
+            countryIdToPass = foundCountry?.id ?: region.parentId
+            countryName = foundCountry?.name
         } else {
-            // Получаем название страны из карты
             countryName = countryMap[countryIdToPass]?.name
         }
 
-        // Если все еще не удалось определить страну, выходим
-        if (countryIdToPass == null) {
-            return
-        }
+        return CountryInfo(countryIdToPass, countryName)
+    }
 
-        val bundle = Bundle().apply {
+    private fun findCountryForRegion(region: FilterArea): FilterArea? {
+        for (country in countryMap.values) {
+            if (country.areas.any { it.id == region.id }) {
+                return country
+            }
+        }
+        return null
+    }
+
+    private fun navigateToWorkPlaceFragment(region: FilterArea, countryInfo: CountryInfo) {
+        if (countryInfo.id == null) return
+
+        val bundle = createNavigationBundle(region, countryInfo)
+        findNavController().navigate(R.id.action_regionFragment_to_workPlaceFragment, bundle)
+    }
+
+    private fun createNavigationBundle(region: FilterArea, countryInfo: CountryInfo): Bundle {
+        return Bundle().apply {
             putString(REGION_NAME_KEY, region.name)
             putInt(REGION_ID_KEY, region.id)
-            if (region.parentId != null) {
-                putInt(REGION_PARENT_ID_KEY, region.parentId)
-            }
-            putInt(COUNTRY_ID_KEY, countryIdToPass)
-            // Передаем название страны, если оно известно
-            if (countryName != null) {
-                putString(COUNTRY_NAME_KEY, countryName)
-            }
+            region.parentId?.let { putInt(REGION_PARENT_ID_KEY, it) }
+            countryInfo.id?.let { putInt(COUNTRY_ID_KEY, it) }
+            countryInfo.name?.let { putString(COUNTRY_NAME_KEY, it) }
         }
-        findNavController().navigate(R.id.action_regionFragment_to_workPlaceFragment, bundle)
     }
 
     override fun onDestroyView() {
@@ -267,6 +264,8 @@ class RegionFragment : Fragment(), RegionAdapter.RegionListener {
         regionAdapter = null
     }
 
+    private data class CountryInfo(val id: Int?, val name: String?)
+
     companion object {
         private const val DEBUG_TAG = "RegionFragment"
         private const val COUNTRY_ID_KEY = "country_id"
@@ -274,6 +273,6 @@ class RegionFragment : Fragment(), RegionAdapter.RegionListener {
         private const val REGION_ID_KEY = "region_id"
         private const val REGION_PARENT_ID_KEY = "region_parentId"
         private const val COUNTRY_NAME_KEY = "country_name"
-        private const val ARG_INVALID_ID = -1 // Добавляем константу для обработки недопустимых ID
+        private const val ARG_INVALID_ID = -1
     }
 }

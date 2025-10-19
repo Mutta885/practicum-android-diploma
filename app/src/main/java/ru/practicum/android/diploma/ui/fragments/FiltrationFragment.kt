@@ -40,19 +40,24 @@ class FiltrationFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setupBackButtonHandler(view)
+    }
 
-        // Обработка системной кнопки назад
+    private fun setupBackButtonHandler(view: View) {
         view.isFocusableInTouchMode = true
         view.requestFocus()
         view.setOnKeyListener { _, keyCode, event ->
-            if (keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_UP) {
-                Log.d(TAG, "System back button pressed - navigating back WITHOUT saving filters")
-                // НЕ сохраняем фильтры и НЕ применяем поиск
-                findNavController().popBackStack()
-                return@setOnKeyListener true
-            }
-            return@setOnKeyListener false
+            handleBackButton(keyCode, event)
         }
+    }
+
+    private fun handleBackButton(keyCode: Int, event: KeyEvent): Boolean {
+        if (keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_UP) {
+            Log.d(TAG, "System back button pressed - navigating back WITHOUT saving filters")
+            findNavController().popBackStack()
+            return true
+        }
+        return false
     }
 
     private fun setupViews() {
@@ -68,79 +73,110 @@ class FiltrationFragment : Fragment() {
     private fun setupReturnButton() {
         binding.returnButton.setOnClickListener {
             Log.d(TAG, "Return button clicked - navigating back WITHOUT saving filters")
-            // НЕ сохраняем фильтры и НЕ применяем поиск
             findNavController().popBackStack()
         }
     }
 
     private fun setupSalaryInput() {
         with(binding) {
-            salaryInput.addTextChangedListener(object : TextWatcher {
-                override fun afterTextChanged(s: Editable?) {
-                    val text = s?.toString() ?: ""
-                    Log.d(TAG, "Salary input changed: '$text'")
-                    viewModel.onSalaryChanged(text)
-                    updateClearSalaryButtonVisibility(text)
-                }
+            salaryInput.addTextChangedListener(createSalaryTextWatcher())
+            setupSalaryFocusListener()
+            setupClearSalaryButton()
+        }
+    }
 
-                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
-                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
-            })
-
-            salaryInput.setOnFocusChangeListener { _, hasFocus ->
-                salaryLabel.setTextColor(
-                    ContextCompat.getColor(
-                        requireContext(),
-                        if (hasFocus) R.color.blue else R.color.grey
-                    )
-                )
+    private fun createSalaryTextWatcher(): TextWatcher {
+        return object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                handleSalaryTextChange(s?.toString() ?: "")
             }
 
-            clearSalaryButton.setOnClickListener {
-                Log.d(TAG, "Clear salary button clicked")
-                salaryInput.text?.clear()
-                viewModel.onSalaryChanged("")
-            }
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
+        }
+    }
+
+    private fun handleSalaryTextChange(text: String) {
+        Log.d(TAG, "Salary input changed: '$text'")
+        viewModel.onSalaryChanged(text)
+        updateClearSalaryButtonVisibility(text)
+    }
+
+    private fun FragmentFilterBinding.setupSalaryFocusListener() {
+        salaryInput.setOnFocusChangeListener { _, hasFocus ->
+            val colorRes = if (hasFocus) R.color.blue else R.color.grey
+            salaryLabel.setTextColor(ContextCompat.getColor(requireContext(), colorRes))
+        }
+    }
+
+    private fun FragmentFilterBinding.setupClearSalaryButton() {
+        clearSalaryButton.setOnClickListener {
+            Log.d(TAG, "Clear salary button clicked")
+            salaryInput.text?.clear()
+            viewModel.onSalaryChanged("")
         }
     }
 
     private fun setupIndustryNavigation() {
         binding.industryItem1.setOnClickListener {
-            findNavController().navigate(R.id.action_filtrationFragment_to_industryFragment)
+            navigateToIndustry()
         }
         binding.groupIndustryItem2.setOnClickListener {
-            findNavController().navigate(R.id.action_filtrationFragment_to_industryFragment)
+            navigateToIndustry()
         }
         binding.closeIndustry.setOnClickListener {
-            binding.groupIndustryItem2.isVisible = false
-            binding.industryItem1.isVisible = true
+            hideIndustrySelection()
         }
+    }
+
+    private fun navigateToIndustry() {
+        findNavController().navigate(R.id.action_filtrationFragment_to_industryFragment)
+    }
+
+    private fun hideIndustrySelection() {
+        binding.groupIndustryItem2.isVisible = false
+        binding.industryItem1.isVisible = true
     }
 
     private fun setupWorkplaceNavigation() {
         binding.workplaceItem1.setOnClickListener {
-            findNavController().navigate(R.id.action_filtrationFragment_to_workPlaceFragment)
+            navigateToWorkplace()
         }
         binding.groupWorkplaceItem2.setOnClickListener {
-            findNavController().navigate(R.id.action_filtrationFragment_to_workPlaceFragment)
+            navigateToWorkplace()
         }
         binding.closeWorkplace.setOnClickListener {
-            binding.groupWorkplaceItem2.isVisible = false
-            binding.workplaceItem1.isVisible = true
+            hideWorkplaceSelection()
         }
+    }
+
+    private fun navigateToWorkplace() {
+        findNavController().navigate(R.id.action_filtrationFragment_to_workPlaceFragment)
+    }
+
+    private fun hideWorkplaceSelection() {
+        binding.groupWorkplaceItem2.isVisible = false
+        binding.workplaceItem1.isVisible = true
     }
 
     private fun setupSalaryCheckbox() {
         with(binding) {
-            hideWithoutSalaryCheckbox.setOnCheckedChangeListener { _, isChecked ->
-                Log.d(TAG, "Hide without salary checkbox changed: $isChecked")
-                viewModel.onHideWithoutSalaryChanged(isChecked)
-            }
+            setupCheckboxListener()
+            setupCheckboxContainer()
+        }
+    }
 
-            hideSalaryContainer.setOnClickListener {
-                Log.d(TAG, "Hide salary container clicked")
-                hideWithoutSalaryCheckbox.isChecked = !hideWithoutSalaryCheckbox.isChecked
-            }
+    private fun FragmentFilterBinding.setupCheckboxListener() {
+        hideWithoutSalaryCheckbox.setOnCheckedChangeListener { _, isChecked ->
+            Log.d(TAG, "Hide without salary checkbox changed: $isChecked")
+            viewModel.onHideWithoutSalaryChanged(isChecked)
+        }
+    }
+
+    private fun FragmentFilterBinding.setupCheckboxContainer() {
+        hideSalaryContainer.setOnClickListener {
+            Log.d(TAG, "Hide salary container clicked")
+            hideWithoutSalaryCheckbox.isChecked = !hideWithoutSalaryCheckbox.isChecked
         }
     }
 
@@ -177,28 +213,28 @@ class FiltrationFragment : Fragment() {
 
     private fun applyFilters() {
         val filters = viewModel.getCurrentFilters()
-        // Сохраняем фильтры в хранилище ТОЛЬКО при явном применении
         viewModel.saveFiltersToStorage()
         viewModel.setFiltersJustApplied(true)
-        // ВАЖНО: Используем applyFiltersWithSearch для явного применения фильтров
         searchViewModel.applyFiltersWithSearch(filters)
-        Toast.makeText(context, "Фильтры применены", Toast.LENGTH_SHORT).show()
-
-        // Возвращаемся назад через popBackStack чтобы сохранить состояние MainFragment
-        findNavController().popBackStack()
+        showToast("Фильтры применены")
+        navigateBack()
     }
 
     private fun resetFilters() {
         viewModel.resetFilters()
         binding.salaryInput.text?.clear()
-        // Сохраняем сброшенные фильтры в хранилище ТОЛЬКО при явном сбросе
         viewModel.saveFiltersToStorage()
         viewModel.setFiltersJustApplied(true)
-        // ВАЖНО: Используем applyFiltersWithSearch для сброса фильтров
         searchViewModel.applyFiltersWithSearch(FiltrationViewModel.Filters())
-        Toast.makeText(context, "Фильтры сброшены", Toast.LENGTH_SHORT).show()
+        showToast("Фильтры сброшены")
+        navigateBack()
+    }
 
-        // Возвращаемся назад через popBackStack чтобы сохранить состояние MainFragment
+    private fun showToast(message: String) {
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+    }
+
+    private fun navigateBack() {
         findNavController().popBackStack()
     }
 
@@ -213,9 +249,13 @@ class FiltrationFragment : Fragment() {
     private fun observeFilterState() {
         viewModel.isAnyFilterActive.observe(viewLifecycleOwner) { isActive ->
             Log.d(TAG, "isAnyFilterActive changed: $isActive")
-            binding.applyButton.visibility = if (isActive) View.VISIBLE else View.GONE
-            binding.resetButton.visibility = if (isActive) View.VISIBLE else View.GONE
+            updateActionButtonsVisibility(isActive)
         }
+    }
+
+    private fun updateActionButtonsVisibility(isActive: Boolean) {
+        binding.applyButton.visibility = if (isActive) View.VISIBLE else View.GONE
+        binding.resetButton.visibility = if (isActive) View.VISIBLE else View.GONE
     }
 
     private fun observeIndustries() {
@@ -256,37 +296,34 @@ class FiltrationFragment : Fragment() {
             else -> "${getString(R.string.this_select)}: ${industries.size}"
         }
         binding.industryItem2.text = text
+        updateIndustryVisibility(text != getString(R.string.industry))
+    }
 
-        if (text != getString(R.string.industry)) {
-            binding.industryItem1.isVisible = false
-            binding.groupIndustryItem2.isVisible = true
-        } else {
-            binding.industryItem1.isVisible = true
-            binding.groupIndustryItem2.isVisible = false
-        }
+    private fun updateIndustryVisibility(hasSelection: Boolean) {
+        binding.industryItem1.isVisible = !hasSelection
+        binding.groupIndustryItem2.isVisible = hasSelection
     }
 
     private fun updateWorkplaceText() {
         val country = viewModel.selectedCountry.value
         val region = viewModel.selectedRegion.value
-        val workplaceText = when {
+        val workplaceText = buildWorkplaceText(country, region)
+        binding.workplaceItem2.text = workplaceText
+        updateWorkplaceVisibility(workplaceText != getString(R.string.area_job))
+    }
+
+    private fun buildWorkplaceText(country: String?, region: String?): String {
+        return when {
             country != null && region != null -> "$country, $region"
             country != null -> country
             region != null -> region
-            else -> {
-                getString(R.string.area_job)
-            }
+            else -> getString(R.string.area_job)
         }
+    }
 
-        binding.workplaceItem2.text = workplaceText
-
-        if (workplaceText != getString(R.string.area_job)) {
-            binding.workplaceItem1.isVisible = false
-            binding.groupWorkplaceItem2.isVisible = true
-        } else {
-            binding.workplaceItem1.isVisible = true
-            binding.groupWorkplaceItem2.isVisible = false
-        }
+    private fun updateWorkplaceVisibility(hasSelection: Boolean) {
+        binding.workplaceItem1.isVisible = !hasSelection
+        binding.groupWorkplaceItem2.isVisible = hasSelection
     }
 
     private fun updateSalaryInput(salary: String?) {

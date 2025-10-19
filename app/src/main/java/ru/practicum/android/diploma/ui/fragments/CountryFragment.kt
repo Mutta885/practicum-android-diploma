@@ -11,9 +11,9 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.databinding.FragmentCountryBinding
 import ru.practicum.android.diploma.domain.models.FilterArea
-import ru.practicum.android.diploma.presentation.vmodels.RegionViewModel
-import ru.practicum.android.diploma.presentation.models.FilterAreaState
 import ru.practicum.android.diploma.presentation.adapters.CountryAdapter
+import ru.practicum.android.diploma.presentation.models.FilterAreaState
+import ru.practicum.android.diploma.presentation.vmodels.RegionViewModel
 
 class CountryFragment : Fragment(), CountryAdapter.CountryListener {
 

@@ -11,9 +11,9 @@ import org.koin.androidx.viewmodel.ext.android.activityViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.databinding.FragmentWorkPlaceBinding
-import ru.practicum.android.diploma.presentation.vmodels.RegionViewModel
-import ru.practicum.android.diploma.presentation.vmodels.FiltrationViewModel
 import ru.practicum.android.diploma.presentation.models.FilterAreaState
+import ru.practicum.android.diploma.presentation.vmodels.FiltrationViewModel
+import ru.practicum.android.diploma.presentation.vmodels.RegionViewModel
 
 class WorkPlaceFragment : Fragment() {
 
