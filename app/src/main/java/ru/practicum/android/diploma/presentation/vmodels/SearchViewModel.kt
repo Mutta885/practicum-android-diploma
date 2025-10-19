@@ -22,12 +22,14 @@ class SearchViewModel(
     private val _searchState = MutableLiveData<SearchState>()
     val searchState: LiveData<SearchState> = _searchState
 
+    private var temporaryEditText: String = ""
     private var currentQuery = ""
     private var currentPage = 0
     private var totalPages = 1
     private var isLoading = false
     private var isLoadingNextPage = false
     private var searchJob: Job? = null
+    private var performSearchJob: Job? = null
     private var currentFilters: FiltrationViewModel.Filters = FiltrationViewModel.Filters()
     private val debouncePeriod = DEBOUNCE_PERIOD
     private val _allVacancies = mutableListOf<Vacancy>()
@@ -97,27 +99,29 @@ class SearchViewModel(
     }
 
     fun search(query: String) {
-        val trimmedQuery = query.trim()
-        println("DEBUG: search() called with: '$trimmedQuery'")
-        println("DEBUG: Current filters: $currentFilters")
+        if (temporaryEditText != query) {
+            temporaryEditText = query
+            val trimmedQuery = query.trim()
+            println("DEBUG: search() called with: '$trimmedQuery'")
+            println("DEBUG: Current filters: $currentFilters")
 
-        if (trimmedQuery.isEmpty()) {
+            if (trimmedQuery.isEmpty()) {
+                _allVacancies.clear()
+                _searchState.value = SearchState.EmptyQuery
+                return
+            }
+
             _allVacancies.clear()
-            _searchState.value = SearchState.EmptyQuery
-            return
-        }
-
-        _allVacancies.clear()
-        currentPage = 0
-        totalPages = 1
-        currentQuery = trimmedQuery
-        _searchState.value = SearchState.Loading
-        println("DEBUG: New search query: '$currentQuery', cleared vacancies")
-
-        searchJob?.cancel()
-        searchJob = viewModelScope.launch {
-            delay(debouncePeriod)
-            performSearch(query = currentQuery, page = 0, isNewSearch = true)
+            currentPage = 0
+            totalPages = 1
+            currentQuery = trimmedQuery
+            _searchState.value = SearchState.Loading
+            println("DEBUG: New search query: '$currentQuery', cleared vacancies")
+            searchJob?.cancel()
+            searchJob = viewModelScope.launch {
+                delay(debouncePeriod)
+                performSearch(query = currentQuery, page = 0, isNewSearch = true)
+            }
         }
     }
 
@@ -185,7 +189,8 @@ class SearchViewModel(
         }
 
         setLoadingStates(isNewSearch)
-        viewModelScope.launch {
+        performSearchJob?.cancel()
+        performSearchJob = viewModelScope.launch {
             println("DEBUG: Performing search with filters: $currentFilters")
             when (val result = searchVacanciesUseCase.execute(query, page, currentFilters)) {
                 is Resource.Success -> handleSearchSuccess(result, isNewSearch)
