@@ -69,6 +69,18 @@
                 android:text="@string/area_job"
                 android:textAppearance="@style/textAppearanceRegular12sp400w"
                 android:textColor="?attr/attr_white_black_color" />
+            <TextView
+                android:id="@+id/workplace_item_2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="26.5dp"
+                android:paddingEnd="50dp"
+                android:textColor="?attr/attr_white_black_color"
+                android:textAppearance="@style/textAppearanceRegular16sp400w"
+                android:layout_marginStart="16dp"
+                android:layout_marginBottom="12.5dp"
+                tools:text="kassssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss"
+                android:text="@string/area_job" />
 
             <TextView
                 android:id="@+id/workplace_item_2"
