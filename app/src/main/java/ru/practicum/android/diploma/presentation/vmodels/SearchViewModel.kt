@@ -34,8 +34,6 @@ class SearchViewModel(
     val allVacancies: List<Vacancy> get() = _allVacancies
 
     fun setFiltersWithoutSearch(filters: FiltrationViewModel.Filters) {
-        println("DEBUG: setFiltersWithoutSearch() called with: $filters")
-        println("DEBUG: Current query: '$currentQuery'")
         val filtersChanged = currentFilters != filters
         currentFilters = filters
         println("DEBUG: Filters updated without search: $currentFilters, changed: $filtersChanged")
@@ -302,6 +300,7 @@ sealed class SearchState {
         val found: Int,
         val isFirstPage: Boolean
     ) : SearchState()
+
     data class Error(val message: String?) : SearchState()
     data class NextPageError(val message: String?) : SearchState()
     data class FiltersApplied(val filters: FiltrationViewModel.Filters) : SearchState()

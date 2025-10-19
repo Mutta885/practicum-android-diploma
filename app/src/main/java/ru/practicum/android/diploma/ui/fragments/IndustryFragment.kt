@@ -15,8 +15,8 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.databinding.FragmentIndustryBinding
 import ru.practicum.android.diploma.presentation.adapters.IndustryAdapter
-import ru.practicum.android.diploma.presentation.vmodels.IndustryViewModel
 import ru.practicum.android.diploma.presentation.vmodels.FiltrationViewModel
+import ru.practicum.android.diploma.presentation.vmodels.IndustryViewModel
 
 class IndustryFragment : Fragment() {
 
@@ -175,6 +175,7 @@ class IndustryFragment : Fragment() {
                     binding.errorText.text = string
                     binding.imageError.setImageResource(R.drawable.cat_with_the_plate)
                 }
+
                 else -> {
                     binding.errorText.text = string ?: getString(R.string.error_unknown)
                     binding.imageError.setImageResource(R.drawable.image_yorik)

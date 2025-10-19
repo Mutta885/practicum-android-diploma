@@ -7,7 +7,7 @@ import ru.practicum.android.diploma.domain.api.DataRepository
 
 class GetIndustriesUseCaseImpl(
     private val repository: DataRepository
-) : GetIndustriesUseCase{
+) : GetIndustriesUseCase {
 
     override fun execute(): Flow<Result<List<Industry>?>> {
         return repository.getIndustries()

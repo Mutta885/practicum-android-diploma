@@ -38,6 +38,7 @@ class MainFragment : Fragment() {
 
     // Флаг для блокировки автоматического поиска при программном изменении текста
     private var isProgrammaticTextChange = false
+
     // Флаг для блокировки поиска при возврате из фильтров
     private var isReturningFromFilters = false
 

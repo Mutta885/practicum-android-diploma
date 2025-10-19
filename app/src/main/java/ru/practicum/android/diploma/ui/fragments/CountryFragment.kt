@@ -65,12 +65,15 @@ class CountryFragment : Fragment(), CountryAdapter.CountryListener {
                 is FilterAreaState.CountriesState -> {
                     showCountries(state.countries)
                 }
+
                 is FilterAreaState.Loading -> {
                     showLoading()
                 }
+
                 is FilterAreaState.Error -> {
                     showError(state.message)
                 }
+
                 is FilterAreaState.GetCountryNameState,
                 is FilterAreaState.RegionsStateByCountry -> {
                     // Не используется в CountryFragment

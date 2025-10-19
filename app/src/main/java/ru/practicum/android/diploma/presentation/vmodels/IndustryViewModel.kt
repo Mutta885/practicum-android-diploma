@@ -32,12 +32,13 @@ class IndustryViewModel(
             result.collect { response ->
                 _isLoading.value = false
                 with(response) {
-                    when{
-                         isSuccess-> {
+                    when {
+                        isSuccess -> {
                             getOrNull()?.let {
                                 _industries.postValue(it)
                             } ?: _industries.postValue(emptyList())
                         }
+
                         isFailure -> {
                             response.exceptionOrNull()
                             exceptionOrNull().let {
