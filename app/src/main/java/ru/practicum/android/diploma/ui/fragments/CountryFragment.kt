@@ -95,19 +95,11 @@ class CountryFragment : Fragment(), CountryAdapter.CountryListener {
         binding.loadingContainer.isVisible = true
     }
 
-    private fun showError(state: FilterAreaState.Error) {
+    private fun showError(message: String) {
         binding.countriesRecyclerView.visibility = View.GONE
         binding.noResultsContainer.isVisible = true
         binding.loadingContainer.isVisible = false
-        binding.noResultsContainer.text = state.message
-        when(state.code) {
-            HTTP_NOT_INTERNET -> {
-                binding.noResultsContainer.setCompoundDrawablesRelativeWithIntrinsicBounds(0,R.drawable.image_yorik,0,0)
-            }
-            HTTP_SERVER_ERROR -> {
-                binding.noResultsContainer.setCompoundDrawablesRelativeWithIntrinsicBounds(0,R.drawable.error_server,0,0)
-            }
-        }
+        binding.noResultsContainer.text = message
     }
 
     override fun onCountryClick(country: FilterArea) {
