@@ -14,45 +14,19 @@ class FiltrationViewModel(
     private val storageManager: StorageManager
 ) : ViewModel() {
 
-    // LiveData для UI - отображают текущие изменения
-    private val _salary = MutableLiveData<String?>()
-    val salary: LiveData<String?> = _salary
+    private val filterStateHandler = FilterStateHandler()
 
-    private val _hideWithoutSalary = MutableLiveData<Boolean>()
-    val hideWithoutSalary: LiveData<Boolean> = _hideWithoutSalary
-
-    private val _selectedIndustries = MutableLiveData<List<Industry>>()
-    val selectedIndustries: LiveData<List<Industry>> = _selectedIndustries
-
-    private val _selectedCountry = MutableLiveData<String?>()
-    val selectedCountry: LiveData<String?> = _selectedCountry
-
-    private val _selectedCountryId = MutableLiveData<String?>()
-    val selectedCountryId: LiveData<String?> = _selectedCountryId
-
-    private val _selectedRegion = MutableLiveData<String?>()
-    val selectedRegion: LiveData<String?> = _selectedRegion
-
-    private val _selectedRegionId = MutableLiveData<String?>()
-    val selectedRegionId: LiveData<String?> = _selectedRegionId
-
-    private val _isAnyFilterActive = MutableLiveData<Boolean>()
-    val isAnyFilterActive: LiveData<Boolean> = _isAnyFilterActive
-
-    private val _isSalaryInputNotEmpty = MutableLiveData<Boolean>()
-    val isSalaryInputNotEmpty: LiveData<Boolean> = _isSalaryInputNotEmpty
-
-    private val _filtersJustApplied = MutableLiveData<Boolean>(false)
-    val filtersJustApplied: LiveData<Boolean> = _filtersJustApplied
-
-    // Состояние для восстановления при отмене
-    private var initialFilters: Filters? = null
-    private var currentFilters: Filters = Filters()
-
-    private companion object {
-        const val FILTERS_DELAY_MS = 200L
-        private const val DEBUG_TAG = "FiltrationViewModel"
-    }
+    // Public LiveData для UI
+    val salary: LiveData<String?> get() = filterStateHandler.salary
+    val hideWithoutSalary: LiveData<Boolean> get() = filterStateHandler.hideWithoutSalary
+    val selectedIndustries: LiveData<List<Industry>> get() = filterStateHandler.selectedIndustries
+    val selectedCountry: LiveData<String?> get() = filterStateHandler.selectedCountry
+    val selectedCountryId: LiveData<String?> get() = filterStateHandler.selectedCountryId
+    val selectedRegion: LiveData<String?> get() = filterStateHandler.selectedRegion
+    val selectedRegionId: LiveData<String?> get() = filterStateHandler.selectedRegionId
+    val isAnyFilterActive: LiveData<Boolean> get() = filterStateHandler.isAnyFilterActive
+    val isSalaryInputNotEmpty: LiveData<Boolean> get() = filterStateHandler.isSalaryInputNotEmpty
+    val filtersJustApplied: LiveData<Boolean> get() = filterStateHandler.filtersJustApplied
 
     init {
         loadSavedFilters()
@@ -72,85 +46,61 @@ class FiltrationViewModel(
         } else {
             setDefaultFilters()
         }
-        updateFilterState()
-        updateSalaryInputState()
+        filterStateHandler.updateFilterState()
+        filterStateHandler.updateSalaryInputState()
         saveInitialState()
     }
 
     private fun loadFiltersFromStorage(savedFilter: FilterParameters) {
-        _salary.value = savedFilter.salary.takeIf { it.isNotEmpty() }
-        _hideWithoutSalary.value = savedFilter.onlyWithSalary
-        _selectedIndustries.value = savedFilter.industries
-        _selectedCountry.value = savedFilter.country
-        _selectedCountryId.value = savedFilter.countryId
-        _selectedRegion.value = savedFilter.region
-        _selectedRegionId.value = savedFilter.regionId
+        filterStateHandler.restoreFiltersFromState(
+            Filters(
+                salary = savedFilter.salary.takeIf { it.isNotEmpty() },
+                hideWithoutSalary = savedFilter.onlyWithSalary,
+                industries = savedFilter.industries,
+                country = savedFilter.country,
+                countryId = savedFilter.countryId,
+                region = savedFilter.region,
+                regionId = savedFilter.regionId
+            )
+        )
 
-        currentFilters = createFiltersFromUI()
+        filterStateHandler.updateCurrentAppliedFilters(filterStateHandler.getCurrentFiltersFromUI())
 
         println(
-            "$DEBUG_TAG: Filters loaded from storage: " +
-                "salary=${_salary.value}, " +
-                "hideWithoutSalary=${_hideWithoutSalary.value}, " +
-                "industries=${_selectedIndustries.value?.size}, " +
-                "country=${_selectedCountry.value}, countryId=${_selectedCountryId.value}, " +
-                "region=${_selectedRegion.value}, regionId=${_selectedRegionId.value}"
+            "FiltrationViewModel: Filters loaded from storage: " +
+                "salary=${filterStateHandler.salary.value}, " +
+                "hideWithoutSalary=${filterStateHandler.hideWithoutSalary.value}, " +
+                "industries=${filterStateHandler.selectedIndustries.value?.size}, " +
+                "country=${filterStateHandler.selectedCountry.value}, countryId=${filterStateHandler.selectedCountryId.value}, " +
+                "region=${filterStateHandler.selectedRegion.value}, regionId=${filterStateHandler.selectedRegionId.value}"
         )
     }
 
     private fun setDefaultFilters() {
-        _salary.value = null
-        _hideWithoutSalary.value = false
-        _selectedIndustries.value = emptyList()
-        _selectedCountry.value = null
-        _selectedCountryId.value = null
-        _selectedRegion.value = null
-        _selectedRegionId.value = null
-
-        currentFilters = Filters()
-        println("$DEBUG_TAG: No saved filters found")
+        filterStateHandler.resetFilters()
+        filterStateHandler.updateCurrentAppliedFilters(Filters())
+        println("FiltrationViewModel: No saved filters found")
     }
 
-    private fun createFiltersFromUI(): Filters {
-        return Filters(
-            salary = _salary.value,
-            hideWithoutSalary = _hideWithoutSalary.value ?: false,
-            industries = _selectedIndustries.value ?: emptyList(),
-            country = _selectedCountry.value,
-            countryId = _selectedCountryId.value,
-            region = _selectedRegion.value,
-            regionId = _selectedRegionId.value
-        )
-    }
-
+    // Public методы для UI взаимодействий
     fun onSalaryChanged(value: String) {
-        val filteredValue = value.filter { it.isDigit() }
-        _salary.value = filteredValue.ifEmpty { null }
-        updateFilterState()
-        updateSalaryInputState()
+        filterStateHandler.onSalaryChanged(value)
     }
 
     fun onHideWithoutSalaryChanged(value: Boolean) {
-        _hideWithoutSalary.value = value
-        updateFilterState()
+        filterStateHandler.onHideWithoutSalaryChanged(value)
     }
 
     fun onIndustriesSelected(industries: List<Industry>) {
-        _selectedIndustries.value = industries
-        updateFilterState()
+        filterStateHandler.onIndustriesSelected(industries)
     }
 
     fun clearIndustries() {
-        _selectedIndustries.value = emptyList()
-        updateFilterState()
+        filterStateHandler.clearIndustries()
     }
 
     fun clearWorkplace() {
-        _selectedCountry.value = null
-        _selectedCountryId.value = null
-        _selectedRegion.value = null
-        _selectedRegionId.value = null
-        updateFilterState()
+        filterStateHandler.clearWorkplace()
     }
 
     fun onWorkplaceSelected(
@@ -159,114 +109,54 @@ class FiltrationViewModel(
         regionName: String?,
         regionId: Int?
     ) {
-        _selectedCountry.value = countryName
-        _selectedCountryId.value = countryId?.toString()
-        _selectedRegion.value = regionName
-        _selectedRegionId.value = regionId?.toString()
-        updateFilterState()
+        filterStateHandler.onWorkplaceSelected(countryName, countryId, regionName, regionId)
     }
 
-    // Сохраняем фильтры в StorageManager ТОЛЬКО при явном применении
     fun saveFiltersToStorage() {
         viewModelScope.launch {
             val filter = createFilterParameters()
             storageManager.setFilterSetting(filter)
 
-            currentFilters = getCurrentFiltersFromUI()
-            println("$DEBUG_TAG: Filters saved to storage: $currentFilters")
+            filterStateHandler.updateCurrentAppliedFilters(filterStateHandler.getCurrentFiltersFromUI())
+            println("FiltrationViewModel: Filters saved to storage: ${filterStateHandler.currentAppliedFilters}")
         }
     }
 
     private fun createFilterParameters(): FilterParameters {
         return FilterParameters(
-            onlyWithSalary = _hideWithoutSalary.value ?: false,
-            salary = _salary.value ?: "",
-            industries = _selectedIndustries.value ?: emptyList(),
-            country = _selectedCountry.value,
-            countryId = _selectedCountryId.value,
-            region = _selectedRegion.value,
-            regionId = _selectedRegionId.value
+            onlyWithSalary = filterStateHandler.hideWithoutSalary.value ?: false,
+            salary = filterStateHandler.salary.value ?: "",
+            industries = filterStateHandler.selectedIndustries.value ?: emptyList(),
+            country = filterStateHandler.selectedCountry.value,
+            countryId = filterStateHandler.selectedCountryId.value,
+            region = filterStateHandler.selectedRegion.value,
+            regionId = filterStateHandler.selectedRegionId.value
         )
     }
 
-    // Получаем текущие фильтры из UI (для применения)
     fun getCurrentFiltersForApply(): Filters {
-        return getCurrentFiltersFromUI()
+        return filterStateHandler.getCurrentFiltersFromUI()
     }
 
-    private fun getCurrentFiltersFromUI(): Filters {
-        return Filters(
-            salary = _salary.value,
-            hideWithoutSalary = _hideWithoutSalary.value ?: false,
-            industries = _selectedIndustries.value ?: emptyList(),
-            country = _selectedCountry.value,
-            countryId = _selectedCountryId.value,
-            region = _selectedRegion.value,
-            regionId = _selectedRegionId.value
-        )
-    }
-
-    // Получаем текущие примененные фильтры (для главного экрана)
     fun getCurrentAppliedFilters(): Filters {
-        return currentFilters
+        return filterStateHandler.currentAppliedFilters
     }
 
     fun resetFilters() {
-        _salary.value = null
-        _hideWithoutSalary.value = false
-        _selectedIndustries.value = emptyList()
-        _selectedCountry.value = null
-        _selectedCountryId.value = null
-        _selectedRegion.value = null
-        _selectedRegionId.value = null
-        updateFilterState()
-        updateSalaryInputState()
+        filterStateHandler.resetFilters()
     }
 
     fun setFiltersJustApplied(applied: Boolean) {
-        _filtersJustApplied.value = applied
-        println("$DEBUG_TAG: setFiltersJustApplied called with: $applied")
+        filterStateHandler.setFiltersJustApplied(applied)
     }
 
-    private fun updateFilterState() {
-        val isActive = !_salary.value.isNullOrEmpty() ||
-            _hideWithoutSalary.value == true ||
-            _selectedIndustries.value?.isNotEmpty() == true ||
-            _selectedCountry.value != null ||
-            _selectedRegion.value != null
-
-        _isAnyFilterActive.value = isActive
-    }
-
-    private fun updateSalaryInputState() {
-        _isSalaryInputNotEmpty.value = !_salary.value.isNullOrEmpty()
-    }
-
-    // Методы для восстановления начального состояния
+    // Методы для восстановления состояния
     fun saveInitialState() {
-        initialFilters = getCurrentFiltersFromUI()
-        println("$DEBUG_TAG: Initial filters saved: $initialFilters")
+        filterStateHandler.saveInitialState()
     }
 
     fun restoreInitialState() {
-        initialFilters?.let { filters ->
-            println("$DEBUG_TAG: Restoring initial filters: $filters")
-            restoreFiltersFromState(filters)
-        } ?: run {
-            println("$DEBUG_TAG: No initial filters to restore")
-        }
-    }
-
-    private fun restoreFiltersFromState(filters: Filters) {
-        _salary.value = filters.salary
-        _hideWithoutSalary.value = filters.hideWithoutSalary
-        _selectedIndustries.value = filters.industries
-        _selectedCountry.value = filters.country
-        _selectedCountryId.value = filters.countryId
-        _selectedRegion.value = filters.region
-        _selectedRegionId.value = filters.regionId
-        updateFilterState()
-        updateSalaryInputState()
+        filterStateHandler.restoreInitialState()
     }
 
     fun applySavedFiltersToSearch(searchViewModel: SearchViewModel) {
@@ -276,24 +166,15 @@ class FiltrationViewModel(
         }
     }
 
-    private suspend fun shouldSkipAutoApplication(): Boolean {
-        val filtersJustApplied = _filtersJustApplied.value == true
-        if (filtersJustApplied) {
-            println("$DEBUG_TAG: Filters were just applied - skipping auto-application")
-            _filtersJustApplied.value = false
-            return true
-        }
-        return false
-    }
-
     private suspend fun handleFiltersApplication(searchViewModel: SearchViewModel) {
-        if (shouldSkipAutoApplication()) {
+        if (filterStateHandler.shouldSkipAutoApplication()) {
             return
         }
         applyFiltersToSearchOnAppStart(searchViewModel)
     }
 
     private fun applyFiltersToSearchOnAppStart(searchViewModel: SearchViewModel) {
+        val currentFilters = filterStateHandler.currentAppliedFilters
         val hasActiveFilters = currentFilters.salary != null ||
             currentFilters.hideWithoutSalary ||
             currentFilters.industries.isNotEmpty() ||
@@ -302,13 +183,17 @@ class FiltrationViewModel(
 
         if (hasActiveFilters) {
             println(
-                "$DEBUG_TAG: Applying saved filters on app start: " +
+                "FiltrationViewModel: Applying saved filters on app start: " +
                     "$currentFilters"
             )
             searchViewModel.setFiltersWithoutSearch(currentFilters)
         } else {
-            println("$DEBUG_TAG: No active filters to apply on app start")
+            println("FiltrationViewModel: No active filters to apply on app start")
         }
+    }
+
+    companion object {
+        const val FILTERS_DELAY_MS = 200L
     }
 
     data class Filters(

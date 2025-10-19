@@ -87,9 +87,7 @@ class MainFragment : Fragment() {
             if (keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_UP) {
                 findNavController().popBackStack()
                 true
-            } else {
-                false
-            }
+            } else false
         }
     }
 
@@ -123,29 +121,47 @@ class MainFragment : Fragment() {
     private fun applySavedFiltersOnStart() {
         lifecycleScope.launch {
             delay(DELAY_FOR_FILTERS)
-            val filtersJustApplied = filtrationViewModel.filtersJustApplied.value == true
-            if (!filtersJustApplied) {
-                val currentQuery = searchViewModel.getCurrentQuery()
-                val currentFilters = filtrationViewModel.getCurrentAppliedFilters()
-                val hasActiveFilters = with(currentFilters) {
-                    salary != null || hideWithoutSalary ||
-                        industries.isNotEmpty() || country != null || region != null
-                }
 
-                if (hasActiveFilters && currentQuery.isNotEmpty()) {
-                    searchViewModel.setFiltersWithoutSearch(currentFilters)
-                    isProgrammaticTextChange = true
-                    binding.searchEditText.setText(currentQuery)
-                    updateSearchFieldIcons(currentQuery)
-                    isProgrammaticTextChange = false
-                } else if (hasActiveFilters) {
-                    searchViewModel.setFiltersWithoutSearch(currentFilters)
-                }
-            } else {
-                filtrationViewModel.setFiltersJustApplied(false)
+            if (filtersAlreadyApplied()) {
+                resetFiltersJustAppliedFlag()
+                return@launch
+            }
+
+            val currentQuery = searchViewModel.getCurrentQuery()
+            val currentFilters = filtrationViewModel.getCurrentAppliedFilters()
+
+            if (hasActiveFilters(currentFilters)) {
+                applyFilters(currentFilters, currentQuery)
             }
         }
     }
+
+    private fun filtersAlreadyApplied(): Boolean {
+        return filtrationViewModel.filtersJustApplied.value == true
+    }
+
+    private fun resetFiltersJustAppliedFlag() {
+        filtrationViewModel.setFiltersJustApplied(false)
+    }
+
+    private fun hasActiveFilters(filters: FiltrationViewModel.Filters): Boolean {
+        return with(filters) {
+            salary != null || hideWithoutSalary ||
+                industries.isNotEmpty() || country != null || region != null
+        }
+    }
+
+    private fun applyFilters(filters: FiltrationViewModel.Filters, query: String) {
+        searchViewModel.setFiltersWithoutSearch(filters)
+
+        if (query.isNotEmpty()) {
+            isProgrammaticTextChange = true
+            binding.searchEditText.setText(query)
+            updateSearchFieldIcons(query)
+            isProgrammaticTextChange = false
+        }
+    }
+
 
     private fun handleTextChange(text: String) {
         if (isProgrammaticTextChange || isReturningFromFilters) {
@@ -170,6 +186,7 @@ class MainFragment : Fragment() {
     }
 
     private fun onVacancyClick(vacancy: Vacancy) {
+        requireContext().showToast("Открываем вакансию: ${vacancy.title}")
         val bundle = Bundle().apply { putString("vacancyId", vacancy.id) }
         findNavController().navigate(R.id.action_mainFragment_to_vacancyDetailFragment, bundle)
     }
