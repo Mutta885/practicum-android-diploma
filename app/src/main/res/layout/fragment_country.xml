@@ -46,38 +46,34 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/countries_recycler_view"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:visibility="gone" />
 
-        <LinearLayout
+        <TextView
             android:id="@+id/no_results_container"
             android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/not_region"
+            android:textAlignment="center"
+            android:layout_gravity="center"
+            android:textAppearance="@style/textAppearanceMedium22sp500w"
+            android:textColor="?attr/attr_white_black_color"
+            android:textSize="22sp"
+            android:visibility="gone"
+            app:drawableTopCompat="@drawable/ic_no_results" />
+
+        <FrameLayout
+            android:id="@+id/loadingContainer"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:visibility="visible">
+            android:visibility="gone">
 
-            <ImageView
-                android:layout_width="328dp"
-                android:layout_height="223dp"
-                android:layout_marginBottom="16dp"
-                android:contentDescription="@string/contentDescription"
-                android:src="@drawable/ic_no_results" />
-
-            <TextView
+            <ProgressBar
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/not_region"
-                android:textAlignment="center"
-                android:textAppearance="@style/textAppearanceMedium22sp500w"
-                android:textColor="?attr/attr_white_black_color"
-                android:textSize="22sp" />
-
-        </LinearLayout>
-        <ProgressBar
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginBottom="16dp"
-            android:indeterminateTint="@color/blue" />
+                android:layout_gravity="center"
+                android:layout_marginBottom="16dp"
+                android:indeterminateTint="@color/blue" />
+        </FrameLayout>
     </LinearLayout>
 </LinearLayout>
