@@ -3,12 +3,14 @@ package ru.practicum.android.diploma.ui.fragments
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import androidx.core.view.isVisible
+import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -25,6 +27,8 @@ import ru.practicum.android.diploma.presentation.vmodels.FiltrationViewModel
 import ru.practicum.android.diploma.presentation.vmodels.SearchState
 import ru.practicum.android.diploma.presentation.vmodels.SearchViewModel
 import ru.practicum.android.diploma.presentation.adapters.VacanciesAdapter
+import ru.practicum.android.diploma.util.SearchDebounce
+import ru.practicum.android.diploma.util.debounce
 import ru.practicum.android.diploma.util.showToast
 
 class MainFragment : Fragment() {
@@ -32,21 +36,16 @@ class MainFragment : Fragment() {
     private val binding get() = _binding!!
     private val searchViewModel: SearchViewModel by sharedViewModel()
     private val filtrationViewModel: FiltrationViewModel by activityViewModel()
+    private var searchDebounce: ((String) -> Unit)? = null
     private val adapter: VacanciesAdapter by lazy {
         VacanciesAdapter(onItemClick = { vacancy -> onVacancyClick(vacancy) })
     }
 
     // Флаг для блокировки автоматического поиска при программном изменении текста
-    private var isProgrammaticTextChange = false
+    //private var isProgrammaticTextChange = false
 
     // Флаг для блокировки поиска при возврате из фильтров
     private var isReturningFromFilters = false
-
-    private companion object {
-        const val LOAD_MORE_THRESHOLD = 3
-        const val DELAY_FOR_FILTERS = 500L
-        private const val DEBUG_TAG = "MainFragment"
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -59,13 +58,16 @@ class MainFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        Log.v("my", "onViewCreated  isReturn = $isReturningFromFilters")
         setupRecyclerView()
         setupSearchField()
         setupClickListeners()
         observeViewModel()
         observeFilterState()
         applySavedFiltersOnStart()
-
+        searchDebounce = debounce<String>(TIME_DELAY, viewLifecycleOwner.lifecycleScope, true) { text ->
+            searchViewModel.search(text)
+        }
         // Обработка системной кнопки назад
         view.isFocusableInTouchMode = true
         view.requestFocus()
@@ -112,35 +114,45 @@ class MainFragment : Fragment() {
         // Инициализируем иконки при создании
         updateSearchFieldIcons(editText.text.toString())
 
+        editText.doOnTextChanged { s, _, _, _ ->
+            /*   if (isProgrammaticTextChange) {
+
+               }*/
+            Log.v("my", "doOnTextChanged")
+            // Если возвращаемся из фильтров - не запускаем поиск
+            if (isReturningFromFilters) {
+                Log.v("my", "if")
+                isReturningFromFilters = false
+            } else {
+            Log.v("my", "else")
+                val text = s.toString().trim()
+                updateSearchFieldIcons(text)
+                if (text.isNotEmpty()) {
+                    searchDebounce?.invoke(text)
+                }
+            }
+        }
+/*
+
         editText.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
             override fun afterTextChanged(s: Editable?) {
                 // Если изменение текста программное - не запускаем поиск
-                if (isProgrammaticTextChange) {
-                    return
-                }
 
-                // Если возвращаемся из фильтров - не запускаем поиск
-                if (isReturningFromFilters) {
-                    isReturningFromFilters = false
-                    return
-                }
 
-                val text = s.toString().trim()
-                updateSearchFieldIcons(text)
-                searchViewModel.search(text)
             }
         })
+*/
 
         searchIcon.setOnClickListener {
             searchViewModel.search(editText.text.toString().trim())
         }
 
         clearIcon.setOnClickListener {
-            isProgrammaticTextChange = true
+            //isProgrammaticTextChange = true
             editText.text.clear()
-            isProgrammaticTextChange = false
+            //isProgrammaticTextChange = false
             searchViewModel.search("")
             updateSearchFieldIcons("")
         }
@@ -178,6 +190,7 @@ class MainFragment : Fragment() {
 
     private fun observeViewModel() {
         searchViewModel.searchState.observe(viewLifecycleOwner) { state ->
+            Log.v("my", "my MainFragment" + state)
             when (state) {
                 is SearchState.EmptyQuery -> showEmptyQueryState()
                 is SearchState.Loading -> showLoadingState()
@@ -234,11 +247,11 @@ class MainFragment : Fragment() {
             searchViewModel.setFiltersWithoutSearch(currentFilters)
 
             // Устанавливаем текст БЕЗ вызова поиска
-            isProgrammaticTextChange = true
+            //isProgrammaticTextChange = true
             binding.searchEditText.setText(currentQuery)
             // Обновляем состояние иконок после установки текста
             updateSearchFieldIcons(currentQuery)
-            isProgrammaticTextChange = false
+            //isProgrammaticTextChange = false
         } else if (hasActiveFilters) {
             println("DEBUG_MAIN: Calling setFiltersWithoutSearch without query")
             // Если есть фильтры, но нет запроса - просто сохраняем их состояние
@@ -318,5 +331,14 @@ class MainFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+        Log.v("my", "onDestroy  isReturn = $isReturningFromFilters")
+    }
+
+    companion object {
+        private const val TIME_DELAY = 2000L
+        const val LOAD_MORE_THRESHOLD = 3
+        const val DELAY_FOR_FILTERS = 500L
+        private const val DEBUG_TAG = "MainFragment"
+
     }
 }
