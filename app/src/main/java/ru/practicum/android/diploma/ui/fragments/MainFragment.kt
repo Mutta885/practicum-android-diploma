@@ -170,7 +170,6 @@ class MainFragment : Fragment() {
     }
 
     private fun onVacancyClick(vacancy: Vacancy) {
-        //requireContext().showToast("Открываем вакансию: ${vacancy.title}")
         val bundle = Bundle().apply { putString("vacancyId", vacancy.id) }
         findNavController().navigate(R.id.action_mainFragment_to_vacancyDetailFragment, bundle)
     }
