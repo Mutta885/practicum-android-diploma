@@ -61,54 +61,66 @@ class FiltrationViewModel(
     private fun loadSavedFilters() {
         viewModelScope.launch {
             storageManager.getFilterSetting().collect { savedFilter ->
-                if (savedFilter != null) {
-                    // Загружаем сохраненные фильтры как начальное состояние
-                    _salary.value = savedFilter.salary.takeIf { it.isNotEmpty() }
-                    _hideWithoutSalary.value = savedFilter.onlyWithSalary
-                    _selectedIndustries.value = savedFilter.industries
-                    _selectedCountry.value = savedFilter.country
-                    _selectedCountryId.value = savedFilter.countryId
-                    _selectedRegion.value = savedFilter.region
-                    _selectedRegionId.value = savedFilter.regionId
-
-                    // Обновляем текущие фильтры
-                    currentFilters = Filters(
-                        salary = _salary.value,
-                        hideWithoutSalary = _hideWithoutSalary.value ?: false,
-                        industries = _selectedIndustries.value ?: emptyList(),
-                        country = _selectedCountry.value,
-                        countryId = _selectedCountryId.value,
-                        region = _selectedRegion.value,
-                        regionId = _selectedRegionId.value
-                    )
-
-                    println(
-                        "$DEBUG_TAG: Filters loaded from storage: " +
-                            "salary=${_salary.value}, " +
-                            "hideWithoutSalary=${_hideWithoutSalary.value}, " +
-                            "industries=${_selectedIndustries.value?.size}, " +
-                            "country=${_selectedCountry.value}, countryId=${_selectedCountryId.value}, " +
-                            "region=${_selectedRegion.value}, regionId=${_selectedRegionId.value}"
-                    )
-                } else {
-                    _salary.value = null
-                    _hideWithoutSalary.value = false
-                    _selectedIndustries.value = emptyList()
-                    _selectedCountry.value = null
-                    _selectedCountryId.value = null
-                    _selectedRegion.value = null
-                    _selectedRegionId.value = null
-
-                    currentFilters = Filters()
-                    println("$DEBUG_TAG: No saved filters found")
-                }
-                updateFilterState()
-                updateSalaryInputState()
-
-                // Сохраняем начальное состояние
-                saveInitialState()
+                handleSavedFilter(savedFilter)
             }
         }
+    }
+
+    private fun handleSavedFilter(savedFilter: FilterParameters?) {
+        if (savedFilter != null) {
+            loadFiltersFromStorage(savedFilter)
+        } else {
+            setDefaultFilters()
+        }
+        updateFilterState()
+        updateSalaryInputState()
+        saveInitialState()
+    }
+
+    private fun loadFiltersFromStorage(savedFilter: FilterParameters) {
+        _salary.value = savedFilter.salary.takeIf { it.isNotEmpty() }
+        _hideWithoutSalary.value = savedFilter.onlyWithSalary
+        _selectedIndustries.value = savedFilter.industries
+        _selectedCountry.value = savedFilter.country
+        _selectedCountryId.value = savedFilter.countryId
+        _selectedRegion.value = savedFilter.region
+        _selectedRegionId.value = savedFilter.regionId
+
+        currentFilters = createFiltersFromUI()
+
+        println(
+            "$DEBUG_TAG: Filters loaded from storage: " +
+                "salary=${_salary.value}, " +
+                "hideWithoutSalary=${_hideWithoutSalary.value}, " +
+                "industries=${_selectedIndustries.value?.size}, " +
+                "country=${_selectedCountry.value}, countryId=${_selectedCountryId.value}, " +
+                "region=${_selectedRegion.value}, regionId=${_selectedRegionId.value}"
+        )
+    }
+
+    private fun setDefaultFilters() {
+        _salary.value = null
+        _hideWithoutSalary.value = false
+        _selectedIndustries.value = emptyList()
+        _selectedCountry.value = null
+        _selectedCountryId.value = null
+        _selectedRegion.value = null
+        _selectedRegionId.value = null
+
+        currentFilters = Filters()
+        println("$DEBUG_TAG: No saved filters found")
+    }
+
+    private fun createFiltersFromUI(): Filters {
+        return Filters(
+            salary = _salary.value,
+            hideWithoutSalary = _hideWithoutSalary.value ?: false,
+            industries = _selectedIndustries.value ?: emptyList(),
+            country = _selectedCountry.value,
+            countryId = _selectedCountryId.value,
+            region = _selectedRegion.value,
+            regionId = _selectedRegionId.value
+        )
     }
 
     fun onSalaryChanged(value: String) {
@@ -157,22 +169,24 @@ class FiltrationViewModel(
     // Сохраняем фильтры в StorageManager ТОЛЬКО при явном применении
     fun saveFiltersToStorage() {
         viewModelScope.launch {
-            // Берем текущие значения из UI для сохранения
-            val filter = FilterParameters(
-                onlyWithSalary = _hideWithoutSalary.value ?: false,
-                salary = _salary.value ?: "",
-                industries = _selectedIndustries.value ?: emptyList(),
-                country = _selectedCountry.value,
-                countryId = _selectedCountryId.value,
-                region = _selectedRegion.value,
-                regionId = _selectedRegionId.value
-            )
+            val filter = createFilterParameters()
             storageManager.setFilterSetting(filter)
 
-            // Обновляем текущие фильтры после сохранения
             currentFilters = getCurrentFiltersFromUI()
             println("$DEBUG_TAG: Filters saved to storage: $currentFilters")
         }
+    }
+
+    private fun createFilterParameters(): FilterParameters {
+        return FilterParameters(
+            onlyWithSalary = _hideWithoutSalary.value ?: false,
+            salary = _salary.value ?: "",
+            industries = _selectedIndustries.value ?: emptyList(),
+            country = _selectedCountry.value,
+            countryId = _selectedCountryId.value,
+            region = _selectedRegion.value,
+            regionId = _selectedRegionId.value
+        )
     }
 
     // Получаем текущие фильтры из UI (для применения)
@@ -237,18 +251,22 @@ class FiltrationViewModel(
     fun restoreInitialState() {
         initialFilters?.let { filters ->
             println("$DEBUG_TAG: Restoring initial filters: $filters")
-            _salary.value = filters.salary
-            _hideWithoutSalary.value = filters.hideWithoutSalary
-            _selectedIndustries.value = filters.industries
-            _selectedCountry.value = filters.country
-            _selectedCountryId.value = filters.countryId
-            _selectedRegion.value = filters.region
-            _selectedRegionId.value = filters.regionId
-            updateFilterState()
-            updateSalaryInputState()
+            restoreFiltersFromState(filters)
         } ?: run {
             println("$DEBUG_TAG: No initial filters to restore")
         }
+    }
+
+    private fun restoreFiltersFromState(filters: Filters) {
+        _salary.value = filters.salary
+        _hideWithoutSalary.value = filters.hideWithoutSalary
+        _selectedIndustries.value = filters.industries
+        _selectedCountry.value = filters.country
+        _selectedCountryId.value = filters.countryId
+        _selectedRegion.value = filters.region
+        _selectedRegionId.value = filters.regionId
+        updateFilterState()
+        updateSalaryInputState()
     }
 
     fun applySavedFiltersToSearch(searchViewModel: SearchViewModel) {
