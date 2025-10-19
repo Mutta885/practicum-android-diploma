@@ -123,16 +123,15 @@ class MainFragment : Fragment() {
         lifecycleScope.launch {
             delay(DELAY_FOR_FILTERS)
 
-            if (filtersAlreadyApplied()) {
+            if (!filtersAlreadyApplied()) {
+                val currentQuery = searchViewModel.getCurrentQuery()
+                val currentFilters = filtrationViewModel.getCurrentAppliedFilters()
+
+                if (hasActiveFilters(currentFilters)) {
+                    applyFilters(currentFilters, currentQuery)
+                }
+            } else {
                 resetFiltersJustAppliedFlag()
-                return@launch
-            }
-
-            val currentQuery = searchViewModel.getCurrentQuery()
-            val currentFilters = filtrationViewModel.getCurrentAppliedFilters()
-
-            if (hasActiveFilters(currentFilters)) {
-                applyFilters(currentFilters, currentQuery)
             }
         }
     }
