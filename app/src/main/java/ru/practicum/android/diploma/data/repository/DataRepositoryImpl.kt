@@ -10,7 +10,6 @@ import ru.practicum.android.diploma.data.dto.EmploymentDto
 import ru.practicum.android.diploma.data.dto.ExperienceDto
 import ru.practicum.android.diploma.data.dto.toDomain
 import ru.practicum.android.diploma.data.dto.FilterIndustryDto
-import ru.practicum.android.diploma.data.dto.IndustryDto
 import ru.practicum.android.diploma.data.dto.IndustryRequest
 import ru.practicum.android.diploma.data.dto.IndustryResponse
 import ru.practicum.android.diploma.data.dto.SalaryDto
@@ -111,7 +110,7 @@ class DataRepositoryImpl(
     override fun getIndustries(): Flow<Result<List<Industry>?>> {
         return flow {
             networkClient.doRequest(IndustryRequest()).collect { result ->
-                if (result.resultCode == 200) {
+                if (result.resultCode == HTTP_OK) {
                     emit(
                         Result.success(
                             (result as IndustryResponse).result.map {
@@ -322,15 +321,6 @@ class DataRepositoryImpl(
             id = dto.id,
             name = dto.name
         )
-    }
-
-    private fun mapIndustry(industryDto: IndustryDto): Industry {
-        return with(industryDto) {
-            Industry(
-                id = id,
-                name = name
-            )
-        }
     }
 
     private fun mapExperience(experienceDto: ExperienceDto?) = experienceDto?.let { dto ->

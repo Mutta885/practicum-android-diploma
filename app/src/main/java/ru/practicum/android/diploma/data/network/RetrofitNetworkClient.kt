@@ -21,7 +21,7 @@ class RetrofitNetworkClient(
     override suspend fun doRequest(dto: Any): Flow<Response> {
         return flow {
             if (!isConnected()) {
-                emit(Response().apply { resultCode = HTTP_ERROR_NOT_INTERNET-1 })
+                emit(Response().apply { resultCode = HTTP_ERROR_NOT_INTERNET - 1 })
             } else {
                 try {
                     when (dto) {
@@ -45,7 +45,7 @@ class RetrofitNetworkClient(
         }.flowOn(Dispatchers.IO)
     }
 
-    private suspend fun industriesRequest(): Response{
+    private suspend fun industriesRequest(): Response {
         val list = api.getIndustries()
         if (list.code() == HTTP_OK) {
             val result = list.body()?.let { IndustryResponse(it) } ?: IndustryResponse(listOf())
@@ -55,7 +55,7 @@ class RetrofitNetworkClient(
         }
     }
 
-    private suspend fun filterAreaRequest(): Response{
+    private suspend fun filterAreaRequest(): Response {
         val list = api.getAreas()
         if (list.code() == HTTP_OK) {
             val result = list.body()?.let { FilterAreasResponse(it) } ?: FilterAreasResponse(listOf())
@@ -69,10 +69,11 @@ class RetrofitNetworkClient(
         val capabilities =
             connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
         if (capabilities != null) {
-            when {
-                capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> return true
-                capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> return true
-                capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> return true
+            return when {
+                capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
+                capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
+                capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> true
+                else -> false
             }
         }
         return false
