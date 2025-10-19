@@ -26,8 +26,10 @@ class RegionFragment : Fragment(), RegionAdapter.RegionListener {
     private val binding get() = _binding!!
     private var regionAdapter: RegionAdapter? = null
     private var allRegions: List<FilterArea> = emptyList()
+
     // Карта для хранения стран по ID
     private var countryMap: Map<Int, FilterArea> = emptyMap()
+
     // Флаг, указывающий, что список стран загружен
     private var countriesLoaded = false
 
@@ -144,6 +146,7 @@ class RegionFragment : Fragment(), RegionAdapter.RegionListener {
                         showNoResultsState()
                     }
                 }
+
                 is FilterAreaState.CountriesState -> {
                     // Сохраняем страны в карту для быстрого поиска
                     countryMap = state.countries.associateBy { it.id }
@@ -156,12 +159,15 @@ class RegionFragment : Fragment(), RegionAdapter.RegionListener {
                         viewModel.getRegions(actualCountryId)
                     }
                 }
+
                 is FilterAreaState.Loading -> {
                     showLoadingState()
                 }
+
                 is FilterAreaState.Error -> {
                     showErrorState(state.message)
                 }
+
                 is FilterAreaState.GetCountryNameState -> {
                     // Не используется в этом фрагменте
                 }

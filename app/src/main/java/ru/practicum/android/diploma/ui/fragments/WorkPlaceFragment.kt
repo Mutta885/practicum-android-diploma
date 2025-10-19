@@ -140,15 +140,19 @@ class WorkPlaceFragment : Fragment() {
                 is FilterAreaState.GetCountryNameState -> {
                     addCountryName(state.countryName, state.countryId)
                 }
+
                 is FilterAreaState.Loading -> {
                     // Можно показать загрузку если нужно
                 }
+
                 is FilterAreaState.Error -> {
                     // Можно показать ошибку если нужно
                 }
+
                 is FilterAreaState.CountriesState -> {
                     // Не используется в WorkPlaceFragment
                 }
+
                 is FilterAreaState.RegionsStateByCountry -> {
                     // Не используется в WorkPlaceFragment
                 }

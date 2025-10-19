@@ -302,6 +302,7 @@ sealed class SearchState {
         val found: Int,
         val isFirstPage: Boolean
     ) : SearchState()
+
     data class Error(val message: String?) : SearchState()
     data class NextPageError(val message: String?) : SearchState()
     data class FiltersApplied(val filters: FiltrationViewModel.Filters) : SearchState()

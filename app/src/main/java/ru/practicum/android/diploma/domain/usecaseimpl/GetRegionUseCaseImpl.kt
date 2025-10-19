@@ -7,7 +7,7 @@ import ru.practicum.android.diploma.util.Resource
 
 class GetRegionUseCaseImpl(
     private val repository: DataRepository
-):GetRegionUseCase {
+) : GetRegionUseCase {
     override suspend fun execute(): Resource<List<FilterArea>> {
         return repository.getAreas()
     }

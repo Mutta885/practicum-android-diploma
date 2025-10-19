@@ -41,8 +41,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
         android:orientation="vertical"
+        android:layout_weight="1"
         android:paddingTop="16dp">
 
         <!-- Место работы -->
@@ -58,16 +58,8 @@
         <FrameLayout
             android:id="@+id/group_workplace_item_2"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/filter_height"
+            android:layout_height="wrap_content"
             android:visibility="gone">
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/workplace_item_2"
-                style="@style/filter_text_button"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
-                android:text="@string/area_job" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -77,6 +69,19 @@
                 android:text="@string/area_job"
                 android:textAppearance="@style/textAppearanceRegular12sp400w"
                 android:textColor="?attr/attr_white_black_color" />
+
+            <TextView
+                android:id="@+id/workplace_item_2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="26.5dp"
+                android:paddingEnd="50dp"
+                android:textColor="?attr/attr_white_black_color"
+                android:textAppearance="@style/textAppearanceRegular16sp400w"
+                android:layout_marginStart="16dp"
+                android:layout_marginBottom="12.5dp"
+                tools:text="kassssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss"
+                android:text="@string/area_job" />
 
             <ImageView
                 android:id="@+id/close_workplace"
@@ -97,9 +102,8 @@
             android:id="@+id/group_industry_item_2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
             android:minHeight="@dimen/filter_height"
-            android:visibility="visible">
+            android:visibility="gone">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -109,6 +113,7 @@
                 android:text="@string/industry"
                 android:textAppearance="@style/textAppearanceRegular12sp400w"
                 android:textColor="?attr/attr_white_black_color" />
+
             <TextView
                 android:id="@+id/industry_item_2"
                 android:layout_width="match_parent"

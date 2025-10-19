@@ -26,7 +26,8 @@ class RetrofitNetworkClient(
                         is FilterAreasRequest -> {
                             val list = api.getAreas()
                             if (list.code() == 200) {
-                                val result = list.body()?.let { FilterAreasResponse(it) } ?: FilterAreasResponse(listOf())
+                                val result =
+                                    list.body()?.let { FilterAreasResponse(it) } ?: FilterAreasResponse(listOf())
                                 emit(result.apply { resultCode = 200 })
                             } else {
                                 emit(Response().apply { resultCode = list.code() })

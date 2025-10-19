@@ -96,6 +96,7 @@ class VacanciesAdapter(
                 ),
                 onItemClick
             )
+
             else -> LoadingViewHolder(
                 ItemVacancyBinding.inflate(
                     LayoutInflater.from(parent.context),
@@ -114,6 +115,7 @@ class VacanciesAdapter(
                     holder.bind(item.vacancy)
                 }
             }
+
             is LoadingViewHolder -> holder.bind()
         }
     }
@@ -192,6 +194,7 @@ class VacanciesAdapter(
             return when {
                 oldItem is VacancyItem.VacancyData && newItem is VacancyItem.VacancyData ->
                     oldItem.vacancy.id == newItem.vacancy.id
+
                 oldItem is VacancyItem.LoadingItem && newItem is VacancyItem.LoadingItem -> true
                 else -> false
             }
@@ -201,6 +204,7 @@ class VacanciesAdapter(
             return when {
                 oldItem is VacancyItem.VacancyData && newItem is VacancyItem.VacancyData ->
                     oldItem.vacancy == newItem.vacancy
+
                 oldItem is VacancyItem.LoadingItem && newItem is VacancyItem.LoadingItem -> true
                 else -> false
             }

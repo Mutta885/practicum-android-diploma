@@ -7,10 +7,13 @@ object SalaryFormatter {
         return when {
             salary.from != null && salary.to != null ->
                 "от ${formatNumber(salary.from)} до ${formatNumber(salary.to)} ${salary.currency}"
+
             salary.from != null ->
                 "от ${formatNumber(salary.from)} ${salary.currency}"
+
             salary.to != null ->
                 "до ${formatNumber(salary.to)} ${salary.currency}"
+
             else -> "Зарплата не указана"
         }.trim()
     }
