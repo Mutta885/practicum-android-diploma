@@ -2,10 +2,12 @@ package ru.practicum.android.diploma.data.network
 
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
+import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import okio.IOException
 import ru.practicum.android.diploma.data.dto.FilterAreasRequest
 import ru.practicum.android.diploma.data.dto.FilterAreasResponse
 import ru.practicum.android.diploma.data.dto.IndustryRequest
@@ -19,40 +21,48 @@ class RetrofitNetworkClient(
     override suspend fun doRequest(dto: Any): Flow<Response> {
         return flow {
             if (!isConnected()) {
-                emit(Response().apply { resultCode = -1 })
+                emit(Response().apply { resultCode = HTTP_ERROR_NOT_INTERNET-1 })
             } else {
                 try {
                     when (dto) {
                         is FilterAreasRequest -> {
-                            val list = api.getAreas()
-                            if (list.code() == 200) {
-                                val result =
-                                    list.body()?.let { FilterAreasResponse(it) } ?: FilterAreasResponse(listOf())
-                                emit(result.apply { resultCode = 200 })
-                            } else {
-                                emit(Response().apply { resultCode = list.code() })
-                            }
+                            emit(filterAreaRequest())
                         }
 
                         is IndustryRequest -> {
-                            val list = api.getIndustries()
-                            if (list.code() == 200) {
-                                val result = list.body()?.let { IndustryResponse(it) } ?: IndustryResponse(listOf())
-                                emit(result.apply { resultCode = 200 })
-                            } else {
-                                emit(Response().apply { resultCode = list.code() })
-                            }
+                            emit(industriesRequest())
                         }
 
                         else -> {
-                            emit(Response().apply { resultCode = 400 })
+                            emit(Response().apply { resultCode = HTTP_ERROR_ALL })
                         }
                     }
-                } catch (e: Throwable) {
-                    emit(Response().apply { resultCode = 500 })
+                } catch (e: IOException) {
+                    Log.e(TAG_ERROR, e.message.toString())
+                    emit(Response().apply { resultCode = HTTP_ERROR_SERVER })
                 }
             }
         }.flowOn(Dispatchers.IO)
+    }
+
+    private suspend fun industriesRequest(): Response{
+        val list = api.getIndustries()
+        if (list.code() == HTTP_OK) {
+            val result = list.body()?.let { IndustryResponse(it) } ?: IndustryResponse(listOf())
+            return result.apply { resultCode = HTTP_OK }
+        } else {
+            return Response().apply { resultCode = list.code() }
+        }
+    }
+
+    private suspend fun filterAreaRequest(): Response{
+        val list = api.getAreas()
+        if (list.code() == HTTP_OK) {
+            val result = list.body()?.let { FilterAreasResponse(it) } ?: FilterAreasResponse(listOf())
+            return result.apply { resultCode = HTTP_OK }
+        } else {
+            return Response().apply { resultCode = list.code() }
+        }
     }
 
     private fun isConnected(): Boolean {
@@ -66,5 +76,13 @@ class RetrofitNetworkClient(
             }
         }
         return false
+    }
+
+    companion object {
+        private const val HTTP_ERROR_NOT_INTERNET = -1
+        private const val HTTP_OK = 200
+        private const val HTTP_ERROR_SERVER = 500
+        private const val HTTP_ERROR_ALL = 400
+        private const val TAG_ERROR = "error"
     }
 }
