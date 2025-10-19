@@ -61,7 +61,9 @@ object MainUiHelper {
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                 viewModel.search(editText.text.toString().trim())
                 true
-            } else false
+            } else {
+                false
+            }
         }
     }
 

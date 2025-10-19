@@ -23,7 +23,7 @@ class FiltrationFragment : Fragment() {
     private val viewModel: FiltrationViewModel by activityViewModel()
     private val searchViewModel: SearchViewModel by sharedViewModel()
 
-    private lateinit var uiHelper: FiltrationUiHelper
+    private var uiHelper: FiltrationUiHelper? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -33,8 +33,8 @@ class FiltrationFragment : Fragment() {
         Log.d(TAG, "onCreateView")
         _binding = FragmentFilterBinding.inflate(inflater, container, false)
         uiHelper = FiltrationUiHelper(this, binding, viewModel, searchViewModel)
-        uiHelper.setupViews()
-        uiHelper.observeViewModel()
+        uiHelper?.setupViews()
+        uiHelper?.observeViewModel()
         return binding.root
     }
 
@@ -53,7 +53,9 @@ class FiltrationFragment : Fragment() {
                 viewModel.restoreInitialState()
                 findNavController().popBackStack()
                 true
-            } else false
+            } else {
+                false
+            }
         }
     }
 

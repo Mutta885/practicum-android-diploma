@@ -177,8 +177,9 @@ class FiltrationUiHelper(
 
     private fun observeSalaryState(owner: LifecycleOwner) {
         viewModel.salary.observe(owner) { salary ->
-            if (salary != null && binding.salaryInput.text?.toString() != salary)
+            if (salary != null && binding.salaryInput.text?.toString() != salary) {
                 binding.salaryInput.setText(salary)
+            }
             updateClearSalaryButtonVisibility(salary ?: "")
         }
     }
