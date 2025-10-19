@@ -87,7 +87,9 @@ class MainFragment : Fragment() {
             if (keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_UP) {
                 findNavController().popBackStack()
                 true
-            } else false
+            } else {
+                false
+            }
         }
     }
 
@@ -139,7 +141,9 @@ class MainFragment : Fragment() {
                 } else if (hasActiveFilters) {
                     searchViewModel.setFiltersWithoutSearch(currentFilters)
                 }
-            } else filtrationViewModel.setFiltersJustApplied(false)
+            } else {
+                filtrationViewModel.setFiltersJustApplied(false)
+            }
         }
     }
 
