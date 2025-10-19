@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -84,14 +85,20 @@ class CountryFragment : Fragment(), CountryAdapter.CountryListener {
     private fun showCountries(countries: List<FilterArea>) {
         countryAdapter?.updateCountries(countries)
         binding.countriesRecyclerView.visibility = View.VISIBLE
+        binding.noResultsContainer.isVisible = false
+        binding.loadingContainer.isVisible = false
     }
 
     private fun showLoading() {
         binding.countriesRecyclerView.visibility = View.GONE
+        binding.noResultsContainer.isVisible = false
+        binding.loadingContainer.isVisible = true
     }
 
     private fun showError(message: String) {
         binding.countriesRecyclerView.visibility = View.GONE
+        binding.noResultsContainer.isVisible = true
+        binding.loadingContainer.isVisible = false
     }
 
     override fun onCountryClick(country: FilterArea) {
