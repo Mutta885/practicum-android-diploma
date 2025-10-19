@@ -10,7 +10,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.content.ContextCompat
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import org.koin.androidx.viewmodel.ext.android.activityViewModel
@@ -26,6 +25,9 @@ class FiltrationFragment : Fragment() {
     private val viewModel: FiltrationViewModel by activityViewModel()
     private val searchViewModel: SearchViewModel by sharedViewModel()
 
+    private lateinit var uiStateManager: FiltrationUiStateManager
+    private lateinit var navigationManager: FiltrationNavigationManager
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -33,14 +35,16 @@ class FiltrationFragment : Fragment() {
     ): View {
         Log.d(TAG, "onCreateView")
         _binding = FragmentFilterBinding.inflate(inflater, container, false)
-        setupViews()
-        observeViewModel()
+        uiStateManager = FiltrationUiStateManager(binding)
+        navigationManager = FiltrationNavigationManager(this, binding)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupBackButtonHandler(view)
+        setupViews()
+        observeViewModel()
     }
 
     private fun setupBackButtonHandler(view: View) {
@@ -61,20 +65,11 @@ class FiltrationFragment : Fragment() {
     }
 
     private fun setupViews() {
-        setupReturnButton()
+        navigationManager.setupNavigation()
         setupSalaryInput()
-        setupIndustryNavigation()
-        setupWorkplaceNavigation()
         setupSalaryCheckbox()
         setupActionButtons()
         setupClearButtons()
-    }
-
-    private fun setupReturnButton() {
-        binding.returnButton.setOnClickListener {
-            Log.d(TAG, "Return button clicked - navigating back WITHOUT saving filters")
-            findNavController().popBackStack()
-        }
     }
 
     private fun setupSalaryInput() {
@@ -90,7 +85,6 @@ class FiltrationFragment : Fragment() {
             override fun afterTextChanged(s: Editable?) {
                 handleSalaryTextChange(s?.toString() ?: "")
             }
-
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
         }
@@ -99,7 +93,7 @@ class FiltrationFragment : Fragment() {
     private fun handleSalaryTextChange(text: String) {
         Log.d(TAG, "Salary input changed: '$text'")
         viewModel.onSalaryChanged(text)
-        updateClearSalaryButtonVisibility(text)
+        uiStateManager.updateClearSalaryButtonVisibility(text)
     }
 
     private fun FragmentFilterBinding.setupSalaryFocusListener() {
@@ -115,48 +109,6 @@ class FiltrationFragment : Fragment() {
             salaryInput.text?.clear()
             viewModel.onSalaryChanged("")
         }
-    }
-
-    private fun setupIndustryNavigation() {
-        binding.industryItem1.setOnClickListener {
-            navigateToIndustry()
-        }
-        binding.groupIndustryItem2.setOnClickListener {
-            navigateToIndustry()
-        }
-        binding.closeIndustry.setOnClickListener {
-            hideIndustrySelection()
-        }
-    }
-
-    private fun navigateToIndustry() {
-        findNavController().navigate(R.id.action_filtrationFragment_to_industryFragment)
-    }
-
-    private fun hideIndustrySelection() {
-        binding.groupIndustryItem2.isVisible = false
-        binding.industryItem1.isVisible = true
-    }
-
-    private fun setupWorkplaceNavigation() {
-        binding.workplaceItem1.setOnClickListener {
-            navigateToWorkplace()
-        }
-        binding.groupWorkplaceItem2.setOnClickListener {
-            navigateToWorkplace()
-        }
-        binding.closeWorkplace.setOnClickListener {
-            hideWorkplaceSelection()
-        }
-    }
-
-    private fun navigateToWorkplace() {
-        findNavController().navigate(R.id.action_filtrationFragment_to_workPlaceFragment)
-    }
-
-    private fun hideWorkplaceSelection() {
-        binding.groupWorkplaceItem2.isVisible = false
-        binding.workplaceItem1.isVisible = true
     }
 
     private fun setupSalaryCheckbox() {
@@ -249,100 +201,44 @@ class FiltrationFragment : Fragment() {
     private fun observeFilterState() {
         viewModel.isAnyFilterActive.observe(viewLifecycleOwner) { isActive ->
             Log.d(TAG, "isAnyFilterActive changed: $isActive")
-            updateActionButtonsVisibility(isActive)
+            uiStateManager.updateActionButtonsVisibility(isActive)
         }
-    }
-
-    private fun updateActionButtonsVisibility(isActive: Boolean) {
-        binding.applyButton.visibility = if (isActive) View.VISIBLE else View.GONE
-        binding.resetButton.visibility = if (isActive) View.VISIBLE else View.GONE
     }
 
     private fun observeIndustries() {
         viewModel.selectedIndustries.observe(viewLifecycleOwner) { industries ->
             Log.d(TAG, "selectedIndustries observed: ${industries.size} items")
-            updateIndustryText(industries)
+            uiStateManager.updateIndustryText(industries)
         }
     }
 
     private fun observeWorkplace() {
         listOf(viewModel.selectedCountry, viewModel.selectedRegion).forEach { liveData ->
             liveData.observe(viewLifecycleOwner) {
-                updateWorkplaceText()
+                uiStateManager.updateWorkplaceText(
+                    viewModel.selectedCountry.value,
+                    viewModel.selectedRegion.value
+                )
             }
         }
     }
 
     private fun observeSalaryState() {
         viewModel.salary.observe(viewLifecycleOwner) { salary ->
-            updateSalaryInput(salary)
-            updateClearSalaryButtonVisibility(salary ?: "")
+            uiStateManager.updateSalaryInput(binding.salaryInput.text?.toString(), salary)
+            uiStateManager.updateClearSalaryButtonVisibility(salary ?: "")
         }
         viewModel.isSalaryInputNotEmpty.observe(viewLifecycleOwner) { isNotEmpty ->
-            updateClearSalaryButtonVisibility(binding.salaryInput.text?.toString() ?: "")
+            uiStateManager.updateClearSalaryButtonVisibility(binding.salaryInput.text?.toString() ?: "")
         }
     }
 
     private fun observeCheckboxState() {
         viewModel.hideWithoutSalary.observe(viewLifecycleOwner) { isChecked ->
-            updateCheckboxState(isChecked)
+            uiStateManager.updateCheckboxState(isChecked) { checked ->
+                viewModel.onHideWithoutSalaryChanged(checked)
+            }
         }
-    }
-
-    private fun updateIndustryText(industries: List<ru.practicum.android.diploma.domain.models.Industry>) {
-        val text = when {
-            industries.isEmpty() -> getString(R.string.industry)
-            industries.size == 1 -> industries[0].name
-            else -> "${getString(R.string.this_select)}: ${industries.size}"
-        }
-        binding.industryItem2.text = text
-        updateIndustryVisibility(text != getString(R.string.industry))
-    }
-
-    private fun updateIndustryVisibility(hasSelection: Boolean) {
-        binding.industryItem1.isVisible = !hasSelection
-        binding.groupIndustryItem2.isVisible = hasSelection
-    }
-
-    private fun updateWorkplaceText() {
-        val country = viewModel.selectedCountry.value
-        val region = viewModel.selectedRegion.value
-        val workplaceText = buildWorkplaceText(country, region)
-        binding.workplaceItem2.text = workplaceText
-        updateWorkplaceVisibility(workplaceText != getString(R.string.area_job))
-    }
-
-    private fun buildWorkplaceText(country: String?, region: String?): String {
-        return when {
-            country != null && region != null -> "$country, $region"
-            country != null -> country
-            region != null -> region
-            else -> getString(R.string.area_job)
-        }
-    }
-
-    private fun updateWorkplaceVisibility(hasSelection: Boolean) {
-        binding.workplaceItem1.isVisible = !hasSelection
-        binding.groupWorkplaceItem2.isVisible = hasSelection
-    }
-
-    private fun updateSalaryInput(salary: String?) {
-        if (salary != null && binding.salaryInput.text?.toString() != salary) {
-            binding.salaryInput.setText(salary)
-        }
-    }
-
-    private fun updateCheckboxState(isChecked: Boolean) {
-        binding.hideWithoutSalaryCheckbox.setOnCheckedChangeListener(null)
-        binding.hideWithoutSalaryCheckbox.isChecked = isChecked
-        binding.hideWithoutSalaryCheckbox.setOnCheckedChangeListener { _, checked ->
-            viewModel.onHideWithoutSalaryChanged(checked)
-        }
-    }
-
-    private fun updateClearSalaryButtonVisibility(salaryText: String) {
-        binding.clearSalaryButton.visibility = if (salaryText.isNotEmpty()) View.VISIBLE else View.GONE
-        Log.d(TAG, "Salary clear button visibility: ${binding.clearSalaryButton.visibility}")
     }
 
     override fun onDestroyView() {
