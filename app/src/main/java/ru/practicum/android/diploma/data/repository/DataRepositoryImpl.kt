@@ -1,8 +1,10 @@
 package ru.practicum.android.diploma.data.repository
 
+import android.content.Context
 import android.util.Log
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.data.dto.AreaDto
 import ru.practicum.android.diploma.data.dto.ContactDto
 import ru.practicum.android.diploma.data.dto.EmployerDto
@@ -45,7 +47,8 @@ import javax.net.ssl.SSLHandshakeException
 class DataRepositoryImpl(
     private val api: HhApi,
     private val networkClient: NetworkClient,
-    private val converters: ConvertersDto
+    private val converters: ConvertersDto,
+    private val appContext: Context
 ) : DataRepository {
 
     companion object {
@@ -54,6 +57,7 @@ class DataRepositoryImpl(
         private const val HTTP_FORBIDDEN = 403
         private const val HTTP_NOT_FOUND = 404
         private const val HTTP_SERVER_ERROR = 500
+        private const val HTTP_NOT_INTERNET = -1
         private const val TAG = "DataRepositoryImpl"
     }
 
@@ -93,7 +97,7 @@ class DataRepositoryImpl(
             }
         } catch (e: UnknownHostException) {
             Log.w(TAG, "Network connection error", e)
-            Resource.Error("Проверьте подключение к интернету")
+            Resource.Error(appContext.getString(R.string.not_internet), HTTP_NOT_INTERNET)
         } catch (e: SocketTimeoutException) {
             Log.w(TAG, "Request timeout", e)
             Resource.Error("Превышено время ожидания ответа")
@@ -139,7 +143,7 @@ class DataRepositoryImpl(
                 HTTP_UNAUTHORIZED -> Resource.Error("Ошибка авторизации")
                 HTTP_FORBIDDEN -> Resource.Error("Доступ запрещен")
                 HTTP_NOT_FOUND -> Resource.Error("Вакансия не найдена")
-                HTTP_SERVER_ERROR -> Resource.Error("Ошибка сервера")
+                HTTP_SERVER_ERROR -> Resource.Error(appContext.getString(R.string.error_server), HTTP_SERVER_ERROR)
                 else -> Resource.Error("Ошибка: ${response.code()} - ${response.message()}")
             }
         } catch (e: UnknownHostException) {
@@ -171,11 +175,11 @@ class DataRepositoryImpl(
         } catch (e: UnknownHostException) {
             Log.w(TAG, "Network connection error loading areas", e)
             println("DEBUG: Network error loading areas: ${e.message}")
-            Resource.Error("Проверьте подключение к интернету")
+            Resource.Error(appContext.getString(R.string.not_internet), HTTP_NOT_INTERNET)
         } catch (e: SocketTimeoutException) {
             Log.w(TAG, "Timeout loading areas", e)
             println("DEBUG: Timeout loading areas: ${e.message}")
-            Resource.Error("Превышено время ожидания")
+            Resource.Error(appContext.getString(R.string.waiting_time_exceeded), HTTP_SERVER_ERROR)
         } catch (e: IOException) {
             Log.w(TAG, "IO error loading areas", e)
             println("DEBUG: IO error loading areas: ${e.message}")

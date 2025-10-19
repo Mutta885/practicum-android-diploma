@@ -166,7 +166,7 @@ class IndustryFragment : Fragment() {
                     binding.imageError.setImageResource(R.drawable.error_server)
                 }
 
-                HTTP_UNAUTHORIZED, HTTP_FORBIDDEN, HTTP_NOT_FOUND -> {
+                HTTP_UNAUTHORIZED, HTTP_FORBIDDEN, HTTP_NOT_FOUND, HTTP_OK_EMPTY -> {
                     binding.errorText.text = getString(R.string.no_results)
                     binding.imageError.setImageResource(R.drawable.cover_samolet)
                 }
@@ -191,6 +191,7 @@ class IndustryFragment : Fragment() {
 
     companion object {
         private const val HTTP_NOT_INTERNET = "-1"
+        private const val HTTP_OK_EMPTY = "-2"
         private const val HTTP_UNAUTHORIZED = "401"
         private const val HTTP_FORBIDDEN = "403"
         private const val HTTP_NOT_FOUND = "404"

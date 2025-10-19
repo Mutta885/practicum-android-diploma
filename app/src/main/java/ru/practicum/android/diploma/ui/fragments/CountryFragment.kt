@@ -1,5 +1,6 @@
 package ru.practicum.android.diploma.ui.fragments
 
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -22,11 +23,6 @@ class CountryFragment : Fragment(), CountryAdapter.CountryListener {
     private var _binding: FragmentCountryBinding? = null
     private val binding get() = _binding!!
     private var countryAdapter: CountryAdapter? = null
-
-    companion object {
-        private const val COUNTRY_NAME_KEY = "country_name"
-        private const val COUNTRY_ID_KEY = "country_id"
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -71,7 +67,7 @@ class CountryFragment : Fragment(), CountryAdapter.CountryListener {
                 }
 
                 is FilterAreaState.Error -> {
-                    showError(state.message)
+                    showError(state)
                 }
 
                 is FilterAreaState.GetCountryNameState,
@@ -95,10 +91,19 @@ class CountryFragment : Fragment(), CountryAdapter.CountryListener {
         binding.loadingContainer.isVisible = true
     }
 
-    private fun showError(message: String) {
+    private fun showError(state: FilterAreaState.Error) {
         binding.countriesRecyclerView.visibility = View.GONE
         binding.noResultsContainer.isVisible = true
         binding.loadingContainer.isVisible = false
+        binding.noResultsContainer.text = state.message
+        when(state.code) {
+            HTTP_NOT_INTERNET -> {
+                binding.noResultsContainer.setCompoundDrawablesRelativeWithIntrinsicBounds(0,R.drawable.image_yorik,0,0)
+            }
+            HTTP_SERVER_ERROR -> {
+                binding.noResultsContainer.setCompoundDrawablesRelativeWithIntrinsicBounds(0,R.drawable.error_server,0,0)
+            }
+        }
     }
 
     override fun onCountryClick(country: FilterArea) {
@@ -113,5 +118,13 @@ class CountryFragment : Fragment(), CountryAdapter.CountryListener {
         super.onDestroyView()
         _binding = null
         countryAdapter = null
+    }
+
+    companion object {
+        private const val HTTP_NOT_INTERNET = -1
+        private const val HTTP_SERVER_ERROR = 500
+        private const val COUNTRY_NAME_KEY = "country_name"
+        private const val COUNTRY_ID_KEY = "country_id"
+
     }
 }

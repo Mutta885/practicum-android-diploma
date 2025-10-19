@@ -21,7 +21,7 @@ class RetrofitNetworkClient(
     override suspend fun doRequest(dto: Any): Flow<Response> {
         return flow {
             if (!isConnected()) {
-                emit(Response().apply { resultCode = HTTP_ERROR_NOT_INTERNET - 1 })
+                emit(Response().apply { resultCode = HTTP_ERROR_NOT_INTERNET })
             } else {
                 try {
                     when (dto) {
@@ -49,7 +49,7 @@ class RetrofitNetworkClient(
         val list = api.getIndustries()
         if (list.code() == HTTP_OK) {
             val result = list.body()?.let { IndustryResponse(it) } ?: IndustryResponse(listOf())
-            return result.apply { resultCode = HTTP_OK }
+            return result.apply { resultCode = if (list.body()?.isNotEmpty() == true) HTTP_OK else HTTP_OK_EMPTY }
         } else {
             return Response().apply { resultCode = list.code() }
         }
@@ -59,7 +59,7 @@ class RetrofitNetworkClient(
         val list = api.getAreas()
         if (list.code() == HTTP_OK) {
             val result = list.body()?.let { FilterAreasResponse(it) } ?: FilterAreasResponse(listOf())
-            return result.apply { resultCode = HTTP_OK }
+            return result.apply { resultCode = if (list.body()?.isNotEmpty() == true) HTTP_OK else HTTP_OK_EMPTY }
         } else {
             return Response().apply { resultCode = list.code() }
         }
@@ -82,6 +82,7 @@ class RetrofitNetworkClient(
     companion object {
         private const val HTTP_ERROR_NOT_INTERNET = -1
         private const val HTTP_OK = 200
+        private const val HTTP_OK_EMPTY = -2
         private const val HTTP_ERROR_SERVER = 500
         private const val HTTP_ERROR_ALL = 400
         private const val TAG_ERROR = "error"

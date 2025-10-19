@@ -31,7 +31,7 @@ class RegionViewModel(private val getRegionUseCase: GetRegionUseCase) : ViewMode
                 }
 
                 is Resource.Error -> {
-                    _filterAreaState.postValue(FilterAreaState.Error(result.message ?: "Ошибка загрузки стран"))
+                    _filterAreaState.postValue(FilterAreaState.Error(result.message ?: "Ошибка загрузки стран", result.code))
                 }
 
                 else -> {}

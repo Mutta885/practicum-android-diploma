@@ -7,5 +7,5 @@ sealed class FilterAreaState {
     data class RegionsStateByCountry(val regions: List<FilterArea>) : FilterAreaState()
     data class GetCountryNameState(val countryName: String, val countryId: Int) : FilterAreaState()
     object Loading : FilterAreaState()
-    data class Error(val message: String) : FilterAreaState()
+    data class Error(val message: String, val code: Int? = null) : FilterAreaState()
 }

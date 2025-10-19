@@ -36,4 +36,6 @@
     <!-- Для состояния ошибки -->
     <string name="no_internet_title">Нет интернета</string>
     <string name="no_internet_content_description">Нет интернета</string>
+    <string name="not_internet">Нет интернета</string>
+    <string name="waiting_time_exceeded">Превышено время ожидания</string>
 </resources>
