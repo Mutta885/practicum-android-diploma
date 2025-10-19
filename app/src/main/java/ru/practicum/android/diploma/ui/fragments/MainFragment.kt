@@ -227,7 +227,7 @@ class MainFragment : Fragment() {
 
     private fun applySavedFiltersOnAppStart() {
         val currentQuery = searchViewModel.getCurrentQuery()
-        val currentFilters = filtrationViewModel.getCurrentFilters()
+        val currentFilters = filtrationViewModel.getCurrentAppliedFilters()
         val hasActiveFilters = hasActiveFilters(currentFilters)
 
         if (hasActiveFilters && currentQuery.isNotEmpty()) {

@@ -41,6 +41,8 @@ class FiltrationFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupBackButtonHandler(view)
+        // Сохраняем начальное состояние при создании фрагмента
+        viewModel.saveInitialState()
     }
 
     private fun setupBackButtonHandler(view: View) {
@@ -53,7 +55,9 @@ class FiltrationFragment : Fragment() {
 
     private fun handleBackButton(keyCode: Int, event: KeyEvent): Boolean {
         if (keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_UP) {
-            Log.d(TAG, "System back button pressed - navigating back WITHOUT saving filters")
+            Log.d(TAG, "System back button pressed - restoring initial filters WITHOUT saving")
+            // Восстанавливаем начальное состояние и выходим БЕЗ сохранения
+            viewModel.restoreInitialState()
             findNavController().popBackStack()
             return true
         }
@@ -72,7 +76,9 @@ class FiltrationFragment : Fragment() {
 
     private fun setupReturnButton() {
         binding.returnButton.setOnClickListener {
-            Log.d(TAG, "Return button clicked - navigating back WITHOUT saving filters")
+            Log.d(TAG, "Return button clicked - restoring initial filters WITHOUT saving")
+            // Восстанавливаем начальное состояние и выходим БЕЗ сохранения
+            viewModel.restoreInitialState()
             findNavController().popBackStack()
         }
     }
@@ -212,19 +218,25 @@ class FiltrationFragment : Fragment() {
     }
 
     private fun applyFilters() {
-        val filters = viewModel.getCurrentFilters()
+        // Получаем текущие фильтры из UI и применяем их
+        val filters = viewModel.getCurrentFiltersForApply()
+        // Сохраняем в хранилище
         viewModel.saveFiltersToStorage()
         viewModel.setFiltersJustApplied(true)
+        // Применяем к поиску
         searchViewModel.applyFiltersWithSearch(filters)
         showToast("Фильтры применены")
         navigateBack()
     }
 
     private fun resetFilters() {
+        // Сбрасываем фильтры в UI
         viewModel.resetFilters()
         binding.salaryInput.text?.clear()
+        // Сохраняем сброшенное состояние
         viewModel.saveFiltersToStorage()
         viewModel.setFiltersJustApplied(true)
+        // Применяем пустые фильтры к поиску
         searchViewModel.applyFiltersWithSearch(FiltrationViewModel.Filters())
         showToast("Фильтры сброшены")
         navigateBack()
