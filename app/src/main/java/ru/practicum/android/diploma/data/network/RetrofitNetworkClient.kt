@@ -21,7 +21,7 @@ class RetrofitNetworkClient(
     override suspend fun doRequest(dto: Any): Flow<Response> {
         return flow {
             if (!isConnected()) {
-                emit(Response().apply { resultCode = HTTP_ERROR_NOT_INTERNET - 1 })
+                emit(Response().apply { resultCode = HTTP_ERROR_NOT_INTERNET })
             } else {
                 try {
                     when (dto) {
