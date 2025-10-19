@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?attr/attr_black_white_color"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:fitsSystemWindows="true">
 
     <!-- Заголовок -->
     <RelativeLayout
@@ -79,7 +80,6 @@
                 android:textAppearance="@style/textAppearanceRegular16sp400w"
                 android:layout_marginStart="16dp"
                 android:layout_marginBottom="12.5dp"
-                tools:text="kassssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss"
                 android:text="@string/area_job" />
 
             <ImageView
