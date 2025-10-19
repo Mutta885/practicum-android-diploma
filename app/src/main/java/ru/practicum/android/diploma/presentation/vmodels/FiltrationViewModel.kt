@@ -1,7 +1,6 @@
 package ru.practicum.android.diploma.presentation.vmodels
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.delay
@@ -63,23 +62,12 @@ class FiltrationViewModel(
                 regionId = savedFilter.regionId
             )
         )
-
         filterStateHandler.updateCurrentAppliedFilters(filterStateHandler.getCurrentFiltersFromUI())
-
-        println(
-            "FiltrationViewModel: Filters loaded from storage: " +
-                "salary=${filterStateHandler.salary.value}, " +
-                "hideWithoutSalary=${filterStateHandler.hideWithoutSalary.value}, " +
-                "industries=${filterStateHandler.selectedIndustries.value?.size}, " +
-                "country=${filterStateHandler.selectedCountry.value}, countryId=${filterStateHandler.selectedCountryId.value}, " +
-                "region=${filterStateHandler.selectedRegion.value}, regionId=${filterStateHandler.selectedRegionId.value}"
-        )
     }
 
     private fun setDefaultFilters() {
         filterStateHandler.resetFilters()
         filterStateHandler.updateCurrentAppliedFilters(Filters())
-        println("FiltrationViewModel: No saved filters found")
     }
 
     // Public методы для UI взаимодействий
@@ -116,9 +104,7 @@ class FiltrationViewModel(
         viewModelScope.launch {
             val filter = createFilterParameters()
             storageManager.setFilterSetting(filter)
-
             filterStateHandler.updateCurrentAppliedFilters(filterStateHandler.getCurrentFiltersFromUI())
-            println("FiltrationViewModel: Filters saved to storage: ${filterStateHandler.currentAppliedFilters}")
         }
     }
 
@@ -166,7 +152,7 @@ class FiltrationViewModel(
         }
     }
 
-    private suspend fun handleFiltersApplication(searchViewModel: SearchViewModel) {
+    private fun handleFiltersApplication(searchViewModel: SearchViewModel) {
         if (filterStateHandler.shouldSkipAutoApplication()) {
             return
         }
@@ -182,13 +168,7 @@ class FiltrationViewModel(
             currentFilters.region != null
 
         if (hasActiveFilters) {
-            println(
-                "FiltrationViewModel: Applying saved filters on app start: " +
-                    "$currentFilters"
-            )
             searchViewModel.setFiltersWithoutSearch(currentFilters)
-        } else {
-            println("FiltrationViewModel: No active filters to apply on app start")
         }
     }
 

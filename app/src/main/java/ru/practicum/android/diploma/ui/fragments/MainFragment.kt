@@ -87,25 +87,26 @@ class MainFragment : Fragment() {
             if (keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_UP) {
                 findNavController().popBackStack()
                 true
-            } else false
+            } else {
+                false
+            }
         }
     }
 
     private fun observeViewModel() {
         searchViewModel.searchState.observe(viewLifecycleOwner) { state ->
             when (state) {
-                is SearchState.EmptyQuery ->
-                    MainUiHelper.showEmptyQueryState(binding, adapter)
-                is SearchState.Loading ->
-                    MainUiHelper.showLoadingState(binding)
-                is SearchState.Success ->
-                    MainUiHelper.showSuccessState(binding, state, adapter, searchViewModel.hasMorePages())
-                is SearchState.Error ->
-                    state.message?.let { MainUiHelper.showErrorState(binding, it) }
-                is SearchState.LoadingNextPage ->
-                    adapter.setLoading(true)
-                is SearchState.NextPageError ->
-                    state.message?.let { requireContext().showToast(it) }
+                is SearchState.EmptyQuery -> MainUiHelper.showEmptyQueryState(binding, adapter)
+                is SearchState.Loading -> MainUiHelper.showLoadingState(binding)
+                is SearchState.Success -> MainUiHelper.showSuccessState(
+                    binding,
+                    state,
+                    adapter,
+                    searchViewModel.hasMorePages()
+                )
+                is SearchState.Error -> state.message?.let { MainUiHelper.showErrorState(binding, it) }
+                is SearchState.LoadingNextPage -> adapter.setLoading(true)
+                is SearchState.NextPageError -> state.message?.let { requireContext().showToast(it) }
                 is SearchState.FiltersApplied -> Unit
             }
         }
@@ -161,7 +162,6 @@ class MainFragment : Fragment() {
             isProgrammaticTextChange = false
         }
     }
-
 
     private fun handleTextChange(text: String) {
         if (isProgrammaticTextChange || isReturningFromFilters) {
