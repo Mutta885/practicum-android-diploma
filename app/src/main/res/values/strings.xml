@@ -27,6 +27,7 @@
     <string name="region_choose_text">Выбор региона</string>
     <string name="choose">Выбрать</string>
     <string name="this_select">Выбрано</string>
+    <string name="this_not_vacancy">Такой вакансии нет</string>
 
     <!-- Для состояния "нет результатов" -->
     <string name="no_results_title">Ничего не найдено</string>

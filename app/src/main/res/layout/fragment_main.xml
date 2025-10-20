@@ -174,26 +174,9 @@
             android:layout_height="match_parent"
             android:gravity="center"
             android:orientation="vertical"
-            android:visibility="visible"
+            android:visibility="gone"
             android:paddingTop="100dp">
-
             <!-- Текст "Ничего не найдено" НАД картинкой - на синем фоне -->
-            <TextView
-                android:id="@+id/no_results_title"
-                style="@style/text_black_white_color"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/no_results_title"
-                android:textColor="@color/white"
-                android:textSize="@dimen/text_size_medium"
-                android:gravity="center"
-                android:background="@drawable/bg_results_count"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp"
-                android:paddingTop="12dp"
-                android:paddingBottom="12dp"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginBottom="32dp" />
 
             <!-- Картинка 328x223 -->
             <ImageView

@@ -106,14 +106,14 @@ object MainUiHelper {
             loadingProgressBar.isVisible = false
             errorStateContainer.isVisible = false
             emptyStateContainer.isVisible = false
-
+            resultsCountText.isVisible = true
             if (state.vacancies.isEmpty()) {
                 vacanciesRecyclerView.isVisible = false
                 noResultsContainer.isVisible = true
+                resultsCountText.text = "Такой вакансии нет"
             } else {
                 vacanciesRecyclerView.isVisible = true
                 noResultsContainer.isVisible = false
-                resultsCountText.isVisible = true
                 resultsCountText.text = "Найдено ${state.found} вакансий"
             }
         }
