@@ -20,6 +20,7 @@ import ru.practicum.android.diploma.presentation.vmodels.FiltrationViewModel
 import ru.practicum.android.diploma.presentation.vmodels.SearchState
 import ru.practicum.android.diploma.presentation.vmodels.SearchViewModel
 import ru.practicum.android.diploma.ui.fragments.helpers.MainUiHelper
+import ru.practicum.android.diploma.util.debounce
 import ru.practicum.android.diploma.util.showToast
 
 class MainFragment : Fragment() {
@@ -29,17 +30,13 @@ class MainFragment : Fragment() {
 
     private val searchViewModel: SearchViewModel by sharedViewModel()
     private val filtrationViewModel: FiltrationViewModel by activityViewModel()
-
+    private var searchDebounce: ((String) -> Unit)? = null
     private val adapter: VacanciesAdapter by lazy {
         VacanciesAdapter(onItemClick = { vacancy -> onVacancyClick(vacancy) })
     }
 
     private var isProgrammaticTextChange = false
     private var isReturningFromFilters = false
-
-    private companion object {
-        const val DELAY_FOR_FILTERS = 500L
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -52,6 +49,9 @@ class MainFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        searchDebounce = debounce<String>(TIME_DELAY, viewLifecycleOwner.lifecycleScope, true) { text ->
+            searchViewModel.search(text)
+        }
         MainUiHelper.setupRecycler(binding, adapter, searchViewModel)
         MainUiHelper.setupSearchField(
             binding,
@@ -169,7 +169,7 @@ class MainFragment : Fragment() {
         }
         val trimmed = text.trim()
         updateSearchFieldIcons(trimmed)
-        searchViewModel.search(trimmed)
+        searchDebounce?.invoke(trimmed)
     }
 
     private fun clearSearchField() {
@@ -193,5 +193,10 @@ class MainFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    companion object {
+        private const val TIME_DELAY = 2000L
+        const val DELAY_FOR_FILTERS = 500L
     }
 }

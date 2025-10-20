@@ -1,5 +1,6 @@
 package ru.practicum.android.diploma.presentation.vmodels
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -97,6 +98,7 @@ class SearchViewModel(
     }
 
     fun search(query: String) {
+        Log.v("my", "search")
         val trimmedQuery = query.trim()
         println("DEBUG: search() called with: '$trimmedQuery'")
         println("DEBUG: Current filters: $currentFilters")
