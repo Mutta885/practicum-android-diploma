@@ -56,7 +56,24 @@ class VacancyDetailFragment : Fragment() {
     private fun observeViewModel() {
         viewModel.vacancyDetailState.observe(viewLifecycleOwner) { state ->
             when (state) {
-                is VacancyDetailState.Success -> getVacancyDetail(state.vacancyDetail)
+                is VacancyDetailState.Success -> {
+                    renderSuccess(true)
+                    renderError(false)
+                    renderLoading(false)
+                    getVacancyDetail(state.vacancyDetail)
+                }
+
+                is VacancyDetailState.Loading -> {
+                    renderSuccess(false)
+                    renderError(false)
+                    renderLoading(true)
+                }
+
+                is VacancyDetailState.Error -> {
+                    renderError(true, state.message)
+                    renderSuccess(false)
+                    renderLoading(false)
+                }
             }
         }
         viewModel.vacancyFavoriteState.observe(viewLifecycleOwner) { state ->
@@ -98,6 +115,33 @@ class VacancyDetailFragment : Fragment() {
                 renderPhone(it.phones)
             }
         }
+    }
+
+    private fun renderLoading(value: Boolean) {
+        binding.progressCircular.isVisible = value
+    }
+
+    private fun renderSuccess(value: Boolean) {
+        binding.scrollView.isVisible = value
+    }
+
+    private fun renderError(value: Boolean, message: String? = null) {
+        binding.groupImageText.isVisible = value
+        binding.errorText.text = message
+        when (message) {
+            getString(R.string.error_server) -> {
+                binding.imageError.setImageResource(R.drawable.error_server_vacancy)
+            }
+
+            getString(R.string.this_not_vacancy_or_delete) -> {
+                binding.imageError.setImageResource(R.drawable.this_vacancy_not_search_or_delete)
+            }
+
+            getString(R.string.not_internet) -> {
+                binding.imageError.setImageResource(R.drawable.image_yorik)
+            }
+        }
+
     }
 
     private fun renderEmail(value: String?) {

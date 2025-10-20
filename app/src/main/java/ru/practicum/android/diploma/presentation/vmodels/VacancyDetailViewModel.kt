@@ -111,14 +111,18 @@ class VacancyDetailViewModel(
     }
 
     private fun performSearch(query: String) {
+        _vacancyDetailState.postValue(VacancyDetailState.Loading)
         viewModelScope.launch {
             when (val result = searchVacancyDetailUseCase.execute(query)) {
                 is Resource.Success -> {
                     handleSearchSuccess(result)
                 }
 
-                is Resource.Error -> null
-                is Resource.Loading -> null
+                is Resource.Error -> {
+                    _vacancyDetailState.postValue(VacancyDetailState.Error(result.message))
+                }
+
+                else -> {}
             }
         }
     }

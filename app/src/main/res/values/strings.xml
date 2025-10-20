@@ -17,7 +17,7 @@
     <string name="error_network">Нет интернета</string>
     <string name="error_server">Ошибка сервера</string>
     <string name="error_unknown">Произошла неизвестная ошибка</string>
-    <string name="vacancy">Вакансии</string>
+    <string name="vacancy">Вакансия</string>
     <string name="experience">Требуемый опыт</string>
     <string name="description">Описание вакансии</string>
     <string name="work_place_text">Выбор места работы</string>

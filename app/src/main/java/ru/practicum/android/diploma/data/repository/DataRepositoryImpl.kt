@@ -138,13 +138,13 @@ class DataRepositoryImpl(
 
                 HTTP_UNAUTHORIZED -> Resource.Error("Ошибка авторизации")
                 HTTP_FORBIDDEN -> Resource.Error("Доступ запрещен")
-                HTTP_NOT_FOUND -> Resource.Error("Вакансия не найдена")
+                HTTP_NOT_FOUND -> Resource.Error("Вакансия не найдена или удалена")
                 HTTP_SERVER_ERROR -> Resource.Error("Ошибка сервера")
                 else -> Resource.Error("Ошибка: ${response.code()} - ${response.message()}")
             }
         } catch (e: UnknownHostException) {
             Log.w(TAG, "Network connection error", e)
-            Resource.Error("Проверьте подключение к интернету")
+            Resource.Error("Нет интернета")
         } catch (e: SocketTimeoutException) {
             Log.w(TAG, "Request timeout", e)
             Resource.Error("Превышено время ожидания ответа")
