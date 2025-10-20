@@ -158,6 +158,7 @@
             <TextView
                 android:id="@+id/error_state_text"
                 style="@style/text_black_white_color"
+                android:textAppearance="@style/textAppearanceMedium22sp500w"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/no_internet_title"
@@ -173,7 +174,7 @@
             android:layout_height="match_parent"
             android:gravity="center"
             android:orientation="vertical"
-            android:visibility="gone"
+            android:visibility="visible"
             android:paddingTop="100dp">
 
             <!-- Текст "Ничего не найдено" НАД картинкой - на синем фоне -->
