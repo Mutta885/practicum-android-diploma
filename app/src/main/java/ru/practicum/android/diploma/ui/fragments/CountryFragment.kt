@@ -72,10 +72,11 @@ class CountryFragment : Fragment(), CountryAdapter.CountryListener {
                 }
 
                 is FilterAreaState.Error -> {
-                    if (state.message == "Нет интернета"){
+                    if (state.message == "Нет интернета") {
                         showError(state.message)
+                    } else {
+                        failedLoading(state.message)
                     }
-                    else failedLoading(state.message)
                 }
 
                 is FilterAreaState.GetCountryNameState,
@@ -101,8 +102,13 @@ class CountryFragment : Fragment(), CountryAdapter.CountryListener {
 
     private fun showError(message: String) {
         binding.countriesRecyclerView.visibility = View.GONE
-        binding.noResultsContainer.setCompoundDrawablesWithIntrinsicBounds(null,
-            ContextCompat.getDrawable(requireContext(), R.drawable.image_yorik),null,null)
+        binding.noResultsContainer.setCompoundDrawablesWithIntrinsicBounds(
+            null,
+            ContextCompat.getDrawable(requireContext(),
+            R.drawable.image_yorik),
+            null,
+            null
+        )
         binding.noResultsContainer.isVisible = true
         binding.loadingContainer.isVisible = false
         binding.noResultsContainer.text = message
@@ -110,8 +116,13 @@ class CountryFragment : Fragment(), CountryAdapter.CountryListener {
 
     private fun failedLoading(message: String) {
         binding.countriesRecyclerView.visibility = View.GONE
-        binding.noResultsContainer.setCompoundDrawablesWithIntrinsicBounds(null,
-            ContextCompat.getDrawable(requireContext(), R.drawable.cover_samolet),null,null)
+        binding.noResultsContainer.setCompoundDrawablesWithIntrinsicBounds(
+            null,
+            ContextCompat.getDrawable(requireContext(),
+            R.drawable.cover_samolet),
+            null,
+            null
+        )
         binding.noResultsContainer.isVisible = true
         binding.loadingContainer.isVisible = false
         binding.noResultsContainer.setText(R.string.no_results)
