@@ -152,7 +152,6 @@ class VacancyDetailFragment : Fragment() {
 
     }
 
-
     private fun renderArea(value: Address) {
         val address = value.raw
         address?.let {
