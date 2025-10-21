@@ -31,6 +31,7 @@
             android:layout_height="@dimen/button_size"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
+            android:contentDescription="@string/contentDescription"
             android:layout_marginEnd="@dimen/merge_size"
             android:background="@null"
             android:src="@drawable/trailing_icon" />
@@ -86,6 +87,7 @@
                     android:clickable="true"
                     android:focusable="true"
                     android:src="@drawable/search_icon"
+                    android:contentDescription="@string/contentDescription"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent" />
@@ -97,6 +99,7 @@
                     android:layout_marginEnd="8dp"
                     android:clickable="true"
                     android:focusable="true"
+                    android:contentDescription="@string/contentDescription"
                     android:src="@drawable/close_edit_text_search_24"
                     android:visibility="gone"
                     app:layout_constraintTop_toTopOf="parent"
@@ -161,9 +164,7 @@
                 android:textAppearance="@style/textAppearanceMedium22sp500w"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/no_internet_title"
-                android:textSize="17sp"
-                android:textStyle="bold" />
+                android:text="@string/no_internet_title" />
 
         </LinearLayout>
 
@@ -214,6 +215,7 @@
                 android:id="@+id/empty_state_image"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:contentDescription="@string/contentDescription"
                 android:src="@drawable/il_1_1" />
         </LinearLayout>
 

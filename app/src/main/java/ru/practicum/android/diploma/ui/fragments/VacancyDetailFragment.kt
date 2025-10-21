@@ -35,11 +35,12 @@ class VacancyDetailFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         var vacancyId = arguments?.getString(ARGS_VACANCY_ID)
-        vacancyId ?: let {
+        vacancyId?.let {
+            viewModel.search(vacancyId)
+        } ?: run {
             vacancyId = arguments?.getString(ARGS_VACANCY_ID_BY_DB)
             viewModel.loadDatabase(vacancyId)
         }
-        viewModel.search(vacancyId)
         viewModel.checkFavorites(vacancyId)
         observeViewModel()
         binding.returnButton.setOnClickListener {
