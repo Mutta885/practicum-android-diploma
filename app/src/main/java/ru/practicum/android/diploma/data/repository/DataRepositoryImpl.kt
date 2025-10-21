@@ -95,7 +95,7 @@ class DataRepositoryImpl(
             }
         } catch (e: UnknownHostException) {
             Log.w(TAG, "Network connection error", e)
-            Resource.Error("Проверьте подключение к интернету")
+            Resource.Error("Нет интернета")
         } catch (e: SocketTimeoutException) {
             Log.w(TAG, "Request timeout", e)
             Resource.Error("Превышено время ожидания ответа")
@@ -164,7 +164,7 @@ class DataRepositoryImpl(
         return try {
             val response = api.searchAreas()
             println("DEBUG: Areas API response received: ${response.size} items")
-
+            //throw IOException()
             if (response.isNotEmpty()) {
                 val areas = response.map { it.toDomain() }
                 Resource.Success(areas)
@@ -174,7 +174,7 @@ class DataRepositoryImpl(
         } catch (e: UnknownHostException) {
             Log.w(TAG, "Network connection error loading areas", e)
             println("DEBUG: Network error loading areas: ${e.message}")
-            Resource.Error("Проверьте подключение к интернету")
+            Resource.Error("Нет интернета")
         } catch (e: SocketTimeoutException) {
             Log.w(TAG, "Timeout loading areas", e)
             println("DEBUG: Timeout loading areas: ${e.message}")

@@ -130,7 +130,13 @@ class RegionFragment : Fragment(), RegionAdapter.RegionListener {
             is FilterAreaState.RegionsStateByCountry -> handleRegionsState(state)
             is FilterAreaState.CountriesState -> handleCountriesState(state)
             is FilterAreaState.Loading -> showLoadingState()
-            is FilterAreaState.Error -> showErrorState(state.message)
+            is FilterAreaState.Error -> {
+                if (state.message == "Нет интернета") {
+                    showErrorState(state.message)
+                } else {
+                    failedLoading(state.message)
+                }
+            }
             is FilterAreaState.GetCountryNameState -> Unit // Не используется в этом фрагменте
         }
     }
@@ -186,6 +192,18 @@ class RegionFragment : Fragment(), RegionAdapter.RegionListener {
         with(binding) {
             errorText.text = message
             loadingContainer.visibility = View.GONE
+            ivError.setImageResource(R.drawable.image_yorik)
+            errorContainer.visibility = View.VISIBLE
+            noResultsContainer.visibility = View.GONE
+            successContainer.visibility = View.GONE
+        }
+    }
+
+    private fun failedLoading(message: String) {
+        with(binding) {
+            errorText.text = message
+            loadingContainer.visibility = View.GONE
+            ivError.setImageResource(R.drawable.cover_samolet)
             errorContainer.visibility = View.VISIBLE
             noResultsContainer.visibility = View.GONE
             successContainer.visibility = View.GONE
