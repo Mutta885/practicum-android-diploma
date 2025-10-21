@@ -6,15 +6,21 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import org.koin.androidx.viewmodel.ext.android.viewModel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import org.koin.androidx.viewmodel.ext.android.activityViewModel
+import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.databinding.FragmentMainBinding
 import ru.practicum.android.diploma.domain.models.Vacancy
+import ru.practicum.android.diploma.presentation.vmodels.filter.FiltrationViewModel
 import ru.practicum.android.diploma.ui.search.SearchState
 import ru.practicum.android.diploma.ui.search.SearchViewModel
 import ru.practicum.android.diploma.ui.search.VacanciesAdapter
@@ -25,13 +31,17 @@ class MainFragment : Fragment() {
     private var _binding: FragmentMainBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: SearchViewModel by viewModel()
+    private val searchViewModel: SearchViewModel by sharedViewModel()
+    private val filtrationViewModel: FiltrationViewModel by activityViewModel()
+
     private val adapter: VacanciesAdapter by lazy {
         VacanciesAdapter(onItemClick = { vacancy -> onVacancyClick(vacancy) })
     }
 
     private companion object {
         const val LOAD_MORE_THRESHOLD = 3
+        const val DELAY_FOR_FILTERS = 500L
+        private const val DEBUG_TAG = "MainFragment"
     }
 
     override fun onCreateView(
@@ -45,10 +55,13 @@ class MainFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         setupRecyclerView()
         setupSearchField()
         setupClickListeners()
         observeViewModel()
+        observeFilterState()
+        applySavedFiltersOnStart()
     }
 
     private fun setupRecyclerView() {
@@ -59,14 +72,13 @@ class MainFragment : Fragment() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
 
-                if (dy > 0 && !viewModel.isLoading() && viewModel.hasMorePages()) {
+                if (dy > 0 && !searchViewModel.isLoading() && searchViewModel.hasMorePages()) {
                     val layoutManager = recyclerView.layoutManager as LinearLayoutManager
                     val totalItemCount = layoutManager.itemCount
                     val lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition()
 
                     if (lastVisibleItemPosition >= totalItemCount - LOAD_MORE_THRESHOLD) {
-                        println("DEBUG: Loading next page... current items: $totalItemCount")
-                        viewModel.loadNextPage()
+                        searchViewModel.loadNextPage()
                     }
                 }
             }
@@ -74,13 +86,51 @@ class MainFragment : Fragment() {
     }
 
     private fun setupSearchField() {
-        binding.searchEditText.addTextChangedListener(object : TextWatcher {
+        val editText = binding.searchEditText
+        val searchIcon = binding.searchIcon
+        val clearIcon = binding.clearIcon
+
+        editText.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
+
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
+
             override fun afterTextChanged(s: Editable?) {
-                viewModel.search(s.toString())
+                val text = s.toString().trim()
+
+                if (text.isNotEmpty()) {
+                    searchIcon.visibility = View.GONE
+                    clearIcon.visibility = View.VISIBLE
+                } else {
+                    searchIcon.visibility = View.VISIBLE
+                    clearIcon.visibility = View.GONE
+                }
+
+                searchViewModel.search(text)
             }
         })
+
+        searchIcon.setOnClickListener {
+            val query = editText.text.toString().trim()
+            searchViewModel.search(query)
+        }
+
+        clearIcon.setOnClickListener {
+            editText.text.clear()
+            searchViewModel.search("")
+            clearIcon.visibility = View.GONE
+            searchIcon.visibility = View.VISIBLE
+        }
+
+        editText.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                val query = editText.text.toString().trim()
+                searchViewModel.search(query)
+                true
+            } else {
+                false
+            }
+        }
     }
 
     private fun setupClickListeners() {
@@ -90,34 +140,87 @@ class MainFragment : Fragment() {
     }
 
     private fun observeViewModel() {
-        viewModel.searchState.observe(viewLifecycleOwner) { state ->
-            println("DEBUG: State changed to: ${state.javaClass.simpleName}")
-
+        searchViewModel.searchState.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is SearchState.EmptyQuery -> showEmptyQueryState()
                 is SearchState.Loading -> showLoadingState()
                 is SearchState.Success -> {
-                    println(
-                        "DEBUG: Success state - vacancies: ${state.vacancies.size}, " +
-                            "isFirstPage: ${state.isFirstPage}"
-                    )
                     showSuccessState(state)
                     adapter.submitVacancies(state.vacancies)
                     adapter.setLoading(false)
-                    adapter.setHasMore(viewModel.hasMorePages())
+                    adapter.setHasMore(searchViewModel.hasMorePages())
                 }
 
-                is SearchState.Error -> showErrorState(state.message)
+                is SearchState.Error -> state.message?.let { showErrorState(it) }
                 is SearchState.LoadingNextPage -> {
-                    println("DEBUG: Loading next page state")
                     adapter.setLoading(true)
                     adapter.setHasMore(true)
                 }
 
                 is SearchState.NextPageError -> {
                     adapter.setLoading(false)
-                    requireContext().showToast(state.message)
+                    state.message?.let { requireContext().showToast(it) }
                 }
+
+                is SearchState.FiltersApplied -> {
+                    val hasActiveFilters = state.filters.salary != null ||
+                        state.filters.hideWithoutSalary ||
+                        state.filters.industries.isNotEmpty()
+
+                    if (hasActiveFilters) {
+                        requireContext().showToast("Фильтры восстановлены")
+                    }
+                }
+
+                else -> {}
+            }
+        }
+    }
+
+    private fun observeFilterState() {
+        filtrationViewModel.isAnyFilterActive.observe(viewLifecycleOwner) { isActive ->
+            if (isActive) {
+                binding.trailingButton.setImageResource(R.drawable.trailing_icon_2)
+            } else {
+                binding.trailingButton.setImageResource(R.drawable.trailing_icon)
+            }
+        }
+    }
+
+    private fun applySavedFiltersOnStart() {
+        lifecycleScope.launch {
+            delay(DELAY_FOR_FILTERS)
+            handleSavedFilters()
+        }
+    }
+
+    private suspend fun handleSavedFilters() {
+        val filtersJustApplied = filtrationViewModel.filtersJustApplied.value == true
+
+        if (filtersJustApplied) {
+            filtrationViewModel.setFiltersJustApplied(false)
+            println("$DEBUG_TAG: Filters were just applied - skipping auto-application")
+        } else {
+            applySavedFilters()
+        }
+    }
+
+    private fun applySavedFilters() {
+        val currentQuery = searchViewModel.getCurrentQuery()
+        val currentFilters = filtrationViewModel.getCurrentFilters()
+
+        val hasActiveFilters = currentFilters.salary != null ||
+            currentFilters.hideWithoutSalary ||
+            currentFilters.industries.isNotEmpty() ||
+            currentFilters.country != null ||
+            currentFilters.region != null
+
+        if (hasActiveFilters) {
+            println("$DEBUG_TAG: Applying saved filters on start")
+            searchViewModel.setFilters(currentFilters)
+
+            if (currentQuery.isNotEmpty()) {
+                binding.searchEditText.setText(currentQuery)
             }
         }
     }
@@ -128,8 +231,8 @@ class MainFragment : Fragment() {
             vacanciesRecyclerView.isVisible = false
             errorStateContainer.isVisible = false
             noResultsContainer.isVisible = false
-            emptyStateText.isVisible = true
             resultsCountText.isVisible = false
+            emptyStateContainer.isVisible = true
         }
         adapter.submitVacancies(emptyList())
         adapter.setLoading(false)
@@ -142,7 +245,7 @@ class MainFragment : Fragment() {
             vacanciesRecyclerView.isVisible = false
             errorStateContainer.isVisible = false
             noResultsContainer.isVisible = false
-            emptyStateText.isVisible = false
+            emptyStateContainer.isVisible = false
             resultsCountText.isVisible = false
         }
         adapter.setLoading(false)
@@ -153,7 +256,7 @@ class MainFragment : Fragment() {
         binding.apply {
             loadingProgressBar.isVisible = false
             errorStateContainer.isVisible = false
-            emptyStateText.isVisible = false
+            emptyStateContainer.isVisible = false
 
             if (state.vacancies.isEmpty()) {
                 vacanciesRecyclerView.isVisible = false
@@ -168,7 +271,7 @@ class MainFragment : Fragment() {
 
         adapter.submitVacancies(state.vacancies)
         adapter.setLoading(false)
-        adapter.setHasMore(viewModel.hasMorePages())
+        adapter.setHasMore(searchViewModel.hasMorePages())
 
         if (state.vacancies.isNotEmpty() && state.isFirstPage) {
             requireContext().showToast("Найдено вакансий: ${state.found}")
@@ -179,10 +282,10 @@ class MainFragment : Fragment() {
         binding.apply {
             loadingProgressBar.isVisible = false
             vacanciesRecyclerView.isVisible = false
-            emptyStateText.isVisible = false
+            emptyStateContainer.isVisible = false
             noResultsContainer.isVisible = false
             errorStateContainer.isVisible = true
-            errorStateText.text = message
+            errorStateText.text = "Нет интернета"
             resultsCountText.isVisible = false
         }
         adapter.setLoading(false)

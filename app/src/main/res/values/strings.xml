@@ -8,18 +8,24 @@
     <string name="sharing_there_are_no_apps">Приложения не найдены</string>
     <string name="job_search">Поиск вакансий</string>
     <string name="filtration_settings">Настройки фильтрации</string>
-    <string name="search_hint">Должность, навыки или компания</string>
+    <string name="search_hint">Введите запрос</string>
     <string name="empty_query_text">Введите запрос для поиска вакансий</string>
     <string name="no_results_text">По вашему запросу ничего не найдено</string>
     <string name="retry">Повторить</string>
     <string name="sharedMailto">mailto:</string>
     <string name="contacts">Контакты</string>
-    <string name="error_network">Проверьте подключение к интернету</string>
+    <string name="error_network">Нет интернета</string>
     <string name="error_server">Ошибка сервера</string>
     <string name="error_unknown">Произошла неизвестная ошибка</string>
     <string name="vacancy">Вакансии</string>
     <string name="experience">Требуемый опыт</string>
     <string name="description">Описание вакансии</string>
+    <string name="work_place_text">Выбор места работы</string>
+    <string name="country_text">Страна</string>
+    <string name="region_text">Регион</string>
+    <string name="country_choose_text">Выбор страны</string>
+    <string name="region_choose_text">Выбор региона</string>
+    <string name="choose">Выбрать</string>
     <!-- Для состояния "нет результатов" -->
     <string name="no_results_title">Ничего не найдено</string>
     <string name="no_results_subtitle">Не удалось получить список вакансий</string>
