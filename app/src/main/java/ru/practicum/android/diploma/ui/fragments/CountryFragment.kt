@@ -107,7 +107,7 @@ class CountryFragment : Fragment(), CountryAdapter.CountryListener {
             ContextCompat.getDrawable(
                 requireContext(),
                 R.drawable.image_yorik
-                ),
+            ),
             null,
             null
         )
@@ -123,7 +123,7 @@ class CountryFragment : Fragment(), CountryAdapter.CountryListener {
             ContextCompat.getDrawable(
                 requireContext(),
                 R.drawable.cover_samolet
-                ),
+            ),
             null,
             null
         )
