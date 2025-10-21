@@ -6,14 +6,24 @@ import java.util.Locale
 object SalaryFormatter {
     fun getFormattedSalary(salary: Salary): String {
         return when {
-            salary.from != null && salary.to != null ->
-                "от ${formatNumber(salary.from)} до ${formatNumber(salary.to)} ${getCurrencySymbol(salary.currency.toString())}"
+            salary.from != null && salary.to != null -> {
+                val from = formatNumber(salary.from)
+                val to = formatNumber(salary.to)
+                val currency = getCurrencySymbol(salary.currency.toString())
+                "от $from до $to $currency"
+            }
 
-            salary.from != null ->
-                "от ${formatNumber(salary.from)} ${getCurrencySymbol(salary.currency.toString())}"
+            salary.from != null -> {
+                val from = formatNumber(salary.from)
+                val currency = getCurrencySymbol(salary.currency.toString())
+                "от $from $currency"
+            }
 
-            salary.to != null ->
-                "до ${formatNumber(salary.to)} ${getCurrencySymbol(salary.currency.toString())}"
+            salary.to != null -> {
+                val to = formatNumber(salary.to)
+                val currency = getCurrencySymbol(salary.currency.toString())
+                "до $to $currency"
+            }
 
             else -> "Зарплата не указана"
         }.trim()
@@ -24,13 +34,11 @@ object SalaryFormatter {
     }
 
     private fun getCurrencySymbol(currencyCode: String, locale: Locale = Locale.getDefault()): String {
-        var currencySymbol = ""
-        currencySymbol = when (currencyCode) {
+        return when (currencyCode) {
             "RUB" -> "₽"
             "SEK" -> "KR"
             "SGD" -> "S$"
             else -> Currency.getInstance(currencyCode).getSymbol(locale)
         }
-        return currencySymbol
     }
 }
