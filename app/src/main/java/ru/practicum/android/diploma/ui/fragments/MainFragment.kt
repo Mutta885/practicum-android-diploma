@@ -37,6 +37,7 @@ class MainFragment : Fragment() {
 
     private var isProgrammaticTextChange = false
     private var isReturningFromFilters = false
+    private var shouldBlockAutoSearch = false // НОВЫЙ ФЛАГ
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -50,7 +51,11 @@ class MainFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         searchDebounce = debounce<String>(TIME_DELAY, viewLifecycleOwner.lifecycleScope, true) { text ->
-            searchViewModel.search(text)
+            if (!shouldBlockAutoSearch) { // ПРОВЕРКА ФЛАГА
+                searchViewModel.search(text)
+            } else {
+                shouldBlockAutoSearch = false // Сбрасываем флаг после блокировки
+            }
         }
         MainUiHelper.setupRecycler(binding, adapter, searchViewModel)
         MainUiHelper.setupSearchField(
@@ -73,9 +78,16 @@ class MainFragment : Fragment() {
         isReturningFromFilters = false
     }
 
+    override fun onPause() {
+        super.onPause()
+        // Устанавливаем флаг блокировки при уходе с фрагмента
+        shouldBlockAutoSearch = true
+    }
+
     private fun setupClickListeners() {
         binding.trailingButton.setOnClickListener {
             isReturningFromFilters = true
+            shouldBlockAutoSearch = true // Блокируем авто-поиск при переходе к фильтрам
             findNavController().navigate(R.id.action_mainFragment_to_filtrationFragment)
         }
     }
@@ -107,7 +119,10 @@ class MainFragment : Fragment() {
                 is SearchState.Error -> state.message?.let { MainUiHelper.showErrorState(binding, it) }
                 is SearchState.LoadingNextPage -> adapter.setLoading(true)
                 is SearchState.NextPageError -> state.message?.let { requireContext().showToast(it) }
-                is SearchState.FiltersApplied -> Unit
+                is SearchState.FiltersApplied -> {
+                    // При применении фильтров сбрасываем флаг блокировки
+                    shouldBlockAutoSearch = false
+                }
             }
         }
     }
@@ -178,6 +193,7 @@ class MainFragment : Fragment() {
         isProgrammaticTextChange = false
         searchViewModel.search("")
         updateSearchFieldIcons("")
+        shouldBlockAutoSearch = false // Сбрасываем флаг при очистке
     }
 
     private fun updateSearchFieldIcons(text: String) {
