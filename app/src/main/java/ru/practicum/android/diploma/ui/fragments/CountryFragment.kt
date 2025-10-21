@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -71,7 +72,10 @@ class CountryFragment : Fragment(), CountryAdapter.CountryListener {
                 }
 
                 is FilterAreaState.Error -> {
-                    showError(state.message)
+                    if (state.message == "Нет интернета"){
+                        showError(state.message)
+                    }
+                    else failedLoading(state.message)
                 }
 
                 is FilterAreaState.GetCountryNameState,
@@ -97,9 +101,20 @@ class CountryFragment : Fragment(), CountryAdapter.CountryListener {
 
     private fun showError(message: String) {
         binding.countriesRecyclerView.visibility = View.GONE
+        binding.noResultsContainer.setCompoundDrawablesWithIntrinsicBounds(null,
+            ContextCompat.getDrawable(requireContext(), R.drawable.image_yorik),null,null)
         binding.noResultsContainer.isVisible = true
         binding.loadingContainer.isVisible = false
         binding.noResultsContainer.text = message
+    }
+
+    private fun failedLoading(message: String) {
+        binding.countriesRecyclerView.visibility = View.GONE
+        binding.noResultsContainer.setCompoundDrawablesWithIntrinsicBounds(null,
+            ContextCompat.getDrawable(requireContext(), R.drawable.cover_samolet),null,null)
+        binding.noResultsContainer.isVisible = true
+        binding.loadingContainer.isVisible = false
+        binding.noResultsContainer.setText(R.string.no_results)
     }
 
     override fun onCountryClick(country: FilterArea) {

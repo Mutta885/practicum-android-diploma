@@ -31,7 +31,7 @@
 
     <!-- Для состояния "нет результатов" -->
     <string name="no_results_title">Ничего не найдено</string>
-    <string name="no_results">Не удалось получить список</string>
+    <string name="no_results">Не удалось получить \nсписок</string>
     <string name="no_results_subtitle">Не удалось получить список вакансий</string>
     <string name="no_results_content_description">Нет результатов поиска</string>
     <!-- Для состояния ошибки -->

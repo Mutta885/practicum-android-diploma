@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -130,7 +131,12 @@ class RegionFragment : Fragment(), RegionAdapter.RegionListener {
             is FilterAreaState.RegionsStateByCountry -> handleRegionsState(state)
             is FilterAreaState.CountriesState -> handleCountriesState(state)
             is FilterAreaState.Loading -> showLoadingState()
-            is FilterAreaState.Error -> showErrorState(state.message)
+            is FilterAreaState.Error -> {
+                if (state.message == "Нет интернета"){
+                    showErrorState(state.message)
+                }
+               // else failedLoading(state.message)
+            }
             is FilterAreaState.GetCountryNameState -> Unit // Не используется в этом фрагменте
         }
     }
