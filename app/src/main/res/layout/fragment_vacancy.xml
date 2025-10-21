@@ -152,7 +152,7 @@
                 <androidx.cardview.widget.CardView
                     android:id="@+id/cardView"
                     android:layout_width="match_parent"
-                    android:layout_height="80dp"
+                    android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
                     app:cardBackgroundColor="@color/light_grey"
                     app:cardCornerRadius="8dp">
@@ -383,3 +383,4 @@
         </LinearLayout>
     </ScrollView>
 </LinearLayout>
+
