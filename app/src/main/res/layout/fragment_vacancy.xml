@@ -309,6 +309,15 @@
                     android:text="@string/contacts"
                     android:textAppearance="@style/textAppearanceMedium16sp500w" />
 
+                <TextView
+                    android:id="@+id/contactName"
+                    style="@style/text_black_white_color"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginVertical="5dp"
+                    android:textAppearance="@style/textAppearanceRegular16sp400w"
+                    android:visibility="gone"/>
+
                 <LinearLayout
                     android:id="@+id/emailGroup"
                     android:layout_width="wrap_content"

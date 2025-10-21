@@ -110,12 +110,18 @@ class VacancyDetailFragment : Fragment() {
         binding.employment.text = vacancyDetail.employment?.name
         binding.description.text = vacancyDetail.description
         vacancyDetail.contact?.let {
+            it.name?.let { renderContactName(it) }
             if (it.phones != null || it.email != "") {
                 binding.contactGroup.isVisible = true
                 renderEmail(it.email)
                 renderPhone(it.phones)
             }
         }
+    }
+
+    private fun renderContactName(value: String?) {
+        binding.contactName.isVisible = true
+        binding.contactName.text = value
     }
 
     private fun renderLoading(value: Boolean) {
