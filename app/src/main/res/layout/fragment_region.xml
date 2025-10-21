@@ -113,9 +113,10 @@
             android:id="@+id/error_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="?attr/attr_white_black_color"
+            android:textAppearance="@style/textAppearanceMedium22sp500w"
             android:text="Не удалось получить список регионов"
             android:textAlignment="center"
-            android:textColor="@color/black2"
             android:textSize="22sp" />
 
     </LinearLayout>
