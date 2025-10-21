@@ -104,8 +104,10 @@ class CountryFragment : Fragment(), CountryAdapter.CountryListener {
         binding.countriesRecyclerView.visibility = View.GONE
         binding.noResultsContainer.setCompoundDrawablesWithIntrinsicBounds(
             null,
-            ContextCompat.getDrawable(requireContext(),
-            R.drawable.image_yorik),
+            ContextCompat.getDrawable(
+                requireContext(),
+                R.drawable.image_yorik
+                ),
             null,
             null
         )
@@ -118,8 +120,10 @@ class CountryFragment : Fragment(), CountryAdapter.CountryListener {
         binding.countriesRecyclerView.visibility = View.GONE
         binding.noResultsContainer.setCompoundDrawablesWithIntrinsicBounds(
             null,
-            ContextCompat.getDrawable(requireContext(),
-            R.drawable.cover_samolet),
+            ContextCompat.getDrawable(
+                requireContext(),
+                R.drawable.cover_samolet
+                ),
             null,
             null
         )
