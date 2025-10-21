@@ -11,6 +11,7 @@ import com.bumptech.glide.Glide
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.databinding.FragmentVacancyBinding
+import ru.practicum.android.diploma.domain.models.Address
 import ru.practicum.android.diploma.domain.models.Phones
 import ru.practicum.android.diploma.domain.models.SalaryFormatter
 import ru.practicum.android.diploma.domain.models.VacancyDetail
@@ -109,19 +110,19 @@ class VacancyDetailFragment : Fragment() {
         binding.schedule.text = vacancyDetail.schedule?.name
         binding.employment.text = vacancyDetail.employment?.name
         binding.description.text = vacancyDetail.description
+        vacancyDetail.address?.let {
+            renderArea(it)
+        }
         vacancyDetail.contact?.let {
-            it.name?.let { renderContactName(it) }
+            it.name?.let { name ->
+                renderContactName(name)
+            }
             if (it.phones != null || it.email != "") {
                 binding.contactGroup.isVisible = true
                 renderEmail(it.email)
                 renderPhone(it.phones)
             }
         }
-    }
-
-    private fun renderContactName(value: String?) {
-        binding.contactName.isVisible = true
-        binding.contactName.text = value
     }
 
     private fun renderLoading(value: Boolean) {
@@ -149,6 +150,18 @@ class VacancyDetailFragment : Fragment() {
             }
         }
 
+    }
+
+    private fun renderArea(value: Address) {
+        val address = value.raw
+        address?.let {
+            binding.area.text = it
+        }
+    }
+
+    private fun renderContactName(value: String?) {
+        binding.contactName.isVisible = true
+        binding.contactName.text = value
     }
 
     private fun renderEmail(value: String?) {

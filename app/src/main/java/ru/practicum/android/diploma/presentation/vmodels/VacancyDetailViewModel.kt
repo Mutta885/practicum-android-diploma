@@ -138,6 +138,7 @@ class VacancyDetailViewModel(
                 searchResult.employer,
                 searchResult.industry,
                 searchResult.area,
+                searchResult.address,
                 searchResult.experience,
                 searchResult.schedule,
                 searchResult.employment,

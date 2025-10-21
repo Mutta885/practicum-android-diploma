@@ -3,6 +3,7 @@ package ru.practicum.android.diploma.data.repository
 import android.util.Log
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import ru.practicum.android.diploma.data.dto.AddressDto
 import ru.practicum.android.diploma.data.dto.AreaDto
 import ru.practicum.android.diploma.data.dto.ContactDto
 import ru.practicum.android.diploma.data.dto.EmployerDto
@@ -36,6 +37,7 @@ import ru.practicum.android.diploma.domain.models.SearchResultVacancyDetail
 import ru.practicum.android.diploma.domain.models.Vacancy
 import ru.practicum.android.diploma.domain.models.isCountry
 import ru.practicum.android.diploma.domain.api.DataRepository
+import ru.practicum.android.diploma.domain.models.Address
 import ru.practicum.android.diploma.util.Resource
 import java.io.IOException
 import java.net.SocketTimeoutException
@@ -316,6 +318,18 @@ class DataRepositoryImpl(
         )
     }
 
+    private fun mapAddress(addressDto: AddressDto?) = addressDto?.let { dto ->
+        with(dto) {
+            Address(
+                id = id,
+                city = city,
+                street = street,
+                building = building,
+                raw = raw
+            )
+        }
+    }
+
     private fun mapFilterIndustry(industryDto: FilterIndustryDto?) = industryDto?.let { dto ->
         FilterIndustry(
             id = dto.id,
@@ -383,6 +397,7 @@ class DataRepositoryImpl(
                 employer = mapEmployer(body.employer),
                 industry = mapFilterIndustry(body.industry),
                 area = mapArea(body.area),
+                address = mapAddress(body.address),
                 experience = mapExperience(body.experience),
                 schedule = mapSchedule(body.schedule),
                 employment = mapEmployment(body.employment),

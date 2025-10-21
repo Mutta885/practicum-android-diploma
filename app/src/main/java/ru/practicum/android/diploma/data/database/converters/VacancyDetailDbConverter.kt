@@ -2,6 +2,7 @@ package ru.practicum.android.diploma.data.database.converters
 
 import com.google.gson.Gson
 import ru.practicum.android.diploma.data.database.entity.VacancyDetailEntity
+import ru.practicum.android.diploma.domain.models.Address
 import ru.practicum.android.diploma.domain.models.Area
 import ru.practicum.android.diploma.domain.models.Contact
 import ru.practicum.android.diploma.domain.models.Employer
@@ -25,6 +26,7 @@ class VacancyDetailDbConverter(
             employer = gson.toJson(vacancy.employer),
             industry = gson.toJson(vacancy.industry),
             area = gson.toJson(vacancy.area),
+            address = gson.toJson(vacancy.address),
             experience = gson.toJson(vacancy.experience),
             schedule = gson.toJson(vacancy.schedule),
             employment = gson.toJson(vacancy.employment),
@@ -44,6 +46,7 @@ class VacancyDetailDbConverter(
             employer = gson.fromJson(vacancyDetailEntity.employer, Employer::class.java),
             industry = gson.fromJson(vacancyDetailEntity.industry, FilterIndustry::class.java),
             area = gson.fromJson(vacancyDetailEntity.area, Area::class.java),
+            address = gson.fromJson(vacancyDetailEntity.address, Address::class.java),
             experience = gson.fromJson(vacancyDetailEntity.experience, Experience::class.java),
             schedule = gson.fromJson(vacancyDetailEntity.schedule, Schedule::class.java),
             employment = gson.fromJson(vacancyDetailEntity.employment, Employment::class.java),
@@ -62,6 +65,7 @@ class VacancyDetailDbConverter(
                     employer = gson.fromJson(employer, Employer::class.java),
                     industry = gson.fromJson(industry, FilterIndustry::class.java),
                     area = gson.fromJson(area, Area::class.java),
+                    address = gson.fromJson(address, Address::class.java),
                     experience = gson.fromJson(experience, Experience::class.java),
                     schedule = gson.fromJson(schedule, Schedule::class.java),
                     employment = gson.fromJson(employment, Employment::class.java),
