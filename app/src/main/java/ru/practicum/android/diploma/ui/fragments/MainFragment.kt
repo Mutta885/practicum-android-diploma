@@ -1,7 +1,6 @@
 package ru.practicum.android.diploma.ui.fragments
 
 import android.os.Bundle
-import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -37,7 +36,7 @@ class MainFragment : Fragment() {
 
     private var isProgrammaticTextChange = false
     private var isReturningFromFilters = false
-    private var shouldBlockAutoSearch = false // НОВЫЙ ФЛАГ
+    private var shouldBlockAutoSearch = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -50,13 +49,15 @@ class MainFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         searchDebounce = debounce<String>(TIME_DELAY, viewLifecycleOwner.lifecycleScope, true) { text ->
-            if (!shouldBlockAutoSearch) { // ПРОВЕРКА ФЛАГА
+            if (!shouldBlockAutoSearch) {
                 searchViewModel.search(text)
             } else {
-                shouldBlockAutoSearch = false // Сбрасываем флаг после блокировки
+                shouldBlockAutoSearch = false
             }
         }
+
         MainUiHelper.setupRecycler(binding, adapter, searchViewModel)
         MainUiHelper.setupSearchField(
             binding,
@@ -69,7 +70,6 @@ class MainFragment : Fragment() {
         observeViewModel()
         observeFilterState()
         applySavedFiltersOnStart()
-        setupBackButtonHandler(view)
     }
 
     override fun onResume() {
@@ -80,27 +80,37 @@ class MainFragment : Fragment() {
 
     override fun onPause() {
         super.onPause()
-        // Устанавливаем флаг блокировки при уходе с фрагмента
         shouldBlockAutoSearch = true
     }
 
     private fun setupClickListeners() {
         binding.trailingButton.setOnClickListener {
-            isReturningFromFilters = true
-            shouldBlockAutoSearch = true // Блокируем авто-поиск при переходе к фильтрам
-            findNavController().navigate(R.id.action_mainFragment_to_filtrationFragment)
+            navigateToFiltration()
         }
     }
 
-    private fun setupBackButtonHandler(view: View) {
-        view.isFocusableInTouchMode = true
-        view.requestFocus()
-        view.setOnKeyListener { _, keyCode, event ->
-            if (keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_UP) {
-                findNavController().popBackStack()
-                true
-            } else {
-                false
+    private fun navigateToFiltration() {
+        isReturningFromFilters = true
+        shouldBlockAutoSearch = true
+
+        try {
+            findNavController().navigate(R.id.action_mainFragment_to_filtrationFragment)
+        } catch (e: IllegalArgumentException) {
+            try {
+                findNavController().navigate(R.id.filtrationFragment)
+            } catch (e2: IllegalArgumentException) {
+                safeNavigateToFiltration()
+            }
+        }
+    }
+
+    private fun safeNavigateToFiltration() {
+        lifecycleScope.launch {
+            delay(100)
+            try {
+                findNavController().navigate(R.id.filtrationFragment)
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
         }
     }
@@ -120,7 +130,6 @@ class MainFragment : Fragment() {
                 is SearchState.LoadingNextPage -> adapter.setLoading(true)
                 is SearchState.NextPageError -> state.message?.let { requireContext().showToast(it) }
                 is SearchState.FiltersApplied -> {
-                    // При применении фильтров сбрасываем флаг блокировки
                     shouldBlockAutoSearch = false
                 }
             }
@@ -193,7 +202,7 @@ class MainFragment : Fragment() {
         isProgrammaticTextChange = false
         searchViewModel.search("")
         updateSearchFieldIcons("")
-        shouldBlockAutoSearch = false // Сбрасываем флаг при очистке
+        shouldBlockAutoSearch = false
     }
 
     private fun updateSearchFieldIcons(text: String) {
@@ -202,7 +211,11 @@ class MainFragment : Fragment() {
 
     private fun onVacancyClick(vacancy: Vacancy) {
         val bundle = Bundle().apply { putString("vacancyId", vacancy.id) }
-        findNavController().navigate(R.id.action_mainFragment_to_vacancyDetailFragment, bundle)
+        try {
+            findNavController().navigate(R.id.action_mainFragment_to_vacancyDetailFragment, bundle)
+        } catch (e: IllegalArgumentException) {
+            findNavController().navigate(R.id.vacancyDetailFragment, bundle)
+        }
     }
 
     override fun onDestroyView() {
