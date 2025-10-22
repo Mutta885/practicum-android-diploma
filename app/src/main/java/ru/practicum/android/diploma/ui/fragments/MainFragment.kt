@@ -99,6 +99,10 @@ class MainFragment : Fragment() {
             try {
                 findNavController().navigate(R.id.filtrationFragment)
             } catch (e2: IllegalArgumentException) {
+                // Логируем обе ошибки
+                e.printStackTrace()
+                e2.printStackTrace()
+                requireContext().showToast("Не удалось открыть фильтрацию")
                 safeNavigateToFiltration()
             }
         }
@@ -106,11 +110,12 @@ class MainFragment : Fragment() {
 
     private fun safeNavigateToFiltration() {
         lifecycleScope.launch {
-            delay(100)
+            delay(NAVIGATION_RETRY_DELAY)
             try {
                 findNavController().navigate(R.id.filtrationFragment)
-            } catch (e: Exception) {
+            } catch (e: IllegalArgumentException) {
                 e.printStackTrace()
+                requireContext().showToast("Не удалось открыть фильтрацию")
             }
         }
     }
@@ -214,7 +219,13 @@ class MainFragment : Fragment() {
         try {
             findNavController().navigate(R.id.action_mainFragment_to_vacancyDetailFragment, bundle)
         } catch (e: IllegalArgumentException) {
-            findNavController().navigate(R.id.vacancyDetailFragment, bundle)
+            e.printStackTrace()
+            try {
+                findNavController().navigate(R.id.vacancyDetailFragment, bundle)
+            } catch (e2: IllegalArgumentException) {
+                e2.printStackTrace()
+                requireContext().showToast("Не удалось открыть детали вакансии")
+            }
         }
     }
 
@@ -226,5 +237,6 @@ class MainFragment : Fragment() {
     companion object {
         private const val TIME_DELAY = 2000L
         const val DELAY_FOR_FILTERS = 500L
+        private const val NAVIGATION_RETRY_DELAY = 100L
     }
 }
