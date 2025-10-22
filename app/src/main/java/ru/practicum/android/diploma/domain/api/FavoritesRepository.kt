@@ -10,4 +10,3 @@ interface FavoritesRepository {
     fun checkVacanciesInFavorite(id: String): Flow<Boolean>
     fun deleteVacancyFromFavorite(id: String): Flow<Boolean>
 }
-
