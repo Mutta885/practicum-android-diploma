@@ -1,6 +1,7 @@
 package ru.practicum.android.diploma.ui.fragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -96,26 +97,27 @@ class MainFragment : Fragment() {
         try {
             findNavController().navigate(R.id.action_mainFragment_to_filtrationFragment)
         } catch (e: IllegalArgumentException) {
-            try {
-                findNavController().navigate(R.id.filtrationFragment)
-            } catch (e2: IllegalArgumentException) {
-                // Логируем обе ошибки
-                e.printStackTrace()
-                e2.printStackTrace()
-                requireContext().showToast("Не удалось открыть фильтрацию")
-                safeNavigateToFiltration()
-            }
+            Log.e(TAG, "Navigation with action failed, trying direct destination", e)
+            navigateToFiltrationDirectly()
+        }
+    }
+
+    private fun navigateToFiltrationDirectly() {
+        try {
+            findNavController().navigate(R.id.filtrationFragment)
+        } catch (e: IllegalArgumentException) {
+            Log.e(TAG, "Direct navigation failed, trying safe navigation", e)
+            safeNavigateToFiltration()
         }
     }
 
     private fun safeNavigateToFiltration() {
         lifecycleScope.launch {
-            delay(NAVIGATION_RETRY_DELAY)
+            delay(NAVIGATION_DELAY)
             try {
                 findNavController().navigate(R.id.filtrationFragment)
             } catch (e: IllegalArgumentException) {
-                e.printStackTrace()
-                requireContext().showToast("Не удалось открыть фильтрацию")
+                Log.e(TAG, "Safe navigation also failed", e)
             }
         }
     }
@@ -219,13 +221,8 @@ class MainFragment : Fragment() {
         try {
             findNavController().navigate(R.id.action_mainFragment_to_vacancyDetailFragment, bundle)
         } catch (e: IllegalArgumentException) {
-            e.printStackTrace()
-            try {
-                findNavController().navigate(R.id.vacancyDetailFragment, bundle)
-            } catch (e2: IllegalArgumentException) {
-                e2.printStackTrace()
-                requireContext().showToast("Не удалось открыть детали вакансии")
-            }
+            Log.e(TAG, "Navigation to vacancy detail with action failed, trying direct", e)
+            findNavController().navigate(R.id.vacancyDetailFragment, bundle)
         }
     }
 
@@ -235,8 +232,9 @@ class MainFragment : Fragment() {
     }
 
     companion object {
+        private const val TAG = "MainFragment"
         private const val TIME_DELAY = 2000L
         const val DELAY_FOR_FILTERS = 500L
-        private const val NAVIGATION_RETRY_DELAY = 100L
+        private const val NAVIGATION_DELAY = 100L
     }
 }
