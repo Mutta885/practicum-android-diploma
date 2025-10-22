@@ -164,7 +164,6 @@ class DataRepositoryImpl(
         return try {
             val response = api.searchAreas()
             println("DEBUG: Areas API response received: ${response.size} items")
-            //throw IOException()
             if (response.isNotEmpty()) {
                 val areas = response.map { it.toDomain() }
                 Resource.Success(areas)
