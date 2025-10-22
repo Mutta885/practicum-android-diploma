@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:fitsSystemWindows="true">
+    android:background="?attr/attr_black_white_color">
 
     <!-- Заголовок -->
     <RelativeLayout
@@ -19,8 +20,8 @@
             android:layout_height="match_parent"
             android:gravity="center_vertical"
             android:paddingStart="56dp"
-            android:text="Выбор отрасли"
-            android:textColor="@color/black"
+            android:text="@string/select_industry"
+            android:textColor="?attr/attr_white_black_color"
             android:textSize="@dimen/text_size"
             tools:ignore="RtlSymmetry" />
 
@@ -42,82 +43,96 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:paddingHorizontal="16dp">
 
         <!-- Поиск -->
-
-        <!-- Поиск -->
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/search_container"
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:layout_margin="@dimen/merge_size"
-            android:background="@drawable/rounded_search_background"
-            android:padding="8dp">
+            android:layout_height="72dp"
+            android:layout_marginBottom="8dp">
 
             <EditText
                 android:id="@+id/search_edit_text"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:hint="@string/search_hint"
-                android:background="@android:color/transparent"
-                android:imeOptions="actionSearch"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_gravity="center_vertical"
+                android:background="@drawable/background_search_edit_text"
+                android:drawableRight="@drawable/search_icon"
+                android:drawablePadding="8dp"
+                android:fontFamily="@font/ys_display_regular"
+                android:hint="@string/input_industry"
+                android:imeOptions="actionDone"
                 android:inputType="text"
-                android:paddingStart="12dp"
-                android:paddingEnd="40dp"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/search_icon" />
-
-            <ImageView
-                android:id="@+id/search_icon"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/search_icon"
-                android:layout_marginEnd="8dp"
-                android:clickable="true"
-                android:focusable="true"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
+                android:maxLines="1"
+                android:enabled="false"
+                android:paddingHorizontal="16dp"
+                android:singleLine="true"
+                android:textAppearance="@style/textAppearanceRegular16sp400w"
+                android:textColor="@color/black"
+                android:textColorHint="?attr/hint_color_edit_text"
+                android:textCursorDrawable="@drawable/cursor" />
 
             <ImageView
                 android:id="@+id/clear_icon"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:src="@drawable/close_edit_text_search"
-                android:layout_marginEnd="8dp"
+                android:layout_gravity="end|center_vertical"
+                android:layout_marginEnd="14dp"
+                android:background="?attr/attr_gray_light_gray_color"
                 android:clickable="true"
+                android:contentDescription="@string/contentDescription"
                 android:focusable="true"
+                android:src="@drawable/close_edit_text_search_24"
                 android:visibility="gone"
-                app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </FrameLayout>
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <ProgressBar
-            android:id="@+id/loading_indicator"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:visibility="gone" />
-
-        <TextView
-            android:id="@+id/error_text"
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Ошибка загрузки отраслей"
-            android:gravity="center"
-            android:visibility="gone" />
+            android:layout_height="match_parent">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerView"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1" />
+            <ProgressBar
+                android:id="@+id/loading_indicator"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:indeterminateTint="@color/blue"
+                android:visibility="gone" />
 
+            <FrameLayout
+                android:id="@+id/groupImageText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:visibility="gone">
+
+                <ImageView
+                    android:id="@+id/imageError"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal|top"
+                    android:layout_marginBottom="16dp"
+                    android:contentDescription="@string/contentDescription"
+                    android:src="@drawable/cat_with_the_plate" />
+
+                <TextView
+                    android:id="@+id/error_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal|bottom"
+                    android:gravity="center"
+                    android:text="@string/error_load_industry"
+                    android:textAppearance="@style/textAppearanceMedium22sp500w"
+                    android:textColor="?attr/attr_white_black_color" />
+            </FrameLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </FrameLayout>
     </LinearLayout>
 
     <!-- Кнопка Выбрать -->
@@ -125,11 +140,10 @@
         android:id="@+id/select_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Выбрать"
-        android:visibility="gone"
         android:layout_margin="16dp"
         android:background="@drawable/rounded_button_background"
         android:backgroundTint="@color/blue"
-        android:textColor="@color/white" />
-
+        android:text="@string/choose"
+        android:textColor="@color/white"
+        android:visibility="gone" />
 </LinearLayout>

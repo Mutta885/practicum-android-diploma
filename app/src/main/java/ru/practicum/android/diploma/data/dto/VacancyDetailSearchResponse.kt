@@ -8,6 +8,7 @@ data class VacancyDetailSearchResponse(
     val employer: EmployerDto,
     val industry: FilterIndustryDto,
     val area: AreaDto,
+    val address: AddressDto?,
     val experience: ExperienceDto,
     val schedule: ScheduleDto,
     val employment: EmploymentDto,

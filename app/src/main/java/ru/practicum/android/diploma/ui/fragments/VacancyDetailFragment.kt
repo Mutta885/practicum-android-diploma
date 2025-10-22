@@ -1,0 +1,215 @@
+package ru.practicum.android.diploma.ui.fragments
+
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.core.view.isVisible
+import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
+import com.bumptech.glide.Glide
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import ru.practicum.android.diploma.R
+import ru.practicum.android.diploma.databinding.FragmentVacancyBinding
+import ru.practicum.android.diploma.domain.models.Address
+import ru.practicum.android.diploma.domain.models.Phones
+import ru.practicum.android.diploma.domain.models.SalaryFormatter
+import ru.practicum.android.diploma.domain.models.VacancyDetail
+import ru.practicum.android.diploma.presentation.models.VacancyDetailState
+import ru.practicum.android.diploma.presentation.vmodels.VacancyDetailViewModel
+
+class VacancyDetailFragment : Fragment() {
+
+    private var _binding: FragmentVacancyBinding? = null
+    private val binding get() = _binding!!
+    private val viewModel: VacancyDetailViewModel by viewModel()
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentVacancyBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        var vacancyId = arguments?.getString(ARGS_VACANCY_ID)
+        vacancyId?.let {
+            viewModel.search(vacancyId)
+        } ?: run {
+            vacancyId = arguments?.getString(ARGS_VACANCY_ID_BY_DB)
+            viewModel.loadDatabase(vacancyId)
+        }
+        viewModel.checkFavorites(vacancyId)
+        observeViewModel()
+        binding.returnButton.setOnClickListener {
+            findNavController().navigateUp()
+        }
+        binding.favoriteButton.setOnClickListener {
+            viewModel.addFavorites()
+        }
+        binding.shareButton.setOnClickListener {
+            viewModel.shared()
+        }
+    }
+
+    private fun observeViewModel() {
+        viewModel.vacancyDetailState.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                is VacancyDetailState.Success -> {
+                    renderSuccess(true)
+                    renderError(false)
+                    renderLoading(false)
+                    getVacancyDetail(state.vacancyDetail)
+                }
+
+                is VacancyDetailState.Loading -> {
+                    renderSuccess(false)
+                    renderError(false)
+                    renderLoading(true)
+                }
+
+                is VacancyDetailState.Error -> {
+                    renderError(true, state.message)
+                    renderSuccess(false)
+                    renderLoading(false)
+                }
+            }
+        }
+        viewModel.vacancyFavoriteState.observe(viewLifecycleOwner) { state ->
+            renderFavorites(state)
+        }
+    }
+
+    private fun renderFavorites(value: Boolean) {
+        if (value) {
+            binding.favoriteButton.setImageResource(R.drawable.favorite_icon_red)
+        } else {
+            binding.favoriteButton.setImageResource(R.drawable.favorite_icon)
+        }
+    }
+
+    private fun getVacancyDetail(vacancyDetail: VacancyDetail) {
+        binding.vacancyTitle.text = vacancyDetail.name
+        val salaryText = vacancyDetail.salary?.let { salary ->
+            SalaryFormatter.getFormattedSalary(salary)
+        } ?: getString(R.string.not_money)
+        binding.salaryText.text = salaryText
+
+        Glide.with(this)
+            .load(vacancyDetail.employer?.logoUrl)
+            .placeholder(R.drawable.ic_company_placeholder)
+            .error(R.drawable.ic_company_placeholder)
+            .into(binding.vacancyCover)
+
+        binding.industry.text = vacancyDetail.industry?.name
+        binding.area.text = vacancyDetail.area?.name
+        binding.experience.text = vacancyDetail.experience?.name
+        binding.schedule.text = vacancyDetail.schedule?.name
+        binding.employment.text = vacancyDetail.employment?.name
+        binding.description.text = vacancyDetail.description
+        vacancyDetail.address?.let {
+            renderArea(it)
+        }
+        vacancyDetail.contact?.let {
+            it.name?.let { name ->
+                renderContactName(name)
+            }
+            if (it.phones != null || it.email != "") {
+                binding.contactGroup.isVisible = true
+                renderEmail(it.email)
+                renderPhone(it.phones)
+            }
+        }
+    }
+
+    private fun renderLoading(value: Boolean) {
+        binding.progressCircular.isVisible = value
+    }
+
+    private fun renderSuccess(value: Boolean) {
+        binding.scrollView.isVisible = value
+    }
+
+    private fun renderError(value: Boolean, message: String? = null) {
+        binding.groupImageText.isVisible = value
+        binding.errorText.text = message
+        when (message) {
+            getString(R.string.error_server) -> {
+                binding.imageError.setImageResource(R.drawable.error_server_vacancy)
+            }
+
+            getString(R.string.this_not_vacancy_or_delete) -> {
+                binding.imageError.setImageResource(R.drawable.this_vacancy_not_search_or_delete)
+            }
+
+            getString(R.string.not_internet) -> {
+                binding.imageError.setImageResource(R.drawable.image_yorik)
+            }
+        }
+
+    }
+
+    private fun renderArea(value: Address) {
+        val address = value.raw
+        address?.let {
+            binding.area.text = it
+        }
+    }
+
+    private fun renderContactName(value: String?) {
+        binding.contactName.isVisible = true
+        binding.contactName.text = value
+    }
+
+    private fun renderEmail(value: String?) {
+        value?.let { email ->
+            if (email != "") {
+                binding.emailGroup.isVisible = true
+                binding.contactEmail.text = email
+                binding.contactEmail.setOnClickListener {
+                    viewModel.sharedEmail(email)
+                }
+            }
+        }
+    }
+
+    private fun renderPhone(value: List<Phones>?) {
+        value?.let { phone ->
+            binding.phonesGroup.isVisible = true
+            phone.forEachIndexed { i, tel ->
+                when (i) {
+                    0 -> {
+                        binding.contactPhone1.text = tel.formatted
+                        binding.contactPhone1.setOnClickListener {
+                            viewModel.sharedPhone(tel.formatted.toString())
+                        }
+                    }
+
+                    1 -> {
+                        binding.contactPhone2.isVisible = true
+                        binding.contactPhone2.text = tel.formatted
+                        binding.contactPhone2.setOnClickListener {
+                            viewModel.sharedPhone(tel.formatted.toString())
+                        }
+                    }
+
+                    2 -> {
+                        binding.contactPhone3.isVisible = true
+                        binding.contactPhone3.text = tel.formatted
+                        binding.contactPhone3.setOnClickListener {
+                            viewModel.sharedPhone(tel.formatted.toString())
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private companion object {
+        private const val ARGS_VACANCY_ID = "vacancyId"
+        private const val ARGS_VACANCY_ID_BY_DB = "vacancyIdByDatabase"
+    }
+}

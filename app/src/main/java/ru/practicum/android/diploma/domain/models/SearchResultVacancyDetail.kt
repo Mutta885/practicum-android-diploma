@@ -8,6 +8,7 @@ data class SearchResultVacancyDetail(
     val employer: Employer?,
     val industry: FilterIndustry?,
     val area: Area?,
+    val address: Address?,
     val experience: Experience?,
     val schedule: Schedule?,
     val employment: Employment?,

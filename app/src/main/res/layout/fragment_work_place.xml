@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="?attr/attr_black_white_color"
     android:orientation="vertical">
 
     <!-- Заголовок -->
@@ -19,7 +20,7 @@
             android:gravity="center_vertical"
             android:paddingStart="56dp"
             android:text="@string/work_place_text"
-            android:textColor="@color/black"
+            android:textColor="?attr/attr_white_black_color"
             android:textSize="@dimen/text_size"
             tools:ignore="RtlSymmetry,SpUsage" />
 
@@ -29,100 +30,44 @@
             android:layout_height="@dimen/button_size"
             android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
-            android:layout_marginStart="4dp"
             android:background="@null"
             android:src="@drawable/arrow_back_icon"
             tools:ignore="RtlHardcoded" />
     </RelativeLayout>
 
-    <!-- Основной контент -->
-    <ScrollView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:fillViewport="true">
+        android:orientation="vertical"
+        android:paddingTop="16dp">
 
-        <LinearLayout
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/country_container"
+            style="@style/filter_text_button"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingTop="16dp">
+            android:layout_height="60dp"
+            android:text="@string/country_text" />
 
-            <!-- Выбор страны -->
-            <LinearLayout
-                android:id="@+id/country_container"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:layout_marginTop="16dp"
-                android:orientation="horizontal"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp"
-                android:clickable="true"
-                android:focusable="true"
-                android:background="?attr/selectableItemBackground"
-                tools:ignore="RtlSymmetry">
-
-                <TextView
-                    android:id="@+id/country_text"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:gravity="center_vertical"
-                    android:text="@string/country_text"
-                    android:textSize="@dimen/text_size_medium" />
-
-                <ImageButton
-                    android:id="@+id/country_button"
-                    android:layout_width="@dimen/button_size"
-                    android:layout_height="@dimen/button_size"
-                    android:background="@null"
-                    android:src="@drawable/arrow_forward_vector" />
-            </LinearLayout>
-
-            <!-- Выбор региона -->
-            <LinearLayout
-                android:id="@+id/region_container"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:layout_marginTop="16dp"
-                android:orientation="horizontal"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp"
-                android:clickable="true"
-                android:focusable="true"
-                android:background="?attr/selectableItemBackground"
-                tools:ignore="RtlSymmetry">
-
-                <TextView
-                    android:id="@+id/region_text"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:gravity="center_vertical"
-                    android:text="@string/region_text"
-                    android:textSize="@dimen/text_size_medium" />
-
-                <ImageButton
-                    android:id="@+id/region_button"
-                    android:layout_width="@dimen/button_size"
-                    android:layout_height="@dimen/button_size"
-                    android:background="@null"
-                    android:src="@drawable/arrow_forward_vector" />
-            </LinearLayout>
-
-        </LinearLayout>
-    </ScrollView>
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/region_container"
+            style="@style/filter_text_button"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:text="@string/region_text" />
+    </LinearLayout>
 
     <!-- Кнопка Выбрать -->
     <Button
         android:id="@+id/choose_button"
-        android:layout_width="326dp"
+        android:layout_width="match_parent"
         android:layout_height="59dp"
         android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="72dp"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/rounded_image_button"
         android:text="@string/choose"
+        android:textAppearance="@style/textAppearanceMedium16sp500w"
         android:textColor="@color/white"
-        android:visibility="invisible"
-        android:background="@drawable/rounded_image_button" />
-
+        android:visibility="gone" />
 </LinearLayout>

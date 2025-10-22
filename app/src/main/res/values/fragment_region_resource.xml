@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="input_region">Введите регион</string>
+    <string name="not_region">Такого региона нет</string>
+</resources>

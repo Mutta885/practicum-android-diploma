@@ -8,20 +8,17 @@ import ru.practicum.android.diploma.di.appModule
 import ru.practicum.android.diploma.di.areasModule
 import ru.practicum.android.diploma.di.dataModule
 import ru.practicum.android.diploma.di.favoritesModule
-import ru.practicum.android.diploma.di.mainModule
 import ru.practicum.android.diploma.di.sharedModule
 
 class App : Application() {
     override fun onCreate() {
         super.onCreate()
-
         startKoin {
             androidLogger()
             androidContext(this@App)
             modules(
                 appModule,
                 favoritesModule,
-                mainModule,
                 sharedModule,
                 dataModule,
                 areasModule

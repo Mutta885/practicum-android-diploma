@@ -9,8 +9,8 @@ import kotlinx.coroutines.launch
 import ru.practicum.android.diploma.data.sharing.ExternalNavigator
 import ru.practicum.android.diploma.domain.api.FavoritesInteractor
 import ru.practicum.android.diploma.domain.models.VacancyDetail
-import ru.practicum.android.diploma.domain.usecase.SearchVacancyDetailUseCase
-import ru.practicum.android.diploma.ui.root.search.VacancyDetailState
+import ru.practicum.android.diploma.domain.usecaseimpl.SearchVacancyDetailUseCase
+import ru.practicum.android.diploma.presentation.models.VacancyDetailState
 import ru.practicum.android.diploma.util.Resource
 
 class VacancyDetailViewModel(
@@ -111,14 +111,18 @@ class VacancyDetailViewModel(
     }
 
     private fun performSearch(query: String) {
+        _vacancyDetailState.postValue(VacancyDetailState.Loading)
         viewModelScope.launch {
             when (val result = searchVacancyDetailUseCase.execute(query)) {
                 is Resource.Success -> {
                     handleSearchSuccess(result)
                 }
 
-                is Resource.Error -> null
-                is Resource.Loading -> null
+                is Resource.Error -> {
+                    _vacancyDetailState.postValue(VacancyDetailState.Error(result.message))
+                }
+
+                else -> {}
             }
         }
     }
@@ -134,6 +138,7 @@ class VacancyDetailViewModel(
                 searchResult.employer,
                 searchResult.industry,
                 searchResult.area,
+                searchResult.address,
                 searchResult.experience,
                 searchResult.schedule,
                 searchResult.employment,

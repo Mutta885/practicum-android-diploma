@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="select_industry">Выбор отрасли</string>
+    <string name="input_industry">Введите отрасль</string>
+    <string name="error_load_industry">Ошибка загрузки отраслей</string>
+    <string name="this_not_industry">Такой индустрии нет</string>
+</resources>

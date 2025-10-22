@@ -1,5 +1,5 @@
 <!-- res/drawable/rounded_search_background.xml -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <solid android:color="#E0E0E0" />
+    <solid android:color="?attr/attr_gray_light_gray_color" />
     <corners android:radius="16dp" />
 </shape>

@@ -2,4 +2,6 @@
 <resources>
     <attr name="attr_white_black_color" format="color" />
     <attr name="attr_black_white_color" format="color" />
+    <attr name="attr_gray_light_gray_color" format="color" />
+    <attr name="attr_gray_white_color" format="color" />
 </resources>

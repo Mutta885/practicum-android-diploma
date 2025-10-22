@@ -9,11 +9,11 @@ import android.util.Log
 import ru.practicum.android.diploma.R
 
 class ExternalNavigator(
-    private val appContext: Context,
-    private val intent: Intent
+    private val appContext: Context
 ) {
     @SuppressLint("QueryPermissionsNeeded")
     fun shareLink(value: String): String? {
+        val intent = Intent()
         intent.apply {
             action = Intent.ACTION_SEND
             putExtra(Intent.EXTRA_TEXT, value)
@@ -35,6 +35,7 @@ class ExternalNavigator(
     }
 
     fun openEmail(emailData: String): String? {
+        val intent = Intent()
         intent.apply {
             action = Intent.ACTION_SENDTO
             data = Uri.parse(appContext.getString(R.string.sharedMailto))
@@ -45,6 +46,7 @@ class ExternalNavigator(
     }
 
     fun openPhone(value: String): String? {
+        val intent = Intent()
         intent.apply {
             action = Intent.ACTION_DIAL
             data = Uri.parse("tel: $value")

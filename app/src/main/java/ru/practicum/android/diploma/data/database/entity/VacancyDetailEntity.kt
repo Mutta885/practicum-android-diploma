@@ -15,6 +15,7 @@ data class VacancyDetailEntity(
     val employer: String,
     val industry: String,
     val area: String,
+    val address: String,
     val experience: String,
     val schedule: String,
     val employment: String,

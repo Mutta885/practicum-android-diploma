@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:fitsSystemWindows="true">
+    android:background="?attr/attr_black_white_color">
 
     <!-- Заголовок -->
     <RelativeLayout
@@ -30,6 +30,7 @@
             android:layout_height="@dimen/button_size"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
+            android:contentDescription="@string/contentDescription"
             android:layout_marginEnd="@dimen/merge_size"
             android:background="@null"
             android:src="@drawable/trailing_icon" />
@@ -40,7 +41,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:padding="16dp">
+        android:paddingTop="16dp">
 
         <!-- Основной контентный контейнер -->
         <LinearLayout
@@ -54,6 +55,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
                 android:layout_marginBottom="8dp"
+                android:layout_marginHorizontal="16dp"
                 android:background="@drawable/rounded_search_background"
                 android:padding="8dp">
 
@@ -62,6 +64,10 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:hint="@string/search_hint"
+                    android:textColorHint="?attr/attr_gray_white_color"
+                    android:textColor="@color/black"
+                    android:textCursorDrawable="@drawable/cursor"
+                    android:textAppearance="@style/textAppearanceRegular16sp400w"
                     android:background="@android:color/transparent"
                     android:imeOptions="actionSearch"
                     android:inputType="text"
@@ -80,6 +86,7 @@
                     android:clickable="true"
                     android:focusable="true"
                     android:src="@drawable/search_icon"
+                    android:contentDescription="@string/contentDescription"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent" />
@@ -91,7 +98,8 @@
                     android:layout_marginEnd="8dp"
                     android:clickable="true"
                     android:focusable="true"
-                    android:src="@drawable/close_edit_text_search"
+                    android:contentDescription="@string/contentDescription"
+                    android:src="@drawable/close_edit_text_search_24"
                     android:visibility="gone"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -104,13 +112,14 @@
                 android:id="@+id/results_count_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="12dp"
-                android:textColor="@color/white"
-                android:textSize="@dimen/text_size_medium"
-                android:gravity="center"
+                android:layout_gravity="center_horizontal"
                 android:background="@drawable/bg_results_count"
-                android:visibility="gone"
-                android:layout_gravity="center_horizontal" />
+                android:gravity="center"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="4dp"
+                android:textAppearance="@style/textAppearanceRegular16sp400w"
+                android:textColor="@color/white"
+                android:visibility="gone" />
 
             <!-- RecyclerView для вакансий -->
             <androidx.recyclerview.widget.RecyclerView
@@ -151,11 +160,10 @@
             <TextView
                 android:id="@+id/error_state_text"
                 style="@style/text_black_white_color"
+                android:textAppearance="@style/textAppearanceMedium22sp500w"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/no_internet_title"
-                android:textSize="17sp"
-                android:textStyle="bold" />
+                android:text="@string/no_internet_title" />
 
         </LinearLayout>
 
@@ -168,24 +176,7 @@
             android:orientation="vertical"
             android:visibility="gone"
             android:paddingTop="100dp">
-
             <!-- Текст "Ничего не найдено" НАД картинкой - на синем фоне -->
-            <TextView
-                android:id="@+id/no_results_title"
-                style="@style/text_black_white_color"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/no_results_title"
-                android:textColor="@color/white"
-                android:textSize="@dimen/text_size_medium"
-                android:gravity="center"
-                android:background="@drawable/bg_results_count"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp"
-                android:paddingTop="12dp"
-                android:paddingBottom="12dp"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginBottom="32dp" />
 
             <!-- Картинка 328x223 -->
             <ImageView
@@ -223,6 +214,7 @@
                 android:id="@+id/empty_state_image"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:contentDescription="@string/contentDescription"
                 android:src="@drawable/il_1_1" />
         </LinearLayout>
 

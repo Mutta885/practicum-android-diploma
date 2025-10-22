@@ -3,11 +3,11 @@
     <string name="main">Главная</string>
     <string name="favorites">Избранное</string>
     <string name="team">Команда</string>
+    <string name="industry">Отрасль</string>
     <string name="not_money">Зарплата не указана</string>
     <string name="sharing_select_an_application">Выберите приложение</string>
     <string name="sharing_there_are_no_apps">Приложения не найдены</string>
     <string name="job_search">Поиск вакансий</string>
-    <string name="filtration_settings">Настройки фильтрации</string>
     <string name="search_hint">Введите запрос</string>
     <string name="empty_query_text">Введите запрос для поиска вакансий</string>
     <string name="no_results_text">По вашему запросу ничего не найдено</string>
@@ -17,7 +17,7 @@
     <string name="error_network">Нет интернета</string>
     <string name="error_server">Ошибка сервера</string>
     <string name="error_unknown">Произошла неизвестная ошибка</string>
-    <string name="vacancy">Вакансии</string>
+    <string name="vacancy">Вакансия</string>
     <string name="experience">Требуемый опыт</string>
     <string name="description">Описание вакансии</string>
     <string name="work_place_text">Выбор места работы</string>
@@ -26,8 +26,12 @@
     <string name="country_choose_text">Выбор страны</string>
     <string name="region_choose_text">Выбор региона</string>
     <string name="choose">Выбрать</string>
+    <string name="this_select">Выбрано</string>
+    <string name="this_not_vacancy">Такой вакансии нет</string>
+
     <!-- Для состояния "нет результатов" -->
     <string name="no_results_title">Ничего не найдено</string>
+    <string name="no_results">Не удалось получить \nсписок</string>
     <string name="no_results_subtitle">Не удалось получить список вакансий</string>
     <string name="no_results_content_description">Нет результатов поиска</string>
     <!-- Для состояния ошибки -->
