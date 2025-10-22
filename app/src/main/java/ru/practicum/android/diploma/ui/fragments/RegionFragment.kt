@@ -17,6 +17,7 @@ import ru.practicum.android.diploma.domain.models.FilterArea
 import ru.practicum.android.diploma.presentation.adapters.RegionAdapter
 import ru.practicum.android.diploma.presentation.models.FilterAreaState
 import ru.practicum.android.diploma.presentation.vmodels.RegionViewModel
+import ru.practicum.android.diploma.ui.fragments.helpers.RegionUiStateHandler
 
 class RegionFragment : Fragment(), RegionAdapter.RegionListener {
 
@@ -27,6 +28,7 @@ class RegionFragment : Fragment(), RegionAdapter.RegionListener {
     private var allRegions: List<FilterArea> = emptyList()
     private var countryMap: Map<Int, FilterArea> = emptyMap()
     private var countriesLoaded = false
+    private val uiStateHandler = RegionUiStateHandler()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -79,9 +81,7 @@ class RegionFragment : Fragment(), RegionAdapter.RegionListener {
     private fun createTextWatcher(clearIcon: View): TextWatcher {
         return object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
-
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
-
             override fun afterTextChanged(s: Editable?) {
                 val text = s.toString().trim()
                 updateClearIconVisibility(clearIcon, text)
@@ -113,9 +113,9 @@ class RegionFragment : Fragment(), RegionAdapter.RegionListener {
 
     private fun updateResultsState(filteredRegions: List<FilterArea>, query: String) {
         when {
-            filteredRegions.isEmpty() && query.isNotEmpty() -> showNoResultsState()
-            filteredRegions.isEmpty() -> showNoResultsState()
-            else -> showSuccessState()
+            filteredRegions.isEmpty() && query.isNotEmpty() -> uiStateHandler.showNoResultsState(binding)
+            filteredRegions.isEmpty() -> uiStateHandler.showNoResultsState(binding)
+            else -> uiStateHandler.showSuccessState(binding)
         }
     }
 
@@ -129,14 +129,8 @@ class RegionFragment : Fragment(), RegionAdapter.RegionListener {
         when (state) {
             is FilterAreaState.RegionsStateByCountry -> handleRegionsState(state)
             is FilterAreaState.CountriesState -> handleCountriesState(state)
-            is FilterAreaState.Loading -> showLoadingState()
-            is FilterAreaState.Error -> {
-                if (state.message == "Нет интернета") {
-                    showErrorState(state.message)
-                } else {
-                    failedLoading(state.message)
-                }
-            }
+            is FilterAreaState.Loading -> uiStateHandler.showLoadingState(binding)
+            is FilterAreaState.Error -> handleErrorState(state)
             is FilterAreaState.GetCountryNameState -> Unit // Не используется в этом фрагменте
         }
     }
@@ -145,7 +139,7 @@ class RegionFragment : Fragment(), RegionAdapter.RegionListener {
         if (state.regions.isNotEmpty()) {
             showRegions(state.regions)
         } else {
-            showNoResultsState()
+            uiStateHandler.showNoResultsState(binding)
         }
     }
 
@@ -156,6 +150,14 @@ class RegionFragment : Fragment(), RegionAdapter.RegionListener {
         val countryId = getCountryIdFromArguments()
         if (countryId == null) {
             viewModel.getRegions(countryId)
+        }
+    }
+
+    private fun handleErrorState(state: FilterAreaState.Error) {
+        if (state.message == "Нет интернета") {
+            uiStateHandler.showErrorState(binding, state.message, R.drawable.image_yorik)
+        } else {
+            uiStateHandler.showErrorState(binding, state.message, R.drawable.cover_samolet)
         }
     }
 
@@ -176,56 +178,7 @@ class RegionFragment : Fragment(), RegionAdapter.RegionListener {
     private fun showRegions(regions: List<FilterArea>) {
         allRegions = regions
         regionAdapter?.updateRegions(regions)
-        showSuccessState()
-    }
-
-    private fun showLoadingState() {
-        with(binding) {
-            loadingContainer.visibility = View.VISIBLE
-            errorContainer.visibility = View.GONE
-            noResultsContainer.visibility = View.GONE
-            successContainer.visibility = View.GONE
-        }
-    }
-
-    private fun showErrorState(message: String) {
-        with(binding) {
-            errorText.text = message
-            loadingContainer.visibility = View.GONE
-            ivError.setImageResource(R.drawable.image_yorik)
-            errorContainer.visibility = View.VISIBLE
-            noResultsContainer.visibility = View.GONE
-            successContainer.visibility = View.GONE
-        }
-    }
-
-    private fun failedLoading(message: String) {
-        with(binding) {
-            errorText.text = message
-            loadingContainer.visibility = View.GONE
-            ivError.setImageResource(R.drawable.cover_samolet)
-            errorContainer.visibility = View.VISIBLE
-            noResultsContainer.visibility = View.GONE
-            successContainer.visibility = View.GONE
-        }
-    }
-
-    private fun showNoResultsState() {
-        with(binding) {
-            loadingContainer.visibility = View.GONE
-            errorContainer.visibility = View.GONE
-            noResultsContainer.visibility = View.VISIBLE
-            successContainer.visibility = View.GONE
-        }
-    }
-
-    private fun showSuccessState() {
-        with(binding) {
-            loadingContainer.visibility = View.GONE
-            errorContainer.visibility = View.GONE
-            noResultsContainer.visibility = View.GONE
-            successContainer.visibility = View.VISIBLE
-        }
+        uiStateHandler.showSuccessState(binding)
     }
 
     override fun onRegionClick(region: FilterArea) {
