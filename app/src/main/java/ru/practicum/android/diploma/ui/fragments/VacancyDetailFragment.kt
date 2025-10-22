@@ -15,8 +15,8 @@ import ru.practicum.android.diploma.domain.models.Address
 import ru.practicum.android.diploma.domain.models.Phones
 import ru.practicum.android.diploma.domain.models.SalaryFormatter
 import ru.practicum.android.diploma.domain.models.VacancyDetail
-import ru.practicum.android.diploma.presentation.vmodels.VacancyDetailViewModel
 import ru.practicum.android.diploma.presentation.models.VacancyDetailState
+import ru.practicum.android.diploma.presentation.vmodels.VacancyDetailViewModel
 
 class VacancyDetailFragment : Fragment() {
 

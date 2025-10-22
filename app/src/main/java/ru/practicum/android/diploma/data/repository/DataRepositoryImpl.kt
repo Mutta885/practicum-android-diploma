@@ -21,12 +21,14 @@ import ru.practicum.android.diploma.data.dto.VacancySearchResponse
 import ru.practicum.android.diploma.data.network.HhApi
 import ru.practicum.android.diploma.data.network.NetworkClient
 import ru.practicum.android.diploma.data.network.converters.ConvertersDto
-import ru.practicum.android.diploma.domain.models.FilterArea
+import ru.practicum.android.diploma.domain.api.DataRepository
+import ru.practicum.android.diploma.domain.models.Address
 import ru.practicum.android.diploma.domain.models.Area
 import ru.practicum.android.diploma.domain.models.Contact
 import ru.practicum.android.diploma.domain.models.Employer
 import ru.practicum.android.diploma.domain.models.Employment
 import ru.practicum.android.diploma.domain.models.Experience
+import ru.practicum.android.diploma.domain.models.FilterArea
 import ru.practicum.android.diploma.domain.models.FilterIndustry
 import ru.practicum.android.diploma.domain.models.Industry
 import ru.practicum.android.diploma.domain.models.Phones
@@ -36,8 +38,6 @@ import ru.practicum.android.diploma.domain.models.SearchResult
 import ru.practicum.android.diploma.domain.models.SearchResultVacancyDetail
 import ru.practicum.android.diploma.domain.models.Vacancy
 import ru.practicum.android.diploma.domain.models.isCountry
-import ru.practicum.android.diploma.domain.api.DataRepository
-import ru.practicum.android.diploma.domain.models.Address
 import ru.practicum.android.diploma.util.Resource
 import java.io.IOException
 import java.net.SocketTimeoutException
@@ -57,16 +57,25 @@ class DataRepositoryImpl(
         private const val HTTP_NOT_FOUND = 404
         private const val HTTP_SERVER_ERROR = 500
         private const val TAG = "DataRepositoryImpl"
+
+        // Константы для строковых сообщений
+        private const val ERROR_NO_INTERNET = "Нет интернета"
+        private const val ERROR_TIMEOUT = "Превышено время ожидания ответа"
+        private const val ERROR_SSL = "Ошибка безопасности соединения"
+        private const val ERROR_UNAUTHORIZED = "Ошибка авторизации"
+        private const val ERROR_FORBIDDEN = "Доступ запрещен"
+        private const val ERROR_SERVER = "Ошибка сервера"
+        private const val ERROR_NOT_FOUND = "Ресурс не найдена"
+        private const val ERROR_VACANCY_NOT_FOUND = "Вакансия не найдена или удалена"
     }
 
-    // ОБНОВЛЕНО: Добавлен параметр area
     override suspend fun searchVacancies(
         query: String,
         page: Int,
         industry: String?,
         salary: Int?,
         onlyWithSalary: Boolean,
-        area: String? // ДОБАВЛЕНО
+        area: String?
     ): Resource<SearchResult> {
         println(
             "DEBUG: Repository search - query: '$query', page: $page, " +
@@ -87,28 +96,27 @@ class DataRepositoryImpl(
 
             when (response.code()) {
                 HTTP_OK -> handleSuccessResponse(response.body())
-                HTTP_UNAUTHORIZED -> Resource.Error("Ошибка авторизации")
-                HTTP_FORBIDDEN -> Resource.Error("Доступ запрещен")
-                HTTP_NOT_FOUND -> Resource.Error("Ресурс не найдена")
-                HTTP_SERVER_ERROR -> Resource.Error("Ошибка сервера")
+                HTTP_UNAUTHORIZED -> Resource.Error(ERROR_UNAUTHORIZED)
+                HTTP_FORBIDDEN -> Resource.Error(ERROR_FORBIDDEN)
+                HTTP_NOT_FOUND -> Resource.Error(ERROR_NOT_FOUND)
+                HTTP_SERVER_ERROR -> Resource.Error(ERROR_SERVER)
                 else -> Resource.Error("Ошибка: ${response.code()} - ${response.message()}")
             }
         } catch (e: UnknownHostException) {
             Log.w(TAG, "Network connection error", e)
-            Resource.Error("Нет интернета")
+            Resource.Error(ERROR_NO_INTERNET)
         } catch (e: SocketTimeoutException) {
             Log.w(TAG, "Request timeout", e)
-            Resource.Error("Превышено время ожидания ответа")
+            Resource.Error(ERROR_TIMEOUT)
         } catch (e: SSLHandshakeException) {
             Log.w(TAG, "SSL handshake error", e)
-            Resource.Error("Ошибка безопасности соединения")
+            Resource.Error(ERROR_SSL)
         } catch (e: IOException) {
             Log.w(TAG, "IO error during network request", e)
             Resource.Error("Ошибка сети: ${e.message ?: "Неизвестная ошибка"}")
         }
     }
 
-    // Остальные методы остаются без изменений...
     override fun getIndustries(): Flow<Result<List<Industry>?>> {
         return flow {
             networkClient.doRequest(IndustryRequest()).collect { result ->
@@ -137,22 +145,21 @@ class DataRepositoryImpl(
                 HTTP_OK -> {
                     handleSuccessResponseVacancyDetail(response.body())
                 }
-
-                HTTP_UNAUTHORIZED -> Resource.Error("Ошибка авторизации")
-                HTTP_FORBIDDEN -> Resource.Error("Доступ запрещен")
-                HTTP_NOT_FOUND -> Resource.Error("Вакансия не найдена или удалена")
-                HTTP_SERVER_ERROR -> Resource.Error("Ошибка сервера")
+                HTTP_UNAUTHORIZED -> Resource.Error(ERROR_UNAUTHORIZED)
+                HTTP_FORBIDDEN -> Resource.Error(ERROR_FORBIDDEN)
+                HTTP_NOT_FOUND -> Resource.Error(ERROR_VACANCY_NOT_FOUND)
+                HTTP_SERVER_ERROR -> Resource.Error(ERROR_SERVER)
                 else -> Resource.Error("Ошибка: ${response.code()} - ${response.message()}")
             }
         } catch (e: UnknownHostException) {
             Log.w(TAG, "Network connection error", e)
-            Resource.Error("Нет интернета")
+            Resource.Error(ERROR_NO_INTERNET)
         } catch (e: SocketTimeoutException) {
             Log.w(TAG, "Request timeout", e)
-            Resource.Error("Превышено время ожидания ответа")
+            Resource.Error(ERROR_TIMEOUT)
         } catch (e: SSLHandshakeException) {
             Log.w(TAG, "SSL handshake error", e)
-            Resource.Error("Ошибка безопасности соединения")
+            Resource.Error(ERROR_SSL)
         } catch (e: IOException) {
             Log.w(TAG, "IO error during network request", e)
             Resource.Error("Ошибка сети: ${e.message ?: "Неизвестная ошибка"}")
@@ -173,11 +180,11 @@ class DataRepositoryImpl(
         } catch (e: UnknownHostException) {
             Log.w(TAG, "Network connection error loading areas", e)
             println("DEBUG: Network error loading areas: ${e.message}")
-            Resource.Error("Нет интернета")
+            Resource.Error(ERROR_NO_INTERNET)
         } catch (e: SocketTimeoutException) {
             Log.w(TAG, "Timeout loading areas", e)
             println("DEBUG: Timeout loading areas: ${e.message}")
-            Resource.Error("Превышено время ожидания")
+            Resource.Error(ERROR_TIMEOUT)
         } catch (e: IOException) {
             Log.w(TAG, "IO error loading areas", e)
             println("DEBUG: IO error loading areas: ${e.message}")
@@ -193,7 +200,6 @@ class DataRepositoryImpl(
                 println("DEBUG: Found ${countries.size} countries")
                 Resource.Success(countries)
             }
-
             is Resource.Error -> areasResult
             Resource.Loading -> TODO()
         }
@@ -205,7 +211,6 @@ class DataRepositoryImpl(
             is Resource.Success -> {
                 val country = areasResult.data.find { it.id == countryId }
                 if (country != null) {
-                    // Исправляем регионы с null parentId
                     val regions = country.areas.map { region ->
                         if (region.parentId == null) {
                             FilterArea(
@@ -225,7 +230,6 @@ class DataRepositoryImpl(
                     Resource.Error("Страна не найдена")
                 }
             }
-
             is Resource.Error -> areasResult
             else -> Resource.Error("Неизвестная ошибка")
         }
@@ -241,7 +245,6 @@ class DataRepositoryImpl(
                 println("DEBUG: Found ${allRegions.size} total regions")
                 Resource.Success(allRegions)
             }
-
             is Resource.Error -> areasResult
             Resource.Loading -> TODO()
         }
@@ -254,7 +257,6 @@ class DataRepositoryImpl(
                 val country = areasResult.data.find { it.id == countryId }
                 Resource.Success(country)
             }
-
             is Resource.Error -> areasResult
             Resource.Loading -> TODO()
         }
